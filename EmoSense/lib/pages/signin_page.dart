@@ -97,27 +97,23 @@ class _SigninPageState extends State<SigninPage> {
                                   final hasCompletedSurvey = data['surveyCompleted'];
                                   if (hasCompletedSurvey != null) {
                                     print(hasCompletedSurvey);
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-                                    // if (hasCompletedSurvey == true) {
-                                    //   print('Home Page Content');
-                                    //   // Navigate to the home page
-                                    //   Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(builder: (context) => HomePage()),
-                                    //   );
-                                    //   print('Navigation to Home Page initiated');
-                                    // } else {
-                                    //   print('Survey Page Content');
-                                    //   // Navigator.pushNamed(context, 'preferencesSurveyPage');
-                                    //   // Navigate to the preferences survey page
-                                    //   Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) => PreferencesSurveyPage()
-                                    //     ),
-                                    //   );
-                                    //   print('Navigation to Survey Page initiated');
-                                    // }
+                                    if (hasCompletedSurvey == true) {
+                                      print('Home Page Content');
+                                      Future.delayed(Duration(milliseconds: 300), () {
+                                        Navigator.push(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => HomePage()));
+                                      });
+                                    } else {
+                                      print('Survey Page Content');
+                                      // Navigator.pushNamed(context, 'preferencesSurveyPage');
+                                      // Navigate to the preferences survey page
+                                      Future.delayed(Duration(milliseconds: 300), () {
+                                        Navigator.push(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => PreferencesSurveyPage()));
+                                      });
+                                    }
                                   } else {
                                     print('hasCompletedSurvey field is not present in the document');
                                   }
