@@ -106,7 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: 250,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFE5FFD0)),
+                              backgroundColor: Color(0xFF453276)),
                           onPressed: () async {
                             String username = _usernameTextController.text.trim();
                             String email = _emailTextController.text.trim();
@@ -159,7 +159,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   FirebaseAuth.instance.currentUser?.uid).set({
                                 'username': username,
                                 'email': email,
-                                'surveyCompleted': false, // New field
+                                'surveyCompleted': false,
+                                'firstLogin': true,
                                 'gender': null,
                                 'birthdate': null,
                                 'dailyReminder': false,
@@ -229,7 +230,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           },
                           icon: const Icon(
                             Icons.check_circle,
-                            color: Color(0xFF366021),
+                            color: Color(0xFFF2F2F2),
                           ),
                           label: Text(
                             'Sign Up',
@@ -251,7 +252,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: const Text(
                           "Already have an account? Click here.",
                           style: TextStyle(
-                            color: Color(0xFF366021),
+                            color: Color(0xFF453276),
                             fontSize: 15,
                             fontStyle: FontStyle.italic,
                             decoration: TextDecoration.underline,

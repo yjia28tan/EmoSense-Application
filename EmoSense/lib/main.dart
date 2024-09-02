@@ -1,4 +1,4 @@
-import 'package:emosense/pages/preferences_survey.dart';
+import 'package:emosense/pages/preferences_genre.dart';
 import 'package:emosense/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +20,7 @@ void main() async {
       projectId: 'emosense-d13d2',
     ),
   );
-  
+
   runApp(const MyApp());
 }
 
@@ -34,16 +34,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   User? user;
 
-  refresh() {
-    setState(() {});
-  }
-
   @override
   void initState() {
     super.initState();
     // Check if the user is already logged in
-    User? user = FirebaseAuth.instance.currentUser;
-
+    user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      globalUID = user!.uid;
+    }
   }
 
   @override
@@ -53,18 +51,19 @@ class _MyAppState extends State<MyApp> {
       title: 'EmoSense',
       theme: ThemeData(
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFFE5FFD0),
-          selectedItemColor: Color(0xFFFF366021),
-          unselectedItemColor: Color(0xFF34A853),
+          backgroundColor: Color(0xFFF2F2F2),
+          selectedItemColor: Color(0xFF453276),
+          unselectedItemColor: Color(0xFFA6A6A6),
         ),
-        appBarTheme: AppBarTheme(backgroundColor: Color(0xFF366021)),
+        appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFC9A4D7)),
       ),
+      // Use a ternary operator to decide which screen to show based on login status
       home: user != null ? HomePage() : const SigninPage(),
       routes: {
         SigninPage.routeName: (context) => const SigninPage(),
-        '/homepage': (context) => HomePage(),
-        '/preferencesSurveyPage': (context) => const PreferencesSurveyPage(),
-        // SignUpPage.routeName: (context) => const SignUpPage(),
+        HomePage.routeName: (context) => HomePage(),
+        PreferencesSurveyGenre.routeName: (context) => PreferencesSurveyGenre(),
+        AddEmotionRecordPage.routeName: (context) => AddEmotionRecordPage(),
       },
     );
   }

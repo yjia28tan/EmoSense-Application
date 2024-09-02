@@ -6,10 +6,10 @@ import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
 import 'package:emosense/pages/signup_page.dart';
 import 'package:emosense/pages/home_page.dart';
-import 'package:emosense/pages/preferences_survey.dart';
+import 'package:emosense/pages/preferences_genre.dart';
 
 class SigninPage extends StatefulWidget {
-  static String routeName = '/LoginPage';
+  static String routeName = '/SigninPage';
 
   const SigninPage({Key? key}) : super(key: key);
 
@@ -69,7 +69,7 @@ class _SigninPageState extends State<SigninPage> {
                       height: 45,
                       width: 250,
                       child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFE5FFD0)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF453276)),
                         onPressed: () async {
                           showDialog(
                             context: context,
@@ -83,7 +83,7 @@ class _SigninPageState extends State<SigninPage> {
                               password: _passwordTextController.text,
                             );
 
-                            // Check if the email is verified
+                            // Check if email is verified
                             if (userCredential.user!.emailVerified) {
                               globalUID = userCredential.user!.uid;
                               final docSnapshot = await FirebaseFirestore.instance
@@ -91,39 +91,45 @@ class _SigninPageState extends State<SigninPage> {
                                   .doc(globalUID)
                                   .get();
 
-                              if (docSnapshot.exists) {
-                                final data = docSnapshot.data();
-                                if (data != null) {
-                                  final hasCompletedSurvey = data['surveyCompleted'];
-                                  if (hasCompletedSurvey != null) {
-                                    print(hasCompletedSurvey);
-                                    if (hasCompletedSurvey == true) {
-                                      print('Home Page Content');
-                                      Future.delayed(Duration(milliseconds: 300), () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(
-                                            builder: (context) => HomePage()));
-                                      });
-                                    } else {
-                                      print('Survey Page Content');
-                                      // Navigator.pushNamed(context, 'preferencesSurveyPage');
-                                      // Navigate to the preferences survey page
-                                      Future.delayed(Duration(milliseconds: 300), () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(
-                                            builder: (context) => PreferencesSurveyPage()));
-                                      });
-                                    }
-                                  } else {
-                                    print('hasCompletedSurvey field is not present in the document');
-                                  }
+                              final data = docSnapshot.data();
+                              if (data != null) {
+                                final firstLogin = data['firstLogin'] ?? true;
+                                final hasCompletedSurvey = data['surveyCompleted'];
+
+                                if (firstLogin) {
+                                  // Update user document to mark first login as false
+                                  await FirebaseFirestore.instance.collection(
+                                      'users').doc(globalUID).update({'firstLogin': false});
+
+                                  // Navigate to the preferences survey page
+                                  Future.delayed(Duration(milliseconds: 300), () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PreferencesSurveyGenre()
+                                        )
+                                    );
+                                  });
                                 } else {
-                                  print('Document data is null');
-                                }
-                              } else {
-                                print('Document does not exist');
+                                  // Navigate to the home page
+                                  Future.delayed(Duration(milliseconds: 300), () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(
+                                            builder: (context) => HomePage()
+                                        )
+                                    );
+                                  });
                               }
-                            } else {
+                              } else {
+                                final snackbar = SnackBar(
+                                  content: Text("Failed to fetch user data."),
+                                  action: SnackBarAction(
+                                    label: 'OK',
+                                    onPressed: () {},
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                              }
+                            }  else {
                               // Email is not verified
                               final snackbar = SnackBar(
                                 content: Text("Please verify your email before logging in."),
@@ -148,7 +154,7 @@ class _SigninPageState extends State<SigninPage> {
                             Navigator.of(context).pop(); // Hide progress indicator
                           }
                         },
-                        icon: Icon(Icons.login, color: Color(0xFF366021)),
+                        icon: Icon(Icons.login, color: Color(0xFFF2F2F2)),
                         label: Text('Sign In', style: homeSubHeaderText),
                       ),
                     ),
@@ -157,8 +163,8 @@ class _SigninPageState extends State<SigninPage> {
                       height: 45,
                       width: 250,
                       child: ElevatedButton.icon(
-                        icon: Icon(Icons.app_registration, color: Color(0xFF366021)),
-                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFE5FFD0)),
+                        icon: Icon(Icons.app_registration, color: Color(0xFFF2F2F2)),
+                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF453276)),
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
                         },
@@ -170,7 +176,7 @@ class _SigninPageState extends State<SigninPage> {
                 SizedBox(height: 10),
                 InkWell(
                   onTap: () async {
-                    showDialog(
+                     showDialog(
                       context: context,
                       builder: (context) => Center(child: CircularProgressIndicator()),
                     );
@@ -206,7 +212,7 @@ class _SigninPageState extends State<SigninPage> {
                   child: const Text(
                     "Forgot Password?",
                     style: TextStyle(
-                      color: Color(0xFF366021),
+                      color: Color(0xFF453276),
                       fontSize: 15,
                       fontStyle: FontStyle.italic,
                       decoration: TextDecoration.underline,

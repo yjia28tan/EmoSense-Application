@@ -1,3 +1,4 @@
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:flutter/material.dart';
 
 class AddEmotionRecordPage extends StatefulWidget {
@@ -20,7 +21,13 @@ class _AddEmotionRecordPageState extends State<AddEmotionRecordPage> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(title: Text('AddEmotionRecordPage')),
+          appBar: AppBar(
+            automaticallyImplyLeading: false, // disable back button
+            title: Text('Add Emotion Record',
+              style: headerText,
+            ),
+            centerTitle: true,
+          ),
           body: Center(
             child: Text('AddEmotionRecordPage'),
           ),

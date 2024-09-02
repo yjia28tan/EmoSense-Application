@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 ElevatedButton profile_Button(String text, IconData icon, VoidCallback onPressed) {
   return ElevatedButton(
     style: ElevatedButton.styleFrom(
-      foregroundColor: Color(0xFF366021),
-      backgroundColor: Color(0xFFE5FFD0).withOpacity(0.7),
+      foregroundColor: Color(0xFFA6A6A6),
+      backgroundColor: Color(0xFFF2F2F2).withOpacity(0.7),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -17,11 +17,11 @@ ElevatedButton profile_Button(String text, IconData icon, VoidCallback onPressed
       children: [
         Text(
           text,
-          style: TextStyle(color: Color(0xFF366021)),
+          style: TextStyle(color: Color(0xFF453276)),
         ),
         Icon(
           icon,
-          color: Color(0xFF366021),
+          color: Color(0xFF453276),
         ),
       ],
     ),
@@ -32,7 +32,7 @@ ElevatedButton signout_Button(String text, IconData icon, VoidCallback onPressed
   return ElevatedButton(
     style: ElevatedButton.styleFrom(
       // foregroundColor: Color(0xFF366021),
-      backgroundColor: Color(0xFF366021).withOpacity(1.0),
+      backgroundColor: Color(0xFF453176).withOpacity(1.0),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -45,11 +45,11 @@ ElevatedButton signout_Button(String text, IconData icon, VoidCallback onPressed
       children: [
         Icon(
           icon,
-          color: Color(0xFFE5FFD0),
+          color: Color(0xFFF2F2F2),
         ),
         Text(
           text,
-          style: TextStyle(color: Color(0xFFE5FFD0)),
+          style: TextStyle(color: Color(0xFFF2F2F2)),
         ),
       ],
     ),

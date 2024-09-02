@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
-import 'package:emosense/design_widgets//font_style.dart';
-import '../pages/mood_details_page.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 
 class MoodListWidget extends StatelessWidget {
   final List<DocumentSnapshot> moodRecords;
@@ -54,12 +52,12 @@ class MoodListWidget extends StatelessWidget {
           padding: const EdgeInsets.all(5.0),
           child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MoodDetailsPage(moodId: record.id),
-                ),
-              );
+              // Navigator.push(
+                // context,
+                // MaterialPageRoute(
+                //   builder: (context) => MoodDetailsPage(moodId: record.id),
+                // ),
+              // );
             },
             child: Column(
               children: [
