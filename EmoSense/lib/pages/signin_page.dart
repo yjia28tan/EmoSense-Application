@@ -6,7 +6,7 @@ import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
 import 'package:emosense/pages/signup_page.dart';
 import 'package:emosense/pages/home_page.dart';
-import 'package:emosense/pages/preferences_genre.dart';
+import 'package:emosense/pages/genre_selection_page.dart';
 
 class SigninPage extends StatefulWidget {
   static String routeName = '/SigninPage';
@@ -105,7 +105,7 @@ class _SigninPageState extends State<SigninPage> {
                                   Future.delayed(Duration(milliseconds: 300), () {
                                     Navigator.push(context,
                                         MaterialPageRoute(
-                                            builder: (context) => PreferencesSurveyGenre()
+                                            builder: (context) => GenreSelectionPage()
                                         )
                                     );
                                   });

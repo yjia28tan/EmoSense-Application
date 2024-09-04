@@ -1,4 +1,4 @@
-import 'package:emosense/pages/preferences_genre.dart';
+import 'package:emosense/pages/genre_selection_page.dart';
 import 'package:emosense/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:emosense/pages/home_page.dart';
 import 'package:emosense/pages/signin_page.dart';
 import 'package:emosense/pages/add_emotion_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 String? globalUID;
 
@@ -20,6 +21,9 @@ void main() async {
       projectId: 'emosense-d13d2',
     ),
   );
+
+  // Load the .env file
+  await dotenv.load(fileName: ".env");
 
   runApp(const MyApp());
 }
@@ -62,7 +66,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         SigninPage.routeName: (context) => const SigninPage(),
         HomePage.routeName: (context) => HomePage(),
-        PreferencesSurveyGenre.routeName: (context) => PreferencesSurveyGenre(),
+        GenreSelectionPage.routeName: (context) => GenreSelectionPage(),
         AddEmotionRecordPage.routeName: (context) => AddEmotionRecordPage(),
       },
     );
