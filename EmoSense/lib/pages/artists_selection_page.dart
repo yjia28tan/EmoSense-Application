@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/main.dart';
+import 'package:emosense/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/api_services/spotify_services.dart';
 
@@ -86,6 +89,23 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     });
   }
 
+  Future<void> savePreferencesToFirebase() async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Create a new document in the "preferences" collection with the UID as a foreign key
+      await firestore.collection('preferences').add({
+        'uid': globalUID,
+        'selectedGenres': widget.selectedGenres,
+        'selectedArtists': selectedArtists,
+      });
+
+      print("Preferences saved successfully!");
+    } catch (e) {
+      print("Error saving preferences: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,10 +164,12 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: () {
-            // Handle artist selection or save preferences
-            // Save preferences to your backend or move to the next step
-            Navigator.pop(context);
+          onPressed: () async {
+            // Save preferences to Firebase
+            await savePreferencesToFirebase();
+
+            // Navigate to Home Page
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
           },
           child: Text("Done"),
           style: ElevatedButton.styleFrom(

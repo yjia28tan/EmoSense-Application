@@ -130,8 +130,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   formatButtonVisible: false,
                   titleCentered: true,
                 ),
-                firstDay: DateTime.utc(2000, 1, 1),
-                lastDay: DateTime.utc(2100, 12, 31),
+                firstDay: DateTime.utc(1800, 1, 1),
+                lastDay: DateTime.utc(2500, 12, 31),
                 focusedDay: _selectedDay,
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                 onDaySelected: _onDaySelected,
@@ -140,7 +140,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     DateTime normalizedDay =
                     DateTime(day.year, day.month, day.day);
                     return Container(
-                      height: 50,
+                      height: 80,
                       margin: const EdgeInsets.all(4.0),
                       alignment: Alignment.center,
                       child: Column(
@@ -153,7 +153,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             '${day.day}',
                             style: const TextStyle(fontSize: 12),
                           ),
-                          const SizedBox(height: 2),
+
                         ],
                       ),
                     );
@@ -161,7 +161,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(40.0),
                 child: Container(
                   child: Text(
                     _selectedEmotion != null ? 'Emotion: $_selectedEmotion' : 'Emotion: None',

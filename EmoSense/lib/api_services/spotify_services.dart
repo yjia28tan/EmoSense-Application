@@ -88,8 +88,6 @@ class SpotifyService {
     }
   }
 
-
-
 }
 
 // Model class for Artist

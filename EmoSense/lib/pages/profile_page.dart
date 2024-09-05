@@ -3,6 +3,7 @@ import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/edit_genres_preferences.dart';
 import 'package:emosense/pages/signin_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
               ),
               SizedBox(height: 20),
+
+              profile_Button(
+                'Edit Preferences',
+                Icons.arrow_forward_ios,
+                    () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                  );
+                  // if (result == true) {
+                  //   // Refresh the user data
+                  //   fetchUserData();
+                  // }
+                },
+              ),
+              SizedBox(height: 20),
+
               // 'More' text
               Align(
                 alignment: Alignment.centerLeft,
