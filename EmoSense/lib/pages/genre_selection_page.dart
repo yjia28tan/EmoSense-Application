@@ -1,4 +1,6 @@
 import 'package:emosense/api_services/spotify_services.dart';
+import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/pages/artists_selection_page.dart';
 import 'package:flutter/material.dart';
 
@@ -62,42 +64,48 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // Show a loader while fetching data
           : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Number of items per row
-            childAspectRatio: 1, // Keep items square
-          ),
-          itemCount: genres.length,
-          itemBuilder: (context, index) {
-            final genre = genres[index];
-            final isSelected = selectedGenres.contains(genre);
+              padding: const EdgeInsets.all(12),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Number of items per row
+                  childAspectRatio: 1, // Keep items square
+                ),
+                itemCount: genres.length,
+                itemBuilder: (context, index) {
+                  final genre = genres[index];
+                  final isSelected = selectedGenres.contains(genre);
 
-            return GestureDetector(
-              onTap: () => toggleGenreSelection(genre),
-              child: Container(
-                margin: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.purple : Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Center(
-                  child: Text(
-                    genre,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
+                  return GestureDetector(
+                    onTap: () => toggleGenreSelection(genre),
+                    child: Container(
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.purple : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Center(
+                        child: Text(
+                          genre,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-      ),
+          ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(15),
         child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.darkPurpleColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
+            ),
+          ),
           onPressed: () {
             // Navigate to the next page with selected genres
             Navigator.push(
@@ -110,9 +118,8 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
               ),
             );
           },
-          child: Text("Next"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple,
+          child: Text("Next",
+            style: homeSubHeaderText,
           ),
         ),
       ),

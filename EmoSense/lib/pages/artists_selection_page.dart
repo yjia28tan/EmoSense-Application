@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/home_page.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +102,6 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
         'id': artist.id,
         'name': artist.name,
         'imageUrl': artist.imageUrl,
-        // 'genres': artist.genres, // Add other relevant fields if needed
       })
           .toList();
 
@@ -117,7 +118,6 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,65 +127,75 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // Show a loader while fetching data
           : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // Number of items per row
-            childAspectRatio: 1, // Keep items square
-          ),
-          itemCount: artists.length,
-          itemBuilder: (context, index) {
-            final artist = artists[index];
-            final isSelected = selectedArtists.contains(artist.id);
-
-            return GestureDetector(
-              onTap: () async {
-                toggleArtistSelection(artist.id);
-
-                if (!isSelected) {
-                  // Fetch and add similar artists when selecting an artist
-                  await fetchSimilarArtists(artist.id);
-                }
-              },
-              child: Container(
-                margin: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.purple : Colors.grey[300],
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (artist.imageUrl.isNotEmpty)
-                      Image.network(artist.imageUrl, height: 50),
-                    Text(
-                      artist.name,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3, // Number of items per row
+                childAspectRatio: 1, // Keep items square
               ),
-            );
-          },
-        ),
-      ),
+              itemCount: artists.length,
+              itemBuilder: (context, index) {
+                final artist = artists[index];
+                final isSelected = selectedArtists.contains(artist.id);
+
+                return GestureDetector(
+                  onTap: () async {
+                    toggleArtistSelection(artist.id);
+
+                    if (!isSelected) {
+                      // Fetch and add similar artists when selecting an artist
+                      await fetchSimilarArtists(artist.id);
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.purple : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (artist.imageUrl.isNotEmpty)
+                          Image.network(artist.imageUrl, height: 50),
+                        Text(
+                          artist.name,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(15.0),
         child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.darkPurpleColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
+            ),
+          ),
           onPressed: () async {
             // Save preferences to Firebase
             await savePreferencesToFirebase();
 
             // Navigate to Home Page
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()
+                )
+            );
+
           },
-          child: Text("Done"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple,
+          child: Text("Done",
+            style: homeSubHeaderText,
           ),
         ),
       ),
