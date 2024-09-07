@@ -76,7 +76,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
     return Scaffold(
       body: SingleChildScrollView( // Make the screen scrollable
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05), // 5% padding from both sides
+          padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+              vertical: screenHeight * 0.05
+          ),
           child: Column(
             children: [
               Container(
@@ -86,16 +89,16 @@ class _HomeContentPageState extends State<HomeContentPage> {
                   children: [
                     // Button to go to the previous day
                     IconButton(
-                      iconSize: screenHeight * 0.03, // Adjusting icon size based on screen height
+                      iconSize: screenHeight * 0.025, // Adjusting icon size based on screen height
                       icon: Icon(Icons.arrow_back_ios_outlined),
                       onPressed: _showPreviousDay,
                     ),
                     Text(
                       formattedDate,
-                      style: homepageText.copyWith(fontSize: screenHeight * 0.03), // Adjust font size
+                      style: titleBlack.copyWith(fontSize: screenHeight * 0.025), // Adjust font size
                     ),
                     IconButton(
-                      iconSize: screenHeight * 0.03, // Adjusting icon size based on screen height
+                      iconSize: screenHeight * 0.025, // Adjusting icon size based on screen height
                       icon: Icon(Icons.arrow_forward_ios_outlined),
                       onPressed: _isToday() ? null : _showNextDay,
                       color: _isToday() ? Colors.grey : null, // Grey out the icon if disabled
@@ -104,7 +107,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                 ),
               ),
 
-              SizedBox(height: screenHeight * 0.02), // Adjusting space between date and content
+              // SizedBox(height: screenHeight * 0.001), // Adjusting space between date and content
               Align(
                 alignment: Alignment.centerLeft, // Align the 'Today' text to the left
                 child: Text(

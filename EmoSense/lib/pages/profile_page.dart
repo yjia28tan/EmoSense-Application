@@ -27,22 +27,47 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // Sign out function
-  Future<void> signOut(BuildContext context) async {
-    // Sign out the user from Firebase Authentication
-    await _auth.signOut();
+  Future<bool> signOut(BuildContext context) async {
+    // Show a dialog asking if the user is sure they want to log out
+    final bool? shouldSignout = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign Out'),
+          content: Text('Are you sure you want to sign out?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false to prevent back action
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Sign out the user from Firebase Authentication
+                await FirebaseAuth.instance.signOut();
 
-    // Clear the user's FCM token in Firestore
-    if (globalUID != null) {
-      final userRef = FirebaseFirestore.instance.collection('users').doc(globalUID);
-      await userRef.update({'fcmToken': ""});
-    }
+                // Clear the user's FCM token in Firestore
+                if (globalUID != null) {
+                  final userRef = FirebaseFirestore.instance.collection('users').doc(globalUID);
+                  await userRef.update({'fcmToken': ""});
+                }
 
-    // Navigate to SigninPage and clear the navigation stack
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => SigninPage()),
-          (route) => false,
+                // Navigate to SigninPage and clear the navigation stack
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SigninPage()),
+                      (route) => false,
+                ); // Return true to allow back action
+              },
+              child: Text('Sign Out'),
+            ),
+          ],
+        );
+      },
     );
+
+    return shouldSignout ?? false; // Default to false if null
   }
 
   // Fetch user data from Firestore
@@ -69,20 +94,24 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve screen height and width using MediaQuery
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(screenWidth * 0.08),
         child: Center(
           child: Column(
             children: [
               // Profile Picture
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(5.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Welcome,',
-                    style: signinTitle,
+                    style: titleBlack,
                   ),
                 ),
               ),
@@ -117,20 +146,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 'Edit Preferences',
                 Icons.arrow_forward_ios,
                     () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                  );
-                  // if (result == true) {
-                  //   // Refresh the user data
-                  //   fetchUserData();
-                  // }
+                  // final result = await Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                  // );
                 },
               ),
               SizedBox(height: 20),
 
               // 'More' text
               Align(
+
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -157,8 +183,8 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: 20),
               // sign out button
               Container(
-                height: 45,
-                width: 250,
+                width: double.infinity,  // Takes the full width of the screen
+                height: screenHeight * 0.07,
                 child: signout_Button(
                   'Sign Out',
                   Icons.logout,

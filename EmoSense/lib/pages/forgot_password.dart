@@ -45,7 +45,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         child: Center(
                           child: Text(
                             'Forgot Password',
-                            style: signinTitle,
+                            style: titleBlack,
                           ),
                         ),
                       ),

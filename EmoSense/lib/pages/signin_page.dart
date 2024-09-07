@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,66 +24,122 @@ class _SigninPageState extends State<SigninPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: SingleChildScrollView(
+    // Retrieve screen height and width using MediaQuery
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background color and emoji/logo
+          Container(
+            color: AppColors.upBackgroundColor, // Background color matching the design
             child: Column(
               children: [
+                SizedBox(height: screenHeight * 0.08),// Spacing from the top
                 Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        child: Center(
-                          // Logo or App Name
+                  padding: EdgeInsets.all(screenWidth * 0.08),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: AppColors.darkLogoColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Form container with rounded top corners
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SingleChildScrollView(
+              child: Container(
+                height: screenHeight * 0.65,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Sign in', style: titleBlack),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Email", Icons.email, false, _emailTextController),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Password", Icons.lock, true, _passwordTextController),
+                    SizedBox(height: screenHeight * 0.025),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Center(child: CircularProgressIndicator()),
+                          );
+              
+                          try {
+                            await FirebaseAuth.instance.sendPasswordResetEmail(
+                              email: _emailTextController.text,
+                            );
+              
+                            Navigator.pop(context);
+              
+                            final snackbar = SnackBar(
+                              content: Text("Password reset email sent. Please check your email."),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                          } catch (error) {
+                            Navigator.pop(context);
+              
+                            final snackbar = SnackBar(
+                              content: Text("Failed to send password reset email."),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                          }
+                        },
+                        child: Text(
+                          "Forgot password?",
+                          style: inkwellText,
                         ),
                       ),
-                      Container(
-                        height: 100,
-                        child: Center(
-                          child: Text(
-                            'EmoSense',
-                            style: signinTitle,
+                    ),
+                    SizedBox(height: screenHeight * 0.16),
+                    Container(
+                      width: double.infinity,  // Takes the full width of the screen
+                      height: screenHeight * 0.07,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.darkPurpleColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
                           ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      forTextField("Email", Icons.email, false, _emailTextController),
-                      SizedBox(height: 15),
-                      forTextField("Password", Icons.lock, true, _passwordTextController),
-                      SizedBox(height: 80),
-                    ],
-                  ),
-                ),
-                Column(
-                  children: [
-                    Container(
-                      height: 45,
-                      width: 250,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF453276)),
                         onPressed: () async {
                           showDialog(
                             context: context,
                             builder: (context) => Center(child: CircularProgressIndicator()),
                           );
-
+              
                           try {
                             // Sign in with email and password
                             final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: _emailTextController.text,
                               password: _passwordTextController.text,
                             );
-
+              
                             // Check if email is verified
                             if (userCredential.user!.emailVerified) {
                               globalUID = userCredential.user!.uid;
@@ -90,17 +147,17 @@ class _SigninPageState extends State<SigninPage> {
                                   .collection('users')
                                   .doc(globalUID)
                                   .get();
-
+              
                               final data = docSnapshot.data();
                               if (data != null) {
                                 final firstLogin = data['firstLogin'] ?? true;
                                 final hasCompletedSurvey = data['surveyCompleted'];
-
+              
                                 if (firstLogin) {
                                   // Update user document to mark first login as false
                                   await FirebaseFirestore.instance.collection(
                                       'users').doc(globalUID).update({'firstLogin': false});
-
+              
                                   // Navigate to the preferences survey page
                                   Future.delayed(Duration(milliseconds: 300), () {
                                     Navigator.push(context,
@@ -118,7 +175,7 @@ class _SigninPageState extends State<SigninPage> {
                                         )
                                     );
                                   });
-                              }
+                                }
                               } else {
                                 final snackbar = SnackBar(
                                   content: Text("Failed to fetch user data."),
@@ -154,76 +211,17 @@ class _SigninPageState extends State<SigninPage> {
                             Navigator.of(context).pop(); // Hide progress indicator
                           }
                         },
-                        icon: Icon(Icons.login, color: Color(0xFFF2F2F2)),
-                        label: Text('Sign In', style: homeSubHeaderText),
+                        child: Text('Sign in', style: homeSubHeaderText),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Container(
-                      height: 45,
-                      width: 250,
-                      child: ElevatedButton.icon(
-                        icon: Icon(Icons.app_registration, color: Color(0xFFF2F2F2)),
-                        style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF453276)),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
-                        },
-                        label: Text('Sign Up', style: homeSubHeaderText),
-                      ),
-                    ),
+                    // SizedBox(height: screenHeight * 0.01),
                   ],
                 ),
-                SizedBox(height: 10),
-                InkWell(
-                  onTap: () async {
-                     showDialog(
-                      context: context,
-                      builder: (context) => Center(child: CircularProgressIndicator()),
-                    );
-
-                    try {
-                      await FirebaseAuth.instance.sendPasswordResetEmail(
-                        email: _emailTextController.text,
-                      );
-
-                      Navigator.pop(context);
-
-                      final snackbar = SnackBar(
-                        content: Text("Password reset email sent. Please check your email."),
-                        action: SnackBarAction(
-                          label: 'OK',
-                          onPressed: () {},
-                        ),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                    } catch (error) {
-                      Navigator.pop(context);
-
-                      final snackbar = SnackBar(
-                        content: Text("Failed to send password reset email."),
-                        action: SnackBarAction(
-                          label: 'OK',
-                          onPressed: () {},
-                        ),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                    }
-                  },
-                  child: const Text(
-                    "Forgot Password?",
-                    style: TextStyle(
-                      color: Color(0xFF453276),
-                      fontSize: 15,
-                      fontStyle: FontStyle.italic,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

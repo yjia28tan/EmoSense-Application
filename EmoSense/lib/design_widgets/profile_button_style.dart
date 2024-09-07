@@ -35,7 +35,7 @@ ElevatedButton signout_Button(String text, IconData icon, VoidCallback onPressed
       backgroundColor: Color(0xFF453176).withOpacity(1.0),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(50.0),
       ),
       minimumSize: Size(double.infinity, 50), // set the minimum size to match the text field
     ),

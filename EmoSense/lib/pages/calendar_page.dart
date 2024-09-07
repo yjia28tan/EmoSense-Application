@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/main.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -11,13 +12,13 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   DateTime _selectedDay = DateTime.now();
   String? _selectedEmotion;
-  Map<DateTime, String> _moodMap = {};
+  Map<DateTime, String> _emotionMap = {};
 
   @override
   void initState() {
     super.initState();
     _fetchDataForSelectedDay();
-    _fetchAllMoods();
+    _fetchAllEmotions();
   }
 
   Future<void> _fetchDataForSelectedDay() async {
@@ -26,8 +27,8 @@ class _CalendarPageState extends State<CalendarPage> {
     DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
-    final moodSnapshot = await FirebaseFirestore.instance
-        .collection('moodRecord')
+    final emotionSnapshot = await FirebaseFirestore.instance
+        .collection('emotionRecord')
         .where('uid', isEqualTo: uid)
         .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
         .where('timestamp', isLessThan: endOfDay)
@@ -35,8 +36,8 @@ class _CalendarPageState extends State<CalendarPage> {
         .get();
 
     String? mood;
-    if (moodSnapshot.docs.isNotEmpty) {
-      mood = moodSnapshot.docs.first['mood'];
+    if (emotionSnapshot.docs.isNotEmpty) {
+      mood = emotionSnapshot.docs.first['emotion'];
     }
 
     setState(() {
@@ -44,22 +45,22 @@ class _CalendarPageState extends State<CalendarPage> {
     });
   }
 
-  Future<void> _fetchAllMoods() async {
+  Future<void> _fetchAllEmotions() async {
     final uid = globalUID;
 
     final moodSnapshot = await FirebaseFirestore.instance
-        .collection('moodRecord')
+        .collection('emotionRecord')
         .where('uid', isEqualTo: uid)
         .get();
 
-    Map<DateTime, String> moodMap = {};
+    Map<DateTime, String> emotionMap = {};
     for (var doc in moodSnapshot.docs) {
       DateTime date = (doc['timestamp'] as Timestamp).toDate();
-      moodMap[DateTime(date.year, date.month, date.day)] = doc['mood'];
+      emotionMap[DateTime(date.year, date.month, date.day)] = doc['emotion'];
     }
 
     setState(() {
-      _moodMap = moodMap;
+      _emotionMap = emotionMap;
     });
   }
 
@@ -76,37 +77,37 @@ class _CalendarPageState extends State<CalendarPage> {
         return const Icon(
           Icons.sentiment_very_satisfied,
           color: Colors.green,
-          size: 21,
+          size: 25,
         );
       case 'Neutral':
         return const Icon(
           Icons.sentiment_satisfied,
           color: Colors.lightGreen,
-          size: 21,
+          size: 25,
         );
       case 'Disgust':
         return const Icon(
           Icons.sentiment_neutral,
           color: Colors.amber,
-          size: 21,
+          size: 25,
         );
       case 'Fear':
         return const Icon(
           Icons.sentiment_dissatisfied,
           color: Colors.orange,
-          size: 21,
+          size: 25,
         );
       case 'Angry':
         return const Icon(
           Icons.sentiment_very_dissatisfied,
           color: Colors.red,
-          size: 21,
+          size: 25,
         );
       case 'Sad':
         return const Icon(
           Icons.sentiment_dissatisfied_rounded,
           color: Colors.blue,
-          size: 21,
+          size: 25,
         );
       default:
         return const Icon(null);
@@ -115,20 +116,32 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Icon _getDefaultIcon() {
     return const Icon(null);
+    // return const Icon(
+    //   Icons.sentiment_dissatisfied_rounded,
+    //   color: Colors.blue,
+    //   size: 25,
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+              vertical: screenHeight * 0.05
+          ),
           child: Column(
             children: [
               TableCalendar(
-                headerStyle: const HeaderStyle(
+                headerStyle: HeaderStyle(
                   formatButtonVisible: false,
                   titleCentered: true,
+                  titleTextStyle: titleBlack.copyWith(fontSize: screenHeight * 0.025),
                 ),
                 firstDay: DateTime.utc(1800, 1, 1),
                 lastDay: DateTime.utc(2500, 12, 31),
@@ -146,8 +159,8 @@ class _CalendarPageState extends State<CalendarPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _moodMap.containsKey(normalizedDay)
-                              ? _getMoodIcon(_moodMap[normalizedDay]!)
+                          _emotionMap.containsKey(normalizedDay)
+                              ? _getMoodIcon(_emotionMap[normalizedDay]!)
                               : _getDefaultIcon(),
                           Text(
                             '${day.day}',

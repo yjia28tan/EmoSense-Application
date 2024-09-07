@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/app_color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
-import 'package:emosense/pages/signin_page.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
+import 'package:emosense/pages/signin_page.dart';
+import 'package:emosense/pages/home_page.dart'; // Added for possible future use
+import 'package:emosense/pages/genre_selection_page.dart'; // Added for possible future use
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -18,255 +21,218 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _confirmTextController = TextEditingController();
 
-  // FirebaseFirestore firestore = FirebaseFirestore.instance;
-
   bool passwordConfirmed() {
     return _passwordTextController.text.trim() == _confirmTextController.text.trim();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: SingleChildScrollView(
+    // Retrieve screen height and width using MediaQuery
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background color and emoji/logo
+          Container(
+            color: AppColors.upBackgroundColor, // Background color matching the design
             child: Column(
               children: [
+                SizedBox(height: screenHeight * 0.08), // Spacing from the top
                 Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        child: Center(
-                          // child: Image.asset(
-                          //   'assets/images/logo.png',
-                          //   height: 100, // Adjust the logo size
-                          // ),
-                        ),
-                      ),
-                      Container(
-                        height: 80,
-                        child: Center(
-                          child: Text(
-                            'EmoSense',
-                            style: signinTitle,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        child: Center(
-                          child: Text(
-                            'Sign Up',
-                            style: signupTitle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      Container(
-                        child: forTextField("Username", Icons.person, false,
-                            _usernameTextController),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        child: forTextField(
-                            "Email", Icons.email, false, _emailTextController),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        child: forTextField("Password", Icons.lock, true,
-                            _passwordTextController),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        child: forTextField("Confirm Password", Icons.lock,
-                            true, _confirmTextController),
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      // Sign Up Button
-                      Container(
-                        height: 45,
-                        width: 250,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF453276)),
-                          onPressed: () async {
-                            String username = _usernameTextController.text.trim();
-                            String email = _emailTextController.text.trim();
-                            String password = _passwordTextController.text.trim();
-
-                            if (username.isEmpty || email.isEmpty || password.isEmpty) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Registration Failed'),
-                                  content: const Text('Please fill in all details.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context); // Close the dialog
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              return; // Stop further execution
-                            } else if (!passwordConfirmed()) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Ensure your password'),
-                                  content: const Text(
-                                      'Please make sure the password and confirm password are the same.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context); // Close the dialog
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              return;
-                            }
-
-                            // Register new user with email and password
-                            FirebaseAuth.instance
-                                .createUserWithEmailAndPassword(
-                                email: _emailTextController.text,
-                                password: _passwordTextController.text)
-                                .then((userCredential) {
-                              FirebaseFirestore.instance.collection('users').doc(
-                                  FirebaseAuth.instance.currentUser?.uid).set({
-                                'username': username,
-                                'email': email,
-                                'surveyCompleted': false,
-                                'firstLogin': true,
-                                'gender': null,
-                                'birthdate': null,
-                                'dailyReminder': false,
-                                'reminderTime': null,
-                              });
-
-                              // Send email verification
-                              userCredential.user!.sendEmailVerification();
-
-                              // Notify the user that the account has been created
-                              final snackbar = SnackBar(
-                                content: Text(
-                                    "Account Created!\n Check your email to verify your account before signing in."),
-                                action: SnackBarAction(
-                                    label: 'OK',
-                                    onPressed: () {}
-                                ),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
-                              // Navigate to the sign-in page
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const SigninPage()));
-                            }).catchError((error) {
-                              print('Error: $error');
-                              String errorMessage = '';
-
-                              if (error is FirebaseAuthException) {
-                                if (error.code == 'email-already-in-use') {
-                                  // Email is already registered
-                                  errorMessage =
-                                  'Email is already registered. Please use a different email.';
-                                } else if (error.code == 'weak-password') {
-                                  // Weak password entered
-                                  errorMessage =
-                                  'Password is too weak. Please use a different password.';
-                                } else if (error.code == 'invalid-email') {
-                                  // Invalid email entered
-                                  errorMessage = 'Please use a valid email.';
-                                } else {
-                                  // Other FirebaseAuthException errors
-                                  errorMessage =
-                                  'An error occurred\nError: ${error.message}';
-                                }
-                              } else {
-                                // Other errors
-                                errorMessage = 'An unknown error occurred.';
-                              }
-
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text("Registration Failed"),
-                                    content: Text(errorMessage),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text("OK"),
-                                      ),
-                                    ],
-                                  ));
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.check_circle,
-                            color: Color(0xFFF2F2F2),
-                          ),
-                          label: Text(
-                            'Sign Up',
-                            style: homeSubHeaderText,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SigninPage())
-                          );
-                        },
-                        child: const Text(
-                          "Already have an account? Click here.",
-                          style: TextStyle(
-                            color: Color(0xFF453276),
-                            fontSize: 15,
-                            fontStyle: FontStyle.italic,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ],
+                  padding: EdgeInsets.all(screenWidth * 0.08),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: AppColors.darkLogoColor,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ],
+          // Form container with rounded top corners
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SingleChildScrollView(
+              child: Container(
+                height: screenHeight * 0.65,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Let’s sign you up', style: titleBlack),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Username", Icons.person, false, _usernameTextController),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Email", Icons.email, false, _emailTextController),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Password", Icons.lock, true, _passwordTextController),
+                    SizedBox(height: screenHeight * 0.02),
+                    forTextField("Confirm Password", Icons.lock, true, _confirmTextController),
+                    SizedBox(height: screenHeight * 0.04),
+                    Container(
+                      width: double.infinity,  // Takes the full width of the screen
+                      height: screenHeight * 0.07,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.darkPurpleColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
+                          ),
+                        ),
+                        onPressed: () async {
+                          String username = _usernameTextController.text.trim();
+                          String email = _emailTextController.text.trim();
+                          String password = _passwordTextController.text.trim();
+
+                          if (username.isEmpty || email.isEmpty || password.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Registration Failed'),
+                                content: const Text('Please fill in all details.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close the dialog
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return; // Stop further execution
+                          } else if (!passwordConfirmed()) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Ensure your password'),
+                                content: const Text(
+                                    'Please make sure the password and confirm password are the same.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close the dialog
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
+
+                          showDialog(
+                            context: context,
+                            builder: (context) => Center(child: CircularProgressIndicator()),
+                          );
+
+                          try {
+                            // Register new user with email and password
+                            final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                              email: _emailTextController.text,
+                              password: _passwordTextController.text,
+                            );
+
+                            // Save user data in Firestore
+                            await FirebaseFirestore.instance.collection('users').doc(userCredential.user?.uid).set({
+                              'username': username,
+                              'email': email,
+                              'firstLogin': true,
+                              'gender': null,
+                              'birthdate': null,
+                              'dailyReminder': false,
+                              'reminderTime': null,
+                            });
+
+                            // Send email verification
+                            await userCredential.user!.sendEmailVerification();
+
+                            // Notify the user that the account has been created
+                            final snackbar = SnackBar(
+                              content: Text(
+                                  "Account Created!\n Check your email to verify your account before signing in."),
+                              action: SnackBarAction(
+                                  label: 'OK',
+                                  onPressed: () {}
+                              ),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+                            // Navigate to the sign-in page
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SigninPage()));
+                          } catch (error) {
+                            String errorMessage = '';
+
+                            if (error is FirebaseAuthException) {
+                              if (error.code == 'email-already-in-use') {
+                                errorMessage = 'Email is already registered. Please use a different email.';
+                              } else if (error.code == 'weak-password') {
+                                errorMessage = 'Password is too weak. Please use a different password.';
+                              } else if (error.code == 'invalid-email') {
+                                errorMessage = 'Please use a valid email.';
+                              } else {
+                                errorMessage = 'An error occurred\nError: ${error.message}';
+                              }
+                            } else {
+                              errorMessage = 'An unknown error occurred.';
+                            }
+
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("Registration Failed"),
+                                  content: Text(errorMessage),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                ));
+                          } finally {
+                            Navigator.of(context).pop(); // Hide progress indicator
+                          }
+                        },
+                        child: Text('Sign Up', style: homeSubHeaderText),
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.011),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SigninPage())
+                        );
+                      },
+                      child: Text(
+                        "Already have an account? Sign in here",
+                        style: inkwellText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

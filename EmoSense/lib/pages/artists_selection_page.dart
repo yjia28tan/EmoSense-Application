@@ -93,11 +93,22 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+      // Create a list of artist details to save
+      List<Map<String, dynamic>> artistDetails = artists
+          .where((artist) => selectedArtists.contains(artist.id))
+          .map((artist) => {
+        'id': artist.id,
+        'name': artist.name,
+        'imageUrl': artist.imageUrl,
+        // 'genres': artist.genres, // Add other relevant fields if needed
+      })
+          .toList();
+
       // Create a new document in the "preferences" collection with the UID as a foreign key
       await firestore.collection('preferences').add({
         'uid': globalUID,
         'selectedGenres': widget.selectedGenres,
-        'selectedArtists': selectedArtists,
+        'selectedArtists': artistDetails, // Save detailed artist info
       });
 
       print("Preferences saved successfully!");
@@ -105,6 +116,7 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
       print("Error saving preferences: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
