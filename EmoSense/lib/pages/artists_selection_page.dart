@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
@@ -31,27 +32,20 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
 
   void fetchArtists() async {
     try {
-      // Authenticate with Spotify
       await spotifyService.authenticate();
 
       List<Artist> allArtists = [];
       for (String genre in widget.selectedGenres) {
         try {
-          // Fetch artists for the current genre
           List<Artist> fetchedArtists = await spotifyService.getArtistsForGenres([genre]);
-          print("Fetched ${fetchedArtists.length} artists for genre: $genre");
-
-          // Add fetched artists to the list
           allArtists.addAll(fetchedArtists);
         } catch (e) {
           print('Error fetching artists for genre $genre: $e');
         }
       }
 
-      // Remove duplicates if needed
       allArtists = allArtists.toSet().toList();
 
-      // Update the state with fetched artists
       setState(() {
         artists = allArtists;
         isLoading = false;
@@ -66,13 +60,10 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
 
   Future<void> fetchSimilarArtists(String artistId) async {
     try {
-      // Fetch similar artists for the given artist
       List<Artist> similarArtists = await spotifyService.getSimilarArtists(artistId);
 
-      // Filter out artists that are already in the list
       similarArtists = similarArtists.where((artist) => !artists.any((existing) => existing.id == artist.id)).toList();
 
-      // Update the state with similar artists
       setState(() {
         artists.addAll(similarArtists);
       });
@@ -95,7 +86,6 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Create a list of artist details to save
       List<Map<String, dynamic>> artistDetails = artists
           .where((artist) => selectedArtists.contains(artist.id))
           .map((artist) => {
@@ -105,11 +95,10 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
       })
           .toList();
 
-      // Create a new document in the "preferences" collection with the UID as a foreign key
       await firestore.collection('preferences').add({
         'uid': globalUID,
         'selectedGenres': widget.selectedGenres,
-        'selectedArtists': artistDetails, // Save detailed artist info
+        'selectedArtists': artistDetails,
       });
 
       print("Preferences saved successfully!");
@@ -121,84 +110,144 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Select Your Favorite Artists"),
-      ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show a loader while fetching data
+          ? Center(child: CircularProgressIndicator())
           : Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // Number of items per row
-                childAspectRatio: 1, // Keep items square
-              ),
-              itemCount: artists.length,
-              itemBuilder: (context, index) {
-                final artist = artists[index];
-                final isSelected = selectedArtists.contains(artist.id);
-
-                return GestureDetector(
-                  onTap: () async {
-                    toggleArtistSelection(artist.id);
-
-                    if (!isSelected) {
-                      // Fetch and add similar artists when selecting an artist
-                      await fetchSimilarArtists(artist.id);
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.purple : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8.0),
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                Row(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios_outlined,
+                            color: AppColors.textColorBlack),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (artist.imageUrl.isNotEmpty)
-                          Image.network(artist.imageUrl, height: 50),
-                        Text(
-                          artist.name,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
+
+                    Text(
+                        "Choose the artist you like.",
+                        style: titleBlack,
+                        textAlign: TextAlign.center,
+                    ),
+
+                    SizedBox(width: 8), // to balance the back button space
+                  ],
+                ),
+                SizedBox(height: 8),
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1,
+                    ),
+                    itemCount: artists.length,
+                    itemBuilder: (context, index) {
+                      final artist = artists[index];
+                      final isSelected = selectedArtists.contains(artist.id);
+
+                      return GestureDetector(
+                        onTap: () async {
+                          toggleArtistSelection(artist.id);
+
+                          if (!isSelected) {
+                            await fetchSimilarArtists(artist.id);
+                          }
+                        },
+                        child: Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSelected
+                                        ? AppColors.darkPurpleColor
+                                        : AppColors.textFieldColor,
+                                  ),
+                                  child: CircleAvatar(
+                                    backgroundImage: artist.imageUrl.isNotEmpty
+                                        ? NetworkImage(artist.imageUrl)
+                                        : null,
+                                    radius: 40,
+                                    backgroundColor: Colors.transparent,
+                                  ),
+                                ),
+                                Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: 80,  // Adjust the width as needed
+                                    minHeight: 1,  // Adjust height to give more room for text
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      artist.name,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isSelected
+                                            ? AppColors.darkPurpleColor
+                                            : AppColors.textColorBlack,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (isSelected)
+                              Positioned(
+                                right: 1,
+                                top: 1,
+                                child: Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.darkPurpleColor,
+                                  size: 24,
+                                ),
+                              ),
+                          ],
                         ),
-                      ],
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 3.0, horizontal: 10
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkPurpleColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                    onPressed: () async {
+                      await savePreferencesToFirebase();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
+                    child: Text(
+                      "Done",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.darkPurpleColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
-            ),
-          ),
-          onPressed: () async {
-            // Save preferences to Firebase
-            await savePreferencesToFirebase();
-
-            // Navigate to Home Page
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()
-                )
-            );
-
-          },
-          child: Text("Done",
-            style: homeSubHeaderText,
-          ),
-        ),
-      ),
     );
   }
 }

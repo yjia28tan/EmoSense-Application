@@ -4,6 +4,7 @@ import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
+import 'package:emosense/pages/get_starter_page.dart';
 import 'package:emosense/pages/signin_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 // Navigate to SigninPage and clear the navigation stack
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
+                  MaterialPageRoute(builder: (context) => GetStartedPage()),
                       (route) => false,
                 ); // Return true to allow back action
               },
