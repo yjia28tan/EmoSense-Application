@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/get_starter_page.dart';
 import 'package:emosense/pages/signin_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,47 +37,52 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Future<bool> _onWillPop() async {
+  //   // Show a dialog asking if the user is sure they want to log out
+  //   final bool? shouldSignout = await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Sign Out'),
+  //         content: Text('Are you sure you want to sign out?'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(false); // Return false to prevent back action
+  //             },
+  //             child: Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () async {
+  //               // Sign out the user from Firebase Authentication
+  //               await FirebaseAuth.instance.signOut();
+  //
+  //               // Clear the user's FCM token in Firestore
+  //               if (globalUID != null) {
+  //                 final userRef = FirebaseFirestore.instance.collection('users').doc(globalUID);
+  //                 await userRef.update({'fcmToken': ""});
+  //               }
+  //
+  //               // Navigate to SigninPage and clear the navigation stack
+  //               Navigator.pushAndRemoveUntil(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => GetStartedPage()),
+  //                     (route) => false,
+  //               ); // Return true to allow back action
+  //             },
+  //             child: Text('Sign Out'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  //
+  //   return shouldSignout ?? false; // Default to false if null
+  // }
+
   Future<bool> _onWillPop() async {
-    // Show a dialog asking if the user is sure they want to log out
-    final bool? shouldSignout = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Sign Out'),
-          content: Text('Are you sure you want to sign out?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false); // Return false to prevent back action
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                // Sign out the user from Firebase Authentication
-                await FirebaseAuth.instance.signOut();
-
-                // Clear the user's FCM token in Firestore
-                if (globalUID != null) {
-                  final userRef = FirebaseFirestore.instance.collection('users').doc(globalUID);
-                  await userRef.update({'fcmToken': ""});
-                }
-
-                // Navigate to SigninPage and clear the navigation stack
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => SigninPage()),
-                      (route) => false,
-                ); // Return true to allow back action
-              },
-              child: Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-
-    return shouldSignout ?? false; // Default to false if null
+    // Instead of logging out, we allow the back button to close the app
+    return true; // Returning true will close the app on back button press
   }
 
   @override
