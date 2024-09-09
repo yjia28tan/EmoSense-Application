@@ -19,8 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String? email;
   bool? dailyReminder;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
   @override
   void initState() {
     super.initState();
@@ -188,9 +186,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: screenHeight * 0.07,
                 child: signout_Button(
                   'Sign Out',
-                  Icons.logout,
-                      () {
-                    signOut(context); // Pass the context here
+                      () async {
+                    // Call the signOut function
+                    await signOut(context);
                   },
                 ),
               ),
