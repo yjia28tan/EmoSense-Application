@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         SigninPage.routeName: (context) => const SigninPage(),
         HomePage.routeName: (context) => HomePage(),
         GenreSelectionPage.routeName: (context) => GenreSelectionPage(),
-        AddEmotionRecordPage.routeName: (context) => AddEmotionRecordPage(),
+        // EmotionDetectionPage.routeName: (context) => EmotionDetectionPage(),
       },
     );
   }

@@ -36,7 +36,6 @@ class SpotifyService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print("Genres: $data");
       return List<String>.from(data['genres']);
     } else {
       throw Exception('Failed to load genres');

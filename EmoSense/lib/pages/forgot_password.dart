@@ -4,9 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
-import 'package:emosense/pages/signup_page.dart';
-import 'package:emosense/pages/home_page.dart';
-import 'package:emosense/pages/genre_selection_page.dart';
+import 'package:emosense/pages/signin_page.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   static String routeName = '/ForgotPasswordPage';
@@ -105,7 +103,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           }
                         },
                         icon: Icon(Icons.check, color: Color(0xFFF2F2F2)),
-                        label: Text('Send Code', style: homeSubHeaderText),
+                        label: Text('Send Code', style: whiteText),
                       ),
                     ),
 

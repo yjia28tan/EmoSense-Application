@@ -1,8 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emosense/main.dart';
-import 'package:emosense/pages/get_starter_page.dart';
-import 'package:emosense/pages/signin_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/pages/add_emotion_page.dart';
 import 'package:emosense/pages/calendar_page.dart';
@@ -25,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = <Widget>[
     HomeContentPage(),
     CalendarPage(),
-    AddEmotionRecordPage(),
+    EmotionDetectionPage(),
     DiscoverPage(),
     ProfilePage(),
   ];
