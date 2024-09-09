@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Define color palette
 class AppColors {
   static const Color upBackgroundColor = Color(0xFFc9a4d7);
+  static const Color downBackgroundColor = Color(0xFFECEBF3);
   static const Color darkPurpleColor = Color(0xFF453276);
   static const Color textColorBlack = Color(0xFF1f1f1f);
   static const Color textFieldColor = Color(0xFFf2f2f2);

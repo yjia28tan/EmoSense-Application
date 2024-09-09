@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/main.dart';
 import 'package:flutter/material.dart';
@@ -129,64 +130,134 @@ class _CalendarPageState extends State<CalendarPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
+      // set the background color of the page
+      backgroundColor: AppColors.downBackgroundColor,
+      body: Stack(
+        children: [
+          Container(
+           // Background color matching the design
+            child: Column(
+              children: [
+                Container(
+                  height: screenHeight * 0.30,
+                  decoration: BoxDecoration(
+                    color: AppColors.upBackgroundColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                  ),
+
+                ),
+              ],
+            ),
+        ),
+
+        Padding(
           padding: EdgeInsets.symmetric(
               horizontal: screenWidth * 0.05,
               vertical: screenHeight * 0.05
           ),
           child: Column(
             children: [
-              TableCalendar(
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  titleTextStyle: titleBlack.copyWith(fontSize: screenHeight * 0.025),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.95),
+                  borderRadius: BorderRadius.all(Radius.circular(30),
+                  ),
                 ),
-                firstDay: DateTime.utc(1800, 1, 1),
-                lastDay: DateTime.utc(2500, 12, 31),
-                focusedDay: _selectedDay,
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onDaySelected: _onDaySelected,
-                calendarBuilders: CalendarBuilders(
-                  defaultBuilder: (context, day, focusDay) {
-                    DateTime normalizedDay =
-                    DateTime(day.year, day.month, day.day);
-                    return Container(
-                      height: 80,
-                      margin: const EdgeInsets.all(4.0),
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _emotionMap.containsKey(normalizedDay)
-                              ? _getMoodIcon(_emotionMap[normalizedDay]!)
-                              : _getDefaultIcon(),
-                          Text(
-                            '${day.day}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
+                height: screenHeight * 0.53,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TableCalendar(
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      titleTextStyle: titleBlack.copyWith(fontSize: screenHeight * 0.025),
+                    ),
+                    daysOfWeekStyle: DaysOfWeekStyle(
+                      weekdayStyle: TextStyle(fontSize: 12, color: Colors.black), // Customize as needed
+                      weekendStyle: TextStyle(fontSize: 12, color: Colors.black), // Customize as needed
+                    ),
+                    firstDay: DateTime.utc(1800, 1, 1),
+                    lastDay: DateTime.utc(2500, 12, 31),
+                    focusedDay: _selectedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: _onDaySelected,
+                    calendarBuilders: CalendarBuilders(
+                      defaultBuilder: (context, day, focusedDay) {
+                        DateTime normalizedDay = DateTime(day.year, day.month, day.day);
 
-                        ],
-                      ),
-                    );
-                  },
+                        return Container(
+                          height: 80,
+                          margin: const EdgeInsets.all(4.0),
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _emotionMap.containsKey(normalizedDay)
+                                  ? _getMoodIcon(_emotionMap[normalizedDay]!)
+                                  : _getDefaultIcon(),
+                              Text(
+                                '${day.day}',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  )
+
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Container(
-                  child: Text(
-                    _selectedEmotion != null ? 'Emotion: $_selectedEmotion' : 'Emotion: None',
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
+                padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'My Mood',
+                          style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: TextButton(
+                        onPressed: () {
+                          // Navigate to the desired page
+                          // Navigator.pushNamed(context, '/mood');
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.textColorGrey,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'View More',
+                              style: greySmallText.copyWith(fontSize: screenHeight * 0.018),
+                            ),
+                            SizedBox(width: 4.0), // Add space between text and icon
+                            Icon(
+                              Icons.arrow_forward,
+                              size: screenHeight * 0.02,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
             ],
           ),
         ),
+        ],
       ),
     );
   }

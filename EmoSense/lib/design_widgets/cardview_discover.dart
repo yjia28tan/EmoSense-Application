@@ -59,7 +59,7 @@ class MeditationToolCard extends StatelessWidget {
                           children: [
                             Text(
                               title,
-                              style: homeSubHeaderText,
+                              style: whiteText,
                             ),
 
                           ],

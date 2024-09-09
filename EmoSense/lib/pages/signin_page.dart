@@ -211,7 +211,7 @@ class _SigninPageState extends State<SigninPage> {
                             Navigator.of(context).pop(); // Hide progress indicator
                           }
                         },
-                        child: Text('Sign in', style: homeSubHeaderText),
+                        child: Text('Sign in', style: whiteText),
                       ),
                     ),
                     // SizedBox(height: screenHeight * 0.01),

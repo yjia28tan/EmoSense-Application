@@ -75,7 +75,7 @@ class MoodListWidget extends StatelessWidget {
                     ),
                     title: Text(
                       '${formatTimestamp(timestamp)}',
-                      style: homeSubHeaderText,
+                      style: whiteText,
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

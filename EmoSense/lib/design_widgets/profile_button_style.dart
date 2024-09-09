@@ -1,3 +1,5 @@
+import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:flutter/material.dart';
 
 ElevatedButton profile_Button(String text, IconData icon, VoidCallback onPressed) {
@@ -28,11 +30,11 @@ ElevatedButton profile_Button(String text, IconData icon, VoidCallback onPressed
   );
 }
 
-ElevatedButton signout_Button(String text, IconData icon, VoidCallback onPressed) {
+ElevatedButton signout_Button(String text, VoidCallback onPressed) {
   return ElevatedButton(
     style: ElevatedButton.styleFrom(
       // foregroundColor: Color(0xFF366021),
-      backgroundColor: Color(0xFF453176).withOpacity(1.0),
+      backgroundColor: AppColors.darkPurpleColor,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50.0),
@@ -43,13 +45,9 @@ ElevatedButton signout_Button(String text, IconData icon, VoidCallback onPressed
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          color: Color(0xFFF2F2F2),
-        ),
         Text(
           text,
-          style: TextStyle(color: Color(0xFFF2F2F2)),
+          style: whiteText,
         ),
       ],
     ),

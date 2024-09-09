@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
 import 'package:emosense/pages/signin_page.dart';
-import 'package:emosense/pages/home_page.dart'; // Added for possible future use
-import 'package:emosense/pages/genre_selection_page.dart'; // Added for possible future use
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -209,7 +207,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Navigator.of(context).pop(); // Hide progress indicator
                           }
                         },
-                        child: Text('Sign Up', style: homeSubHeaderText),
+                        child: Text('Sign Up', style: whiteText),
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.011),

@@ -16,7 +16,7 @@ Future<void> showAlert(BuildContext context, String title, String message) {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(context).pop();
             },

@@ -9,24 +9,31 @@ final TextStyle titleBlack = GoogleFonts.leagueSpartan(
   fontSize: 18,
 );
 
-// const TextStyle titleBlack = TextStyle(
-//   fontFamily: 'Aptos',       // Use the family name you defined in pubspec.yaml
-//   fontSize: 18,              // Body font size
-//   fontWeight: FontWeight.bold,
-//   color: AppColors.textColorBlack,      // Set the desired color
-// );
-
-final TextStyle homeSubHeaderText = GoogleFonts.leagueSpartan(
+final TextStyle whiteText = GoogleFonts.leagueSpartan(
   color: Color(0xFFF2F2F2),
   fontSize: 18,
   fontWeight: FontWeight.bold,
 );
+
+final TextStyle greySmallText = GoogleFonts.leagueSpartan(
+  color: AppColors.textColorGrey,
+  fontSize: 18,
+  fontWeight: FontWeight.normal,
+);
+
 
 final TextStyle inkwellText = GoogleFonts.leagueSpartan(
   color: AppColors.darkPurpleColor,
   fontSize: 15,
   fontWeight: FontWeight.normal,
 );
+
+final TextStyle HomeButton = GoogleFonts.leagueSpartan(
+  color: AppColors.textColorGrey,
+  fontSize: 16,
+  fontWeight: FontWeight.bold,
+);
+
 
 final TextStyle signupTitle = GoogleFonts.leagueSpartan(
   color: Color(0xFF8D68B8),
