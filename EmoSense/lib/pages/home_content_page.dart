@@ -140,97 +140,175 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
-      body: Stack(
-        children: [
-          Container(
-            child: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
               children: [
                 Container(
-                  height: screenHeight * 0.325,
-                  decoration: BoxDecoration(
-                    color: AppColors.upBackgroundColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.05,
-                      vertical: screenHeight * 0.01
-                  ),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                        child: Container(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Mood Stats',
-                              style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
-                            ),
+                      Container(
+                        height: screenHeight * 0.325,
+                        decoration: BoxDecoration(
+                          color: AppColors.upBackgroundColor,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(30),
+                            bottomRight: Radius.circular(30),
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildViewButton('Daily'),
-                          _buildViewButton('Weekly'),
-                          _buildViewButton('Monthly'),
-                        ],
-                      ),
-
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.05,
+                            vertical: screenHeight * 0.01
+                        ),
+                        child: Column(
                           children: [
-                            // Button to go to the previous day/week/month
-                            IconButton(
-                              iconSize: screenHeight * 0.02, // Adjusting icon size based on screen height
-                              icon: Icon(Icons.arrow_back_ios_outlined),
-                              onPressed: () {
-                                if (_selectedView == 'Daily') {
-                                  _showPreviousDay();
-                                } else if (_selectedView == 'Weekly') {
-                                  _showPreviousWeek();
-                                } else if (_selectedView == 'Monthly') {
-                                  _showPreviousMonth();
-                                }
-                              },
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                              child: Container(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Mood Stats',
+                                    style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
+                                  ),
+                                ),
+                              ),
                             ),
-                            Text(
-                              formattedDate,
-                              style: titleBlack.copyWith(fontSize: screenHeight * 0.02), // Adjust font size
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _buildViewButton('Daily'),
+                                _buildViewButton('Weekly'),
+                                _buildViewButton('Monthly'),
+                              ],
                             ),
-                            IconButton(
-                              iconSize: screenHeight * 0.02, // Adjusting icon size based on screen height
-                              icon: Icon(Icons.arrow_forward_ios_outlined),
-                              onPressed: () {
-                                if (_selectedView == 'Daily' && !_isToday()) {
-                                  _showNextDay();
-                                } else if (_selectedView == 'Weekly' && !_isToday()) {
-                                  _showNextWeek();
-                                } else if (_selectedView == 'Monthly' && !_isToday()) {
-                                  _showNextMonth();
-                                }
-                              },
-                              color: _isToday() ? AppColors.textFieldColor : null, // Grey out the icon if disabled
+            
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Button to go to the previous day/week/month
+                                  IconButton(
+                                    iconSize: screenHeight * 0.02, // Adjusting icon size based on screen height
+                                    icon: Icon(Icons.arrow_back_ios_outlined),
+                                    onPressed: () {
+                                      if (_selectedView == 'Daily') {
+                                        _showPreviousDay();
+                                      } else if (_selectedView == 'Weekly') {
+                                        _showPreviousWeek();
+                                      } else if (_selectedView == 'Monthly') {
+                                        _showPreviousMonth();
+                                      }
+                                    },
+                                  ),
+                                  Text(
+                                    formattedDate,
+                                    style: titleBlack.copyWith(fontSize: screenHeight * 0.02), // Adjust font size
+                                  ),
+                                  IconButton(
+                                    iconSize: screenHeight * 0.02, // Adjusting icon size based on screen height
+                                    icon: Icon(Icons.arrow_forward_ios_outlined),
+                                    onPressed: () {
+                                      if (_selectedView == 'Daily' && !_isToday()) {
+                                        _showNextDay();
+                                      } else if (_selectedView == 'Weekly' && !_isToday()) {
+                                        _showNextWeek();
+                                      } else if (_selectedView == 'Monthly' && !_isToday()) {
+                                        _showNextMonth();
+                                      }
+                                    },
+                                    color: _isToday() ? AppColors.textFieldColor : null, // Grey out the icon if disabled
+                                  ),
+                                ],
+                              ),
                             ),
+            
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      height: screenHeight * 0.15,
+                                      width: screenWidth * 0.43,
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.whiteColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            spreadRadius: 1,
+                                            blurRadius: 3,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Today\'s Mood',
+                                                style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                                              ),
+                                            ),
+                                          ),
+                                          todayEmotionIcon,
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: screenHeight * 0.15,
+                                      width: screenWidth * 0.43,
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.whiteColor,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            spreadRadius: 1,
+                                            blurRadius: 3,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Stress Level',
+                                                style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                                              ),
+                                            ),
+                                          ),
+                                          todayEmotionIcon,
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            _buildMoodBarChart(context, moodData),
                           ],
                         ),
                       ),
-
-                      _buildMoodBarChart(moodData),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -267,9 +345,10 @@ class _HomeContentPageState extends State<HomeContentPage> {
     );
   }
 
-  Widget _buildMoodBarChart(Map<String, int> moodData) {
+  Widget _buildMoodBarChart(context, Map<String, int> moodData) {
     return Container(
-      height: 200,
+      height: MediaQuery.of(context).size.height * 0.3,
+      width: MediaQuery.of(context).size.width * 0.9,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
@@ -277,8 +356,8 @@ class _HomeContentPageState extends State<HomeContentPage> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            spreadRadius: 5,
-            blurRadius: 10,
+            spreadRadius: 1,
+            blurRadius: 3,
           ),
         ],
       ),

@@ -211,6 +211,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
                 ),
               ),
+              // Display moods
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10),
                 child: Row(
@@ -253,6 +254,22 @@ class _CalendarPageState extends State<CalendarPage> {
                   ],
                 ),
               ),
+              // Display mood lists
+
+              // Song Recommendation
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10),
+                child: Container(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Song Recommendation',
+                      style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
+                    ),
+                  ),
+                ),
+              ),
+              // Display song recommendation lists
 
             ],
           ),

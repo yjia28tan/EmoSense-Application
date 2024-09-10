@@ -34,8 +34,26 @@ final TextStyle HomeButton = GoogleFonts.leagueSpartan(
   fontWeight: FontWeight.bold,
 );
 
+final TextStyle ProfileTitleText = GoogleFonts.leagueSpartan(
+  color: AppColors.darkLogoColor,
+  fontWeight: FontWeight.bold,
+  fontSize: 18,
+);
+
+final TextStyle ProfileContentText = GoogleFonts.leagueSpartan(
+  color: AppColors.textColorGrey,
+  fontWeight: FontWeight.normal,
+  fontSize: 15,
+);
+
+final TextStyle ProfileContentBold = GoogleFonts.leagueSpartan(
+  color: AppColors.textColorBlack,
+  fontWeight: FontWeight.bold,
+  fontSize: 16,
+);
 
 
+// No use
 final TextStyle signupTitle = GoogleFonts.leagueSpartan(
   color: Color(0xFF8D68B8),
   fontWeight: FontWeight.bold,

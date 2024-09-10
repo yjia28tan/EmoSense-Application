@@ -6,7 +6,9 @@ import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
 import 'package:emosense/pages/get_starter_page.dart';
+import 'package:emosense/pages/privacy_policy.dart';
 import 'package:emosense/pages/signin_page.dart';
+import 'package:emosense/pages/terms_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -101,18 +103,23 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(screenWidth * 0.08),
+        padding: EdgeInsets.all(screenWidth * 0.095),
         child: Center(
           child: Column(
             children: [
               // Profile Picture
               Padding(
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.only(top: 3, bottom: 10),
                 child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Welcome,',
-                    style: titleBlack,
+                  alignment: Alignment.center,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: AppColors.upBackgroundColor,
+                    child: Icon(
+                      Icons.person,
+                      size: 50,
+                      color: AppColors.lightLogoColor,
+                    ),
                   ),
                 ),
               ),
@@ -172,14 +179,26 @@ class _ProfilePageState extends State<ProfilePage> {
               profile_Button(
                 'Privacy Policy',
                 Icons.arrow_forward_ios,
-                    () {},
+                    () {
+                      Navigator.push(context,
+                          MaterialPageRoute(
+                              builder: (context) => PrivacyPolicyPage()
+                          )
+                      );
+                    },
               ),
               SizedBox(height: 15),
               // t&c
               profile_Button(
                 'Terms and Conditions',
                 Icons.arrow_forward_ios,
-                    () {},
+                    () {
+                      Navigator.push(context,
+                          MaterialPageRoute(
+                              builder: (context) => TermsNConditionsPage()
+                          )
+                      );
+                    },
               ),
               SizedBox(height: 20),
               // sign out button
