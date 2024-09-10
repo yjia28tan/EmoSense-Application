@@ -35,6 +35,7 @@ final TextStyle HomeButton = GoogleFonts.leagueSpartan(
 );
 
 
+
 final TextStyle signupTitle = GoogleFonts.leagueSpartan(
   color: Color(0xFF8D68B8),
   fontWeight: FontWeight.bold,

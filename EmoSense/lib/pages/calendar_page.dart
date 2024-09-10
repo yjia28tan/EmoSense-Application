@@ -139,7 +139,7 @@ class _CalendarPageState extends State<CalendarPage> {
             child: Column(
               children: [
                 Container(
-                  height: screenHeight * 0.30,
+                  height: screenHeight * 0.325,
                   decoration: BoxDecoration(
                     color: AppColors.upBackgroundColor,
                     borderRadius: BorderRadius.only(
@@ -166,7 +166,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   borderRadius: BorderRadius.all(Radius.circular(30),
                   ),
                 ),
-                height: screenHeight * 0.53,
+                height: screenHeight * 0.57,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TableCalendar(

@@ -41,7 +41,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
   @override
   void initState() {
     super.initState();
-    _resetToToday(); // Set the initial date and view
+    setState(() {
+      _resetToToday(); // Set the initial date and view
+    });
   }
 
   void _resetToToday() {
@@ -144,7 +146,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
             child: Column(
               children: [
                 Container(
-                  height: screenHeight * 0.35,
+                  height: screenHeight * 0.325,
                   decoration: BoxDecoration(
                     color: AppColors.upBackgroundColor,
                     borderRadius: BorderRadius.only(
@@ -209,13 +211,13 @@ class _HomeContentPageState extends State<HomeContentPage> {
                               onPressed: () {
                                 if (_selectedView == 'Daily' && !_isToday()) {
                                   _showNextDay();
-                                } else if (_selectedView == 'Weekly') {
+                                } else if (_selectedView == 'Weekly' && !_isToday()) {
                                   _showNextWeek();
-                                } else if (_selectedView == 'Monthly') {
+                                } else if (_selectedView == 'Monthly' && !_isToday()) {
                                   _showNextMonth();
                                 }
                               },
-                              color: _isToday() ? Colors.grey : null, // Grey out the icon if disabled
+                              color: _isToday() ? AppColors.textFieldColor : null, // Grey out the icon if disabled
                             ),
                           ],
                         ),

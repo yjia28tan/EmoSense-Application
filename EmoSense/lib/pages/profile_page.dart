@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
+import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
@@ -98,6 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: AppColors.downBackgroundColor,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.08),
         child: Center(
