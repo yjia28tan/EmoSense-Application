@@ -22,7 +22,7 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
   Future<void>? _initializeControllerFuture;
   List<CameraDescription>? cameras;
   String errorMessage = '';
-  bool isFrontCamera = false;
+  bool isFrontCamera = true;
   bool isFlashOn = false;
   String detectedEmotion = '';
   late Interpreter _interpreter;
@@ -136,7 +136,7 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 8, bottom: 35.0, left: 8.0, right: 8.0),
+              padding: const EdgeInsets.only(top: 8, bottom: 5.0, left: 8.0, right: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
