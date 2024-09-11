@@ -5,8 +5,13 @@ import 'package:emosense/pages/discover_page.dart';
 import 'package:emosense/pages/profile_page.dart';
 import 'package:emosense/pages/home_content_page.dart';
 import 'package:emosense/design_widgets/navigation_bar.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 class HomePage extends StatefulWidget {
+  // final Interpreter interpreter; // Add the interpreter here
+  //
+  // HomePage(this.interpreter); // Update constructor
+
   static String routeName = '/HomePage';
 
   @override
@@ -94,22 +99,22 @@ class _HomePageState extends State<HomePage> {
           onClicked: _onItemTapped,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Container(
-          child: FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _selectedIndex = 2; // Go to the Add Emotion page when FAB is clicked
-              });
-            },
-            backgroundColor: Color(0xFFC9A4D7),
-            child: Icon(Icons.add, color: Color(0xFF453276)),
-            // make the floating button round
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100)
-            ),
-          ),
-        ),
+        floatingActionButton: _selectedIndex != 2
+            ? FloatingActionButton(
+              heroTag: null, // Prevent hero animation conflict
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 2; // Go to Add Emotion page
+                });
+              },
+              backgroundColor: Color(0xFFC9A4D7),
+              child: Icon(Icons.add, color: Color(0xFF453276)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100)),
+            )
+            : null, // Do not display FAB for other pages
       ),
     );
   }
+
 }

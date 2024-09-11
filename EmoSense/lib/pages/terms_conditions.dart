@@ -1,3 +1,4 @@
+import 'package:emosense/design_widgets/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 
@@ -7,11 +8,21 @@ class TermsNConditionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Terms and Conditions", style: ProfileTitleText),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_outlined,
+            color: AppColors.darkLogoColor,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: ListView(
         padding: const EdgeInsets.only(top: 30, bottom: 20, left: 16.0, right: 16.0),
         children: [
-          Text("Terms and Conditions for EmoSense", style: ProfileTitleText),
-          SizedBox(height: 10),
           Text("Effective Date: 11/09/2024", style: ProfileContentText),
           SizedBox(height: 20),
           Text("1. Acceptance of Terms", style: ProfileContentBold),

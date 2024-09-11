@@ -176,24 +176,24 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 15),
               // privacy policy
-              profile_Button(
-                'Privacy Policy',
-                Icons.arrow_forward_ios,
-                    () {
-                      Navigator.push(context,
-                          MaterialPageRoute(
-                              builder: (context) => PrivacyPolicyPage()
-                          )
-                      );
-                    },
-              ),
-              SizedBox(height: 15),
+          profile_Button(
+            'Privacy Policy',
+            Icons.arrow_forward_ios,
+                () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PrivacyPolicyPage(),
+                ),
+              );
+            },
+          ),
+          SizedBox(height: 15),
               // t&c
               profile_Button(
                 'Terms and Conditions',
                 Icons.arrow_forward_ios,
-                    () {
-                      Navigator.push(context,
+                    () async {
+                      await Navigator.push(context,
                           MaterialPageRoute(
                               builder: (context) => TermsNConditionsPage()
                           )

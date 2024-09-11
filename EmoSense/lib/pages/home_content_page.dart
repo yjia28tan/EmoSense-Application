@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +15,7 @@ class HomeContentPage extends StatefulWidget {
 }
 
 class _HomeContentPageState extends State<HomeContentPage> {
+  String? username;
   DateTime _selectedDate = DateTime.now();
   late String formattedDate;
   String _selectedView = 'Daily';
@@ -43,7 +48,27 @@ class _HomeContentPageState extends State<HomeContentPage> {
     super.initState();
     setState(() {
       _resetToToday(); // Set the initial date and view
+      fetchUserData();
     });
+  }
+
+  void fetchUserData() {
+    final uid = globalUID;
+    if (uid != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get()
+          .then((userData) {
+        setState(() {
+          username = userData['username'];
+        });
+      }).catchError((error) {
+        showAlert(context, 'Error', 'Error fetching user data: $error');
+      });
+    } else {
+      showAlert(context, 'Error', 'globalUID is null');
+    }
   }
 
   void _resetToToday() {
@@ -150,6 +175,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                     children: [
                       Container(
                         height: screenHeight * 0.325,
+                        width: screenWidth,
                         decoration: BoxDecoration(
                           color: AppColors.upBackgroundColor,
                           borderRadius: BorderRadius.only(
@@ -157,7 +183,44 @@ class _HomeContentPageState extends State<HomeContentPage> {
                             bottomRight: Radius.circular(30),
                           ),
                         ),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: screenHeight * 0.06, left: screenWidth * 0.05),
+                                child: Text(
+                                  'Hey, $username :)',
+                                  style: HomeWelcomeTitle.copyWith(fontSize: screenHeight * 0.032),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 8, left: screenWidth * 0.05),
+                                child: Text(
+                                  'Have a great day!',
+                                  style: HomeWelcomeTitle.copyWith(
+                                      fontSize: screenHeight * 0.035,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: screenWidth * 0.05),
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: CircleAvatar(
+                                  radius: 52,
+                                  backgroundColor: AppColors.darkLogoColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.05,

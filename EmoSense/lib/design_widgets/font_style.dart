@@ -34,6 +34,12 @@ final TextStyle HomeButton = GoogleFonts.leagueSpartan(
   fontWeight: FontWeight.bold,
 );
 
+final TextStyle HomeWelcomeTitle = GoogleFonts.leagueSpartan(
+  color: AppColors.whiteColor,
+  fontWeight: FontWeight.normal,
+  fontSize: 20,
+);
+
 final TextStyle ProfileTitleText = GoogleFonts.leagueSpartan(
   color: AppColors.darkLogoColor,
   fontWeight: FontWeight.bold,
@@ -51,6 +57,7 @@ final TextStyle ProfileContentBold = GoogleFonts.leagueSpartan(
   fontWeight: FontWeight.bold,
   fontSize: 16,
 );
+
 
 
 // No use
@@ -95,18 +102,4 @@ const TextStyle aptosBody = TextStyle(
   fontSize: 16,              // Body font size
   fontWeight: FontWeight.normal,
   color: Colors.black,       // Set the desired color
-);
-
-const TextStyle aptosBold = TextStyle(
-  fontFamily: 'Aptos',
-  fontSize: 16,
-  fontWeight: FontWeight.bold,
-  color: Colors.black,
-);
-
-const TextStyle aptosItalic = TextStyle(
-  fontFamily: 'Aptos',
-  fontSize: 16,
-  fontStyle: FontStyle.italic,
-  color: Colors.black,
 );
