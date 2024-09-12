@@ -74,7 +74,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                                 SizedBox(width: 8.0), // Add some space between the icon and the text
                                 Flexible(
                                   child: Text(
-                                    ' ${quote?.author ?? 'Unknown'}',
+                                    ' ${quote?.author ?? 'Leo Tolstoy'}',
                                     style: GoogleFonts.leagueSpartan(
                                       color: AppColors.darkPurpleColor,
                                       fontSize: 17,
@@ -89,7 +89,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                           ),
                           SizedBox(height: 8.0),
                           Text(
-                            quote?.content ?? 'No quote available',
+                            quote?.content ?? 'Trust yourself. You’ve survived a lot, and you’ll survive whatever is coming.',
                             style: GoogleFonts.leagueSpartan(
                                 color: Color(0xFFF2F2F2),
                                 fontSize: 18,
@@ -100,7 +100,49 @@ class _DiscoverPageState extends State<DiscoverPage> {
                       ),
                     );
                   } else {
-                    return Text('No quote available');
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.upBackgroundColor, // Background color
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Row(
+                              children: [
+                                const Icon(
+                                    Icons.person_pin_sharp,
+                                    color: AppColors.darkPurpleColor
+                                ),
+                                SizedBox(width: 8.0), // Add some space between the icon and the text
+                                Flexible(
+                                  child: Text(
+                                    'Christian D Larson',
+                                    style: GoogleFonts.leagueSpartan(
+                                      color: AppColors.darkPurpleColor,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2, // Allow the text to wrap into two lines if needed
+                                    overflow: TextOverflow.ellipsis, // Optional: adds an ellipsis if the text is too long
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            'Believe in yourself and all that you are. Know that there is something inside of you that is greater than any obstacle.',
+                            style: GoogleFonts.leagueSpartan(
+                                color: Color(0xFFF2F2F2),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 },
               ),
