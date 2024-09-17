@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Load the model without compiling
 model = tf.keras.models.load_model(
-    r'C:\Users\User\OneDrive\Documents\YiJia\INTI\FYP\fyp\Backend\model\resnet_model.h5',
+    r'C:\Users\User\OneDrive\Documents\YiJia\INTI\FYP\fyp\Backend\model\72_accuracy_model_resnet_4group.h5',
     compile=False
 )
 
@@ -44,7 +44,7 @@ def predict():
         image_array = preprocess_image(image)
         predictions = model.predict(image_array)
         class_idx = np.argmax(predictions, axis=1)[0]
-        class_names = ['Anger', 'Disgust', 'Fear', 'Happiness', 'Sadness', 'Surprise', 'Neutral']  # Adjust as needed
+        class_names = ['Angry', 'Happy', 'Sad', 'Neutral']  # Adjust as needed
         detected_emotion = class_names[class_idx]
 
         return jsonify({'detected_emotion': detected_emotion}), 200
@@ -53,4 +53,4 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
