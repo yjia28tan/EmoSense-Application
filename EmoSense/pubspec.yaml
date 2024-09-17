@@ -58,6 +58,7 @@ dependencies:
   flutter_tflite: ^1.0.1
   image: ^3.0.1
   permission_handler: ^11.3.1
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

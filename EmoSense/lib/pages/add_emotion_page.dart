@@ -1,14 +1,13 @@
-import 'package:camera/camera.dart';
-import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/pages/home_page.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:image/image.dart' as img;
+import 'package:camera/camera.dart';
+import 'package:emosense/api_services/emotion_handler.dart';
+import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/main.dart';
+import 'package:emosense/pages/current_emotion_confirmation_page.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 class EmotionDetectionPage extends StatefulWidget {
   static String routeName = '/EmotionDetectionPage';
@@ -25,13 +24,12 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
   bool isFrontCamera = true;
   bool isFlashOn = false;
   String detectedEmotion = '';
-  late Interpreter _interpreter;
+  File? _capturedImage;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
-    _loadModel();
   }
 
   Future<void> _initializeCamera() async {
@@ -56,44 +54,73 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
         setState(() {
           errorMessage = 'Error initializing camera: $e';
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initializing camera: $e'),
+            duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+          ),
+        );
+        print('Error initializing camera: $e');
       }
     } else {
       // Handle permission denial
       setState(() {
         errorMessage = 'Camera permission denied';
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Camera permission denied'),
+          duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+        ),
+      );
+      print('Camera permission denied');
     }
   }
 
-  Future<void> _loadModel() async {
-    // Load the model
+  Future<void> _uploadImage(File imageFile) async {
+    if (imageFile == null || imageFile.path.isEmpty) {
+      setState(() {
+        errorMessage = 'Error: Image file is null or empty.';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: Image file is null or empty.'),
+          duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+        ),
+      );
+      return;
+    }
+
+    final uri = Uri.parse('http://192.168.1.103:5000/predict');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+
     try {
-    _interpreter = await Interpreter.fromAsset('model.tflite');
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+      setState(() {
+        detectedEmotion = jsonResponse['detected_emotion'] ?? 'Unknown Emotion';
+        print(detectedEmotion);
+        // Show the detected emotion using SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Detected Emotion: $detectedEmotion'),
+            duration: Duration(seconds: 1), // Show SnackBar for 3 seconds
+          ),
+        );
+      });
     } catch (e) {
-      print('Error loading model: $e');
+      setState(() {
+        errorMessage = 'Error uploading image: $e';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error uploading image: $e'),
+          duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+        ),
+      );
     }
-  }
-
-  Future<void> _processImage(String imagePath) async {
-    // Load the image and preprocess it (resize, normalize, etc.)
-    // Assume that _preprocessImage returns a properly formatted input tensor
-    var input = await _preprocessImage(imagePath);
-
-    // Run inference
-    var output = List.filled(1 * 6, 0).reshape([1, 6]); // Adjust shape according to your model
-    _interpreter.run(input, output);
-
-    // Process output
-    setState(() {
-      detectedEmotion = output[0].indexOf(output[0].reduce((a, b) => a > b ? a : b)).toString(); // Example
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    _interpreter.close();
-    super.dispose();
   }
 
   @override
@@ -105,30 +132,24 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
             Expanded(
               child: Stack(
                 children: [
-                  errorMessage.isNotEmpty
-                      ? Center(child: Text(errorMessage))
-                      : _controller == null
+                  _controller == null
                       ? Center(child: CircularProgressIndicator())
                       : FutureBuilder<void>(
-                        future: _initializeControllerFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            return CameraPreview(_controller!);
-                          } else {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                        },
-                      ),
-                  if (detectedEmotion.isNotEmpty)
-                    Positioned(
-                      bottom: 20,
-                      right: 100,
-                      child: Container(
-                        color: Colors.black.withOpacity(0.7),
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          'Emotion: $detectedEmotion',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                    future: _initializeControllerFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return CameraPreview(_controller!);
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
+                  if (_capturedImage != null)
+                    Positioned.fill(
+                      child: Center(
+                        child: Image.file(
+                          _capturedImage!,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -150,27 +171,77 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                         setState(() {
                           isFlashOn = !isFlashOn;
                         });
-                        await _controller!.setFlashMode(
-                            isFlashOn ? FlashMode.torch : FlashMode.off);
+                        try {
+                          await _controller!.setFlashMode(
+                              isFlashOn ? FlashMode.torch : FlashMode.off);
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error toggling flash mode: $e'),
+                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                            ),
+                          );
+                          print('Error toggling flash mode: $e');
+                        }
                       }
                     },
                   ),
                   FloatingActionButton(
-                    // set shape round
                     shape: CircleBorder(),
                     backgroundColor: AppColors.darkLogoColor,
+                    child: Icon(
+                      _capturedImage == null ? Icons.camera_alt : Icons.check,
+                      color: Colors.white,
+                    ),
                     onPressed: () async {
-                      try {
-                        await _initializeControllerFuture;
-                        final image = await _controller!.takePicture();
-                        await _processImage(image.path);
-                        print('Picture saved to: ${image.path}');
-                        // here process the image and detect the emotion
+                      if (_capturedImage == null) {
+                        // Capture image logic
+                        try {
+                          await _initializeControllerFuture;
+                          final image = await _controller!.takePicture();
+                          print('Picture saved to: ${image.path}');
 
-                      } catch (e) {
-                        setState(() {
-                          errorMessage = 'Error taking picture: $e';
-                        });
+                          setState(() {
+                            _capturedImage = File(image.path);
+                          });
+                        } catch (e) {
+                          setState(() {
+                            errorMessage = 'Error taking picture: $e';
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error taking picture: $e'),
+                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                            ),
+                          );
+                        }
+                      } else {
+                        // If image captured, upload it
+                        try {
+                          await _uploadImage(_capturedImage!);
+
+                          // Navigate to the Emotion Confirmation page with detectedEmotion
+                          if (detectedEmotion.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EmotionConfirmationPage(
+                                  detectedEmotion: detectedEmotion,
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          setState(() {
+                            errorMessage = 'Error uploading image: $e';
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error uploading image: $e'),
+                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                            ),
+                          );
+                        }
                       }
                     },
                   ),
@@ -194,35 +265,4 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       ),
     );
   }
-
-
-  // image preprocessing function
-  Future<Uint8List> _preprocessImage(String imagePath) async {
-    // Load the image file
-    final file = File(imagePath);
-    final imageBytes = await file.readAsBytes();
-    final image = img.decodeImage(imageBytes);
-
-    if (image == null) {
-      throw Exception('Failed to decode image');
-    }
-
-    // Resize the image to the expected input size of the model
-    final resizedImage = img.copyResize(image, width: 48, height: 48); // Change to your model's expected size
-
-    // Convert the image to a list of floats
-    final byteData = resizedImage.getBytes();
-    final floatList = Float32List.fromList(byteData.map((byte) => byte.toDouble() / 255.0).toList());
-
-    // Add batch dimension
-    final processedImage = Float32List.fromList(
-      List.generate(
-        floatList.length + 1,
-            (i) => i == 0 ? 1.0 : floatList[i - 1], // Add batch dimension with value 1.0
-      ),
-    );
-
-    return processedImage.buffer.asUint8List();
-  }
-
 }
