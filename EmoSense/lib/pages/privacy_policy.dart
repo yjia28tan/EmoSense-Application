@@ -14,6 +14,7 @@ class PrivacyPolicyPage extends StatelessWidget {
         return true;
       },
       child: Scaffold(
+        backgroundColor: Color(0xFFF2F2F2),
         appBar: AppBar(
           title: Text("Privacy Policy for EmoSense", style: ProfileTitleText),
           leading: IconButton(
@@ -59,7 +60,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
             // Add more sections here
             SizedBox(height: 20),
-            Text("7. Contact Us", style: ProfileContentBold),
+            Text("3. Contact Us", style: ProfileContentBold),
             SizedBox(height: 10),
             Text(
               "If you have any questions or concerns about our privacy practices, please contact us at yijia@emosense.com.",

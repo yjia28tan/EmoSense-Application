@@ -361,7 +361,36 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                 ),
                               ),
                             ),
-                            _buildMoodBarChart(context, moodData),
+                            Container(
+
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: AppColors.whiteColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                                child:
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'Mood Count',
+                                          style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                                        ),
+                                      ),
+                                    ),
+                                    _buildMoodBarChart(context, moodData),
+                                  ],
+                                )),
                           ],
                         ),
                       ),
@@ -415,14 +444,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-          ),
-        ],
       ),
       child: BarChart(
         BarChartData(

@@ -8,6 +8,7 @@ class TermsNConditionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF2F2F2),
       appBar: AppBar(
         title: Text("Terms and Conditions", style: ProfileTitleText),
         leading: IconButton(
@@ -41,7 +42,7 @@ class TermsNConditionsPage extends StatelessWidget {
             style: ProfileContentText,
           ),
           SizedBox(height: 20),
-          Text("7. Contact Us", style: ProfileContentBold),
+          Text("3. Contact Us", style: ProfileContentBold),
           SizedBox(height: 10),
           Text(
             "For any questions regarding these terms and conditions, please contact us at yijia@emosense.com.",

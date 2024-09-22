@@ -5,6 +5,7 @@ import 'package:emosense/pages/discover_page.dart';
 import 'package:emosense/pages/profile_page.dart';
 import 'package:emosense/pages/home_content_page.dart';
 import 'package:emosense/design_widgets/navigation_bar.dart';
+import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -81,8 +82,9 @@ class _HomePageState extends State<HomePage> {
   // }
 
   Future<bool> _onWillPop() async {
-    // Instead of logging out, we allow the back button to close the app
-    return true; // Returning true will close the app on back button press
+    // Close the app instead of popping to another page
+    SystemNavigator.pop();
+    return false; // Return false to indicate that the pop has been handled
   }
 
   @override
