@@ -18,12 +18,14 @@ EmoSense is an innovative mobile application designed to enhance emotional well-
 - **HTTP Requests**: For communicating with the server and retrieving data.
 - **Firebase**: For storing user data and managing authentication.
 - **Spotify API**: For fetching music genres and recommendations.
+- **Python Flask**: For the backend server that processes emotion detection and handles requests.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Flutter SDK installed on your machine.
+- Python and Flask installed for the backend.
 - An IDE such as Android Studio or Visual Studio Code.
 - Access to a local server for the emotion detection model.
 
