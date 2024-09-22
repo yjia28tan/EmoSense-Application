@@ -1,5 +1,8 @@
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/emotion_lists.dart'; // Contains emotions with icon and color data
 import 'package:emosense/design_widgets/font_style.dart';
+import 'package:emosense/pages/stress_level_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class EmotionConfirmationPage extends StatefulWidget {
@@ -13,123 +16,102 @@ class EmotionConfirmationPage extends StatefulWidget {
 
 class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
   late String detectedEmotion;
+  IconData? detectedEmotionIcon;
+  Color? detectedEmotionColor;
 
   @override
   void initState() {
     super.initState();
-    // Initialize detectedEmotion from the passed value
+    // Initialize detectedEmotion and related properties from the passed value
     detectedEmotion = widget.detectedEmotion;
+    _updateEmotionIconAndColor(detectedEmotion);
   }
 
+  // Helper function to update icon and color based on the emotion name
+  void _updateEmotionIconAndColor(String emotionName) {
+    final selectedEmotionData =
+    emotions.firstWhere((emotion) => emotion.name == emotionName, orElse: () => emotions.first);
+    setState(() {
+      detectedEmotionIcon = selectedEmotionData.icon;
+      detectedEmotionColor = selectedEmotionData.color;
+    });
+  }
+
+  // Function to display the emotion selection sheet
   void _showEmotionSelectionSheet(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    String? selectedEmotion = detectedEmotion; // Set initial selection to the detected emotion
+    String? selectedEmotion = detectedEmotion;
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // Allows the bottom sheet to expand fully
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(50.0), // Apply curve to the top only
+        ),
+      ),
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              height: screenHeight * 0.7,
-              color: AppColors.lightBackgroundColor, // Set background color
+              height: screenHeight * 0.65,
+              decoration: BoxDecoration(
+                color: AppColors.lightLogoColor,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(25.0), // Apply the same curve here
+                ),
+              ),
               child: Column(
                 children: [
-                  Expanded(
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: [
-                          // ListTile options for each emotion
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_very_satisfied,
-                              color: selectedEmotion == 'Happy' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
+                        children: emotions.map((emotion) {
+                          bool isSelected = selectedEmotion == emotion.name;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0), // Spacing between items
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedEmotion = emotion.name;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: isSelected ? emotion.color : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12.0), // Curved borders
+                                  border: Border.all(
+                                    color: isSelected ? Colors.white : Colors.transparent,
+                                    width: 2.0,
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(12.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      emotion.icon,
+                                      color: isSelected ? Colors.white : emotion.color,
+                                    ),
+                                    SizedBox(width: 16.0), // Space between icon and text
+                                    Text(
+                                      emotion.name,
+                                      style: TextStyle(
+                                        color: isSelected ? Colors.white : emotion.color,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            title: Text('Happy', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Happy';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_satisfied,
-                              color: selectedEmotion == 'Neutral' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Neutral', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Neutral';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_neutral,
-                              color: selectedEmotion == 'Fear' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Fear', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Fear';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_dissatisfied,
-                              color: selectedEmotion == 'Disgust' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Disgust', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Disgust';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_satisfied,
-                              color: selectedEmotion == 'Surprise' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Surprise', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Surprise';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_very_dissatisfied,
-                              color: selectedEmotion == 'Angry' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Angry', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Angry';
-                              });
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.sentiment_very_dissatisfied,
-                              color: selectedEmotion == 'Sad' ? AppColors.lightLogoColor : AppColors.darkPurpleColor,
-                            ),
-                            title: Text('Sad', style: TextStyle(color: AppColors.lightLogoColor)),
-                            onTap: () {
-                              setState(() {
-                                selectedEmotion = 'Sad';
-                              });
-                            },
-                          ),
-                        ],
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),
-
                   // Confirmation button at the bottom
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -140,16 +122,16 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.darkPurpleColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100), // Rounded corners
+                            borderRadius: BorderRadius.circular(100),
                           ),
                         ),
                         onPressed: () {
                           if (selectedEmotion != null) {
                             setState(() {
                               detectedEmotion = selectedEmotion!;
+                              _updateEmotionIconAndColor(detectedEmotion); // Update icon and color based on new selection
                             });
-                            print('Confirmed emotion: $detectedEmotion');
-                            Navigator.pop(context); // Close the modal bottom sheet
+                            Navigator.pop(context);
                           } else {
                             // Show dialog if no emotion is selected
                             showDialog(
@@ -161,7 +143,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop(); // Close the dialog
+                                        Navigator.of(context).pop();
                                       },
                                       child: Text('OK'),
                                     ),
@@ -183,42 +165,114 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
     );
   }
 
+  Future<bool> _onWillPop() async {
+    // Show confirmation dialog when back button is pressed
+    final shouldPop = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm Exit'),
+        content: Text('Emotion will not added. Do you want to exit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false), // Don't pop
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+              setState(() {
+                detectedEmotion = '';
+              });
+            },
+            child: Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+
+    return shouldPop ?? false; // Fallback to false if dialog is dismissed
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.downBackgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.sentiment_satisfied, size: 100),
-            SizedBox(height: 20),
-            Text(
-              'Is "$detectedEmotion" your current emotion?',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the description page if the emotion is correct
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) =>
-                //         EmotionDescriptionPage(selectedEmotion: detectedEmotion),
-                //   ),
-                // );
-              },
-              child: Text('Yes'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Show bottom sheet to select a different emotion
-                _showEmotionSelectionSheet(context);
-              },
-              child: Text('No, choose another'),
-            ),
-          ],
+    final screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Color(0xFFF2F2F2),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: screenHeight * 0.25),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  'Your current mood detected is',
+                  style: titleBlack,
+                ),
+              ),
+              Text(
+                ' "$detectedEmotion" ',
+                style: titleBlack.copyWith(fontSize: 22),
+              ),
+              SizedBox(height: 20),
+              Icon(
+                detectedEmotionIcon,
+                size: 100,
+                color: detectedEmotionColor,
+              ),
+              SizedBox(height: screenHeight * 0.05),
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Container(
+                  width: screenWidth * 0.75,
+                  height: screenHeight * 0.07,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.darkPurpleColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    onPressed: () {
+                      _showEmotionSelectionSheet(context);
+                    },
+                    child: Text('Not my current mood', style: whiteText),
+                  ),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.1),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, right: 20),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    height: screenHeight * 0.06,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.upBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StressLevelPage(detectedEmotion: detectedEmotion),
+                          ),
+                        );
+                      },
+                      child: Icon(Icons.arrow_forward_rounded, color: AppColors.darkPurpleColor),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

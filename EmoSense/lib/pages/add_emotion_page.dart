@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:emosense/api_services/emotion_handler.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/main.dart';
 import 'package:emosense/pages/current_emotion_confirmation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -29,7 +27,10 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    setState(() {
+      _initializeCamera();
+    });
+
   }
 
   Future<void> _initializeCamera() async {
@@ -91,7 +92,8 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       return;
     }
 
-    final uri = Uri.parse('http://192.168.1.103:5000/predict');
+    final uri = Uri.parse('http://192.168.158.34:5000/predict');
+    // final uri = Uri.parse('http://192.168.197.199:5000/predict');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
@@ -135,13 +137,13 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                   _controller == null
                       ? Center(child: CircularProgressIndicator())
                       : FutureBuilder<void>(
-                    future: _initializeControllerFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return CameraPreview(_controller!);
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
+                      future: _initializeControllerFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return CameraPreview(_controller!);
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
                     },
                   ),
                   if (_capturedImage != null)
@@ -151,6 +153,19 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                           _capturedImage!,
                           fit: BoxFit.cover,
                         ),
+                      ),
+                    ),
+                  if (_capturedImage != null) // Only show if an image is captured
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: AppColors.downBackgroundColor, size: 30),
+                        onPressed: () {
+                          setState(() {
+                            _capturedImage = null; // Reset captured image
+                          });
+                        },
                       ),
                     ),
                 ],
@@ -178,10 +193,9 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error toggling flash mode: $e'),
-                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                              duration: Duration(seconds: 3),
                             ),
                           );
-                          print('Error toggling flash mode: $e');
                         }
                       }
                     },
@@ -205,13 +219,10 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                             _capturedImage = File(image.path);
                           });
                         } catch (e) {
-                          setState(() {
-                            errorMessage = 'Error taking picture: $e';
-                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error taking picture: $e'),
-                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                              duration: Duration(seconds: 3),
                             ),
                           );
                         }
@@ -219,8 +230,6 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                         // If image captured, upload it
                         try {
                           await _uploadImage(_capturedImage!);
-
-                          // Navigate to the Emotion Confirmation page with detectedEmotion
                           if (detectedEmotion.isNotEmpty) {
                             Navigator.push(
                               context,
@@ -232,13 +241,10 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                             );
                           }
                         } catch (e) {
-                          setState(() {
-                            errorMessage = 'Error uploading image: $e';
-                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error uploading image: $e'),
-                              duration: Duration(seconds: 3), // Show SnackBar for 3 seconds
+                              duration: Duration(seconds: 3),
                             ),
                           );
                         }
@@ -257,6 +263,8 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                       await _initializeCamera();
                     },
                   ),
+                  // X Button to discard the image
+
                 ],
               ),
             ),
@@ -265,4 +273,5 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       ),
     );
   }
+
 }
