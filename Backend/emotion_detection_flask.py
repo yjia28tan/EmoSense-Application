@@ -46,6 +46,7 @@ def predict():
         class_idx = np.argmax(predictions, axis=1)[0]
         class_names = ['Angry', 'Happy', 'Sad', 'Neutral']  # Adjust as needed
         detected_emotion = class_names[class_idx]
+        print(detected_emotion)
 
         return jsonify({'detected_emotion': detected_emotion}), 200
 
