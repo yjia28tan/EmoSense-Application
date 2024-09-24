@@ -9,8 +9,9 @@ import 'package:emosense/api_services/spotify_services.dart';
 class ArtistSelectionPage extends StatefulWidget {
   final SpotifyService spotifyService;
   final List<String> selectedGenres;
+  final List<String> emotionGenreMap;
 
-  ArtistSelectionPage({required this.spotifyService, required this.selectedGenres});
+  ArtistSelectionPage({required this.spotifyService, required this.selectedGenres, required this.emotionGenreMap});
 
   @override
   _ArtistSelectionPageState createState() => _ArtistSelectionPageState();
@@ -98,6 +99,7 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
         'uid': globalUID,
         'selectedGenres': widget.selectedGenres,
         'selectedArtists': artistDetails,
+        'emotionGenreMap': widget.emotionGenreMap,
       });
 
       print("Preferences saved successfully!");
@@ -109,13 +111,14 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.downBackgroundColor,
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.only(top: 15.0, left: 10.0, right: 15.0, bottom: 15.0),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                SizedBox(height: 30),
                 Row(
                   children: [
                     Align(

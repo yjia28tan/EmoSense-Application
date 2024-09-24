@@ -2,6 +2,7 @@ import 'package:emosense/api_services/spotify_services.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/pages/artists_selection_page.dart';
+import 'package:emosense/pages/emotion_genre_survey_page.dart';
 import 'package:emosense/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -59,13 +60,14 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.downBackgroundColor,
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // Show a loader while fetching data
           : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                SizedBox(height: 30),
                 Column(
                   children: [
                     Align(
@@ -154,14 +156,22 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
                       minimumSize: Size(double.infinity, 50), // Full-width button
                     ),
                     onPressed: () {
-                      // Navigate to the next page with selected genres
+                      // // Navigate to the artist selection page with selected genres
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => ArtistSelectionPage(
+                      //       spotifyService: spotifyService, // Pass the SpotifyService instance
+                      //       selectedGenres: selectedGenres,
+                      //     ),
+                      //   ),
+                      // );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ArtistSelectionPage(
-                            spotifyService: spotifyService, // Pass the SpotifyService instance
-                            selectedGenres: selectedGenres,
-                          ),
+                          builder: (context) => EmotionGenreSurveyPage(
+                              spotifyService: spotifyService,
+                              selectedGenres: selectedGenres),
                         ),
                       );
                     },
