@@ -6,7 +6,6 @@ import 'package:emosense/pages/profile_page.dart';
 import 'package:emosense/pages/home_content_page.dart';
 import 'package:emosense/design_widgets/navigation_bar.dart';
 import 'package:flutter/services.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 
 class HomePage extends StatefulWidget {
   // final Interpreter interpreter; // Add the interpreter here
