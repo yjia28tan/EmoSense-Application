@@ -25,7 +25,7 @@ class GetQoutesClass implements QoutesData {
 
       // Fetch new quote if cache is outdated or missing
       final response = await http.get(
-        Uri.parse('https://api.quotable.io/random?tags=love|happiness'),
+        Uri.parse('https://api.quotable.io/random?tags=happiness%7Clove%7Csadness'),
       );
 
       // Log rate limit headers

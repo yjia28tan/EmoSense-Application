@@ -45,7 +45,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
     await spotifyService.authenticate();
 
     // Search playlists based on the user's current emotion, favourite genre, etc.
-    final playlists = await spotifyService.searchPlaylists(widget.detectedEmotion);
+    final playlists = await spotifyService.searchPlaylists(widget.detectedEmotion, );
 
     // Fetch tracks from the playlists
     tracksRecommended = await spotifyService.fetchTracksFromPlaylists(playlists);

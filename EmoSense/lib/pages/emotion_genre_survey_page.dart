@@ -60,7 +60,7 @@ class _EmotionGenreSurveyPageState extends State<EmotionGenreSurveyPage> {
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 children: [
                   ...emotionGenreMap.keys.map((emotion) {
                     return Column(
@@ -68,12 +68,14 @@ class _EmotionGenreSurveyPageState extends State<EmotionGenreSurveyPage> {
                       children: [
                         Text(
                           emotion,
-                          style: titleBlack,
+                          style: titleBlack.copyWith(color: AppColors.darkPurpleColor, fontSize: 16),
                         ),
                         Column(
                           children: widget.selectedGenres.map((genre) {
                             return RadioListTile<String>(
-                              title: Text(genre),
+                              title: Text(genre,
+                                  style: textBlackNormal.copyWith(fontSize: 17)
+                              ),
                               value: genre,
                               groupValue: emotionGenreMap[emotion],
                               onChanged: (value) {
@@ -84,7 +86,7 @@ class _EmotionGenreSurveyPageState extends State<EmotionGenreSurveyPage> {
                             );
                           }).toList(),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height:10),
                       ],
                     );
                   }).toList(),

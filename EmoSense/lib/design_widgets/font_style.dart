@@ -58,6 +58,11 @@ final TextStyle ProfileContentBold = GoogleFonts.leagueSpartan(
   fontSize: 16,
 );
 
+final TextStyle textBlackNormal = GoogleFonts.leagueSpartan(
+  color: AppColors.textColorBlack,
+  fontWeight: FontWeight.normal,
+  fontSize: 16,
+);
 
 
 // No use
