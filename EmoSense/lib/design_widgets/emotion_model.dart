@@ -14,10 +14,10 @@ class Emotion {
 }
 
 List<Emotion> emotions = [
-  Emotion(name: 'Happy', assetPath: 'assets/happy.png', color: AppColors.happy),
-  Emotion(name: 'Neutral', assetPath: 'assets/neutral.png', color: AppColors.neutral),
-  Emotion(name: 'Fear', assetPath: 'assets/fear.png', color: AppColors.fear),
-  Emotion(name: 'Disgust', assetPath: 'assets/disgust.png', color: AppColors.disgust),
-  Emotion(name: 'Angry', assetPath: 'assets/angry.png', color: AppColors.angry),
-  Emotion(name: 'Sad', assetPath: 'assets/sad.png', color: AppColors.sad),
+  Emotion(name: 'Happy', assetPath: 'assets/emotion/happy.png', color: AppColors.happy),
+  Emotion(name: 'Neutral', assetPath: 'assets/emotion/neutral.png', color: AppColors.neutral),
+  Emotion(name: 'Fear', assetPath: 'assets/emotion/fear.png', color: AppColors.fear),
+  Emotion(name: 'Disgust', assetPath: 'assets/emotion/disgust.png', color: AppColors.disgust),
+  Emotion(name: 'Angry', assetPath: 'assets/emotion/angry.png', color: AppColors.angry),
+  Emotion(name: 'Sad', assetPath: 'assets/emotion/sad.png', color: AppColors.sad),
 ];

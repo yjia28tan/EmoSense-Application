@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
-import 'package:emosense/design_widgets/mood_display_box.dart';
+import 'package:emosense/design_widgets/emotion_display_box.dart';
 import 'package:emosense/main.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';

@@ -4,6 +4,8 @@ import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/pages/stress_level_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class EmotionConfirmationPage extends StatefulWidget {
   final String detectedEmotion;
@@ -56,7 +58,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              height: screenHeight * 0.68,
+              height: screenHeight * 0.7,
               decoration: BoxDecoration(
                 color: AppColors.downBackgroundColor,
                 borderRadius: BorderRadius.vertical(
@@ -66,14 +68,22 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(5.0),
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      'Select your current emotion',
+                      style: titleBlack,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10),
                     child: SingleChildScrollView(
                       child: Column(
                         children: emotions.map((emotion) {
                           bool isSelected = selectedEmotion == emotion.name;
 
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0), // Spacing between items
+                            padding: const EdgeInsets.symmetric(vertical: 1.0), // Spacing between items
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -89,21 +99,24 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                                     width: 2.0,
                                   ),
                                 ),
-                                padding: EdgeInsets.all(5.0),
+                                padding: EdgeInsets.only(left: 15.0, right: 15.0),
                                 child: Row(
                                   children: [
                                     Image.asset(
                                       emotion.assetPath, // Display emotion image
-                                      width: 50,
-                                      height: 50,
+                                      width: 60,
+                                      height: 60,
                                     ),
-                                    SizedBox(width: 16.0), // Space between icon and text
-                                    Text(
-                                      emotion.name,
-                                      style: TextStyle(
-                                        color: isSelected ? AppColors.darkPurpleColor : Colors.black54,
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
+                                    SizedBox(width: 20.0), // Space between icon and text
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        emotion.name,
+                                        style: GoogleFonts.leagueSpartan(
+                                          color: isSelected ? AppColors.darkPurpleColor : Colors.black54,
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -117,9 +130,10 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                   ),
                   // Confirmation button at the bottom
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30.0),
                     child: Container(
                       height: screenHeight * 0.07,
+                      width: double.infinity,
                       child: ElevatedButton(
                         child: Text('Confirm', style: whiteText),
                         style: ElevatedButton.styleFrom(

@@ -23,9 +23,9 @@ class RecommendedSongsPage extends StatelessWidget {
             children: [
               // Title
               Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 16.0, right: 16.0),
+                padding: const EdgeInsets.only(top: 25.0, left: 16.0, right: 16.0),
                 child: Text(
-                  'Song Recommended',
+                  'Music Recommended',
                   style: titleBlack,
                   textAlign: TextAlign.center, // Center align title
                 ),
@@ -49,7 +49,7 @@ class RecommendedSongsPage extends StatelessWidget {
               ),
               // Button
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.darkPurpleColor,
@@ -146,27 +146,4 @@ class RecommendedSongsPage extends StatelessWidget {
       print("Could not launch Spotify app or web URL");
     }
   }
-
-  // void _playSongInSpotify(Track song) async {
-  //   // Spotify URI for the app
-  //   final spotifyUri = song.spotifyUrl;
-  //
-  //   // Create a Uri object for the Spotify app
-  //   final Uri appUri = Uri.parse(spotifyUri);
-  //
-  //   // Check if the Spotify app can handle the URI
-  //   if (await canLaunchUrl(appUri)) {
-  //     await launchUrl(appUri); // Launch the app if available
-  //   } else {
-  //     // If Spotify app is not installed, open the web player
-  //     final Uri webUrl = Uri.parse('https://open.spotify.com/track/${song.id}');
-  //     if (await canLaunchUrl(webUrl)) {
-  //       await launchUrl(webUrl); // Open in web browser
-  //     } else {
-  //       // Handle the error if neither can be opened
-  //       print('Could not launch Spotify app or web URL');
-  //     }
-  //   }
-  // }
-
 }

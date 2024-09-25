@@ -21,4 +21,11 @@ class AppColors {
   static const Color disgust = Color(0xFF84c3b7);
   static const Color sad = Color(0xFF82b6e6);
   static const Color fear = Color(0xFFb8aeeb);
+
+  // Stress colors
+  static const Color stress_extreme = Color(0xFFe48372);
+  static const Color stress_high = Color(0xFFe8b878);
+  static const Color stress_optimal = Color(0xFFfae69e);
+  static const Color stress_moderate = Color(0xFF84c3b7);
+  static const Color stress_low = Color(0xFF82b6e6);
 }

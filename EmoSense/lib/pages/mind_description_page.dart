@@ -127,74 +127,94 @@ class _DescriptionPageState extends State<DescriptionPage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Color(0xFFF2F2F2),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Text(
-                  'What’s on your mind?',
-                  style: titleBlack,
-                ),
-              ),
-              SizedBox(height: 15),
-              Container(
-                width: double.infinity,
-                height: screenHeight * 0.6,
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _descriptionController,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: 'Write your thoughts here',
-                      hintStyle: greySmallText.copyWith(
-                        fontSize: 16,
+      body: Stack( // Use Stack to layer widgets
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 35.0, left: 18.0, right: 16.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'What’s on your mind?',
+                        style: titleBlack,
                       ),
-                      alignLabelWithHint: true,
-                      border: InputBorder.none,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, right: 16, bottom: 2),
-                child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    height: screenHeight * 0.06,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.upBackgroundColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
+                  SizedBox(height: 125),
+                  // Main content container
+                  Container(
+                    width: double.infinity,
+                    height: screenHeight * 0.6,
+                    decoration: BoxDecoration(
+                      color: AppColors.whiteColor,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: AppColors.textColorBlack, width: 2),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextField(
+                        controller: _descriptionController,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          hintText: 'Write your thoughts here...',
+                          hintStyle: greySmallText.copyWith(
+                            fontSize: 16,
+                          ),
+                          alignLabelWithHint: true,
+                          border: InputBorder.none,
                         ),
                       ),
-                      onPressed: () {
-                        // Save the data to the database
-                        _getSongandSaveEntry();
-                      },
-                      child: Icon(
-                        Icons.check,
-                        color: AppColors.darkPurpleColor,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, right: 16, bottom: 2),
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        height: screenHeight * 0.06,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.upBackgroundColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Save the data to the database
+                            _getSongandSaveEntry();
+                          },
+                          child: Icon(
+                            Icons.check,
+                            color: AppColors.darkPurpleColor,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          // Positioned image at the top right
+          Positioned(
+            top: -85, // Adjust this value to change vertical position
+            right: -10, // Adjust this value to change horizontal position
+            child: Image.asset(
+              'assets/write.png',
+              width: screenWidth * 0.60, // Adjust width as needed
+              height: screenHeight * 0.60, // Adjust height as needed
+            ),
+          ),
+        ],
       ),
     );
   }
