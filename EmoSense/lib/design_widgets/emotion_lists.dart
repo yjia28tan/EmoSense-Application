@@ -3,22 +3,21 @@ import 'package:flutter/material.dart';
 
 class Emotion {
   final String name;
-  final IconData icon;
+  final String assetPath; // Path to the image asset
   final Color color;
 
   Emotion({
     required this.name,
-    required this.icon,
+    required this.assetPath,
     required this.color,
   });
 }
 
-
 List<Emotion> emotions = [
-  Emotion(name: 'Happy', icon: Icons.sentiment_very_satisfied, color: AppColors.happy),
-  Emotion(name: 'Neutral', icon: Icons.sentiment_satisfied, color: AppColors.neutral),
-  Emotion(name: 'Fear', icon: Icons.sentiment_neutral, color: AppColors.fear),
-  Emotion(name: 'Disgust', icon: Icons.sentiment_dissatisfied, color: AppColors.disgust),
-  Emotion(name: 'Angry', icon: Icons.sentiment_very_dissatisfied, color: AppColors.angry),
-  Emotion(name: 'Sad', icon: Icons.sentiment_very_dissatisfied, color: AppColors.sad),
+  Emotion(name: 'Happy', assetPath: 'assets/happy.png', color: AppColors.happy),
+  Emotion(name: 'Neutral', assetPath: 'assets/neutral.png', color: AppColors.neutral),
+  Emotion(name: 'Fear', assetPath: 'assets/fear.png', color: AppColors.fear),
+  Emotion(name: 'Disgust', assetPath: 'assets/disgust.png', color: AppColors.disgust),
+  Emotion(name: 'Angry', assetPath: 'assets/angry.png', color: AppColors.angry),
+  Emotion(name: 'Sad', assetPath: 'assets/sad.png', color: AppColors.sad),
 ];

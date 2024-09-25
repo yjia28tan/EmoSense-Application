@@ -183,43 +183,47 @@ class _HomeContentPageState extends State<HomeContentPage> {
                             bottomRight: Radius.circular(30),
                           ),
                         ),
-                        child: Column(
+                        child: Stack(
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: screenHeight * 0.06, left: screenWidth * 0.05),
-                                child: Text(
-                                  'Hey, $username :)',
-                                  style: HomeWelcomeTitle.copyWith(fontSize: screenHeight * 0.032),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 8, left: screenWidth * 0.05),
-                                child: Text(
-                                  'Have a great day!',
-                                  style: HomeWelcomeTitle.copyWith(
-                                      fontSize: screenHeight * 0.035,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
                             Padding(
-                              padding: EdgeInsets.only(right: screenWidth * 0.05),
-                              child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: CircleAvatar(
-                                  radius: 52,
-                                  backgroundColor: AppColors.darkLogoColor,
-                                ),
+                              padding: EdgeInsets.only(
+                                  top: screenHeight * 0.05,
+                                  left: screenWidth * 0.05
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Hey, $username :)',
+                                    style: HomeWelcomeTitle.copyWith(
+                                      fontSize: screenHeight * 0.035,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    'Have a great day!',
+                                    style: HomeWelcomeTitle.copyWith(
+                                      fontSize: screenHeight * 0.026,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              bottom: -35,
+                              right: -25,
+                              child: Image.asset(
+                                'assets/hi.png',
+                                width: 225,
+                                height: 225,
+                                fit: BoxFit.cover, // Ensures the image fits properly
                               ),
                             ),
                           ],
                         ),
                       ),
+
 
                       Padding(
                         padding: EdgeInsets.symmetric(

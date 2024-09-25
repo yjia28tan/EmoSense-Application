@@ -16,7 +16,7 @@ class EmotionConfirmationPage extends StatefulWidget {
 
 class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
   late String detectedEmotion;
-  IconData? detectedEmotionIcon;
+  String? detectedEmotionAssetPath;
   Color? detectedEmotionColor;
 
   @override
@@ -24,16 +24,18 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
     super.initState();
     // Initialize detectedEmotion and related properties from the passed value
     detectedEmotion = widget.detectedEmotion;
-    _updateEmotionIconAndColor(detectedEmotion);
+    _updateEmotionAssetAndColor(detectedEmotion);
   }
 
-  // Helper function to update icon and color based on the emotion name
-  void _updateEmotionIconAndColor(String emotionName) {
-    final selectedEmotionData =
-    emotions.firstWhere((emotion) => emotion.name == emotionName, orElse: () => emotions.first);
+  // Helper function to update image asset and color based on the emotion name
+  void _updateEmotionAssetAndColor(String emotionName) {
+    final selectedEmotionData = emotions.firstWhere(
+          (emotion) => emotion.name == emotionName,
+      orElse: () => emotions.first,
+    );
     setState(() {
-      detectedEmotionIcon = selectedEmotionData.icon;
-      detectedEmotionColor = selectedEmotionData.color;
+      detectedEmotionAssetPath = selectedEmotionData.assetPath; // Update image asset path
+      detectedEmotionColor = selectedEmotionData.color; // Update color
     });
   }
 
@@ -54,9 +56,9 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              height: screenHeight * 0.65,
+              height: screenHeight * 0.68,
               decoration: BoxDecoration(
-                color: AppColors.lightLogoColor,
+                color: AppColors.downBackgroundColor,
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(25.0), // Apply the same curve here
                 ),
@@ -64,14 +66,14 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(5.0),
                     child: SingleChildScrollView(
                       child: Column(
                         children: emotions.map((emotion) {
                           bool isSelected = selectedEmotion == emotion.name;
 
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0), // Spacing between items
+                            padding: const EdgeInsets.symmetric(vertical: 2.0), // Spacing between items
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -80,25 +82,26 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                               },
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: isSelected ? emotion.color : Colors.transparent,
+                                  color: isSelected ? Colors.white : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12.0), // Curved borders
                                   border: Border.all(
-                                    color: isSelected ? Colors.white : Colors.transparent,
+                                    color: isSelected ? emotion.color : Colors.transparent,
                                     width: 2.0,
                                   ),
                                 ),
-                                padding: EdgeInsets.all(12.0),
+                                padding: EdgeInsets.all(5.0),
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      emotion.icon,
-                                      color: isSelected ? Colors.white : emotion.color,
+                                    Image.asset(
+                                      emotion.assetPath, // Display emotion image
+                                      width: 50,
+                                      height: 50,
                                     ),
                                     SizedBox(width: 16.0), // Space between icon and text
                                     Text(
                                       emotion.name,
                                       style: TextStyle(
-                                        color: isSelected ? Colors.white : emotion.color,
+                                        color: isSelected ? AppColors.darkPurpleColor : Colors.black54,
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -114,7 +117,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                   ),
                   // Confirmation button at the bottom
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
                       height: screenHeight * 0.07,
                       child: ElevatedButton(
@@ -129,7 +132,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                           if (selectedEmotion != null) {
                             setState(() {
                               detectedEmotion = selectedEmotion!;
-                              _updateEmotionIconAndColor(detectedEmotion); // Update icon and color based on new selection
+                              _updateEmotionAssetAndColor(detectedEmotion); // Update icon and color based on new selection
                             });
                             Navigator.pop(context);
                           } else {
@@ -171,7 +174,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Confirm Exit'),
-        content: Text('Emotion will not added. Do you want to exit?'),
+        content: Text('Emotion will not be added. Do you want to exit?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false), // Don't pop
@@ -219,14 +222,15 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                 style: titleBlack.copyWith(fontSize: 22),
               ),
               SizedBox(height: 20),
-              Icon(
-                detectedEmotionIcon,
-                size: 100,
-                color: detectedEmotionColor,
-              ),
-              SizedBox(height: screenHeight * 0.05),
+              detectedEmotionAssetPath != null
+                  ? Image.asset(
+                detectedEmotionAssetPath!, // Display the detected emotion image
+                width: 200,
+                height: 200,
+              )
+                  : SizedBox.shrink(),
               Padding(
-                padding: const EdgeInsets.all(25.0),
+                padding: const EdgeInsets.all(15.0),
                 child: Container(
                   width: screenWidth * 0.75,
                   height: screenHeight * 0.07,

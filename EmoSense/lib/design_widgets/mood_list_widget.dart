@@ -13,22 +13,25 @@ class MoodListWidget extends StatelessWidget {
     required this.onDelete,
   });
 
-  Icon? getMoodIcon(String mood) {
+  Image? getMoodIcon(String mood) {
     switch (mood) {
-      case 'Excellent':
-        return Icon(Icons.sentiment_very_satisfied);
-      case 'Good':
-        return Icon(Icons.sentiment_satisfied);
+      case 'Happy':
+        return Image.asset('assets/happy.png', width: 40, height: 40);
+      case 'Angry':
+        return Image.asset('assets/angry.png', width: 40, height: 40);
       case 'Neutral':
-        return Icon(Icons.sentiment_neutral);
-      case 'Bad':
-        return Icon(Icons.sentiment_dissatisfied);
-      case 'Terrible':
-        return Icon(Icons.sentiment_very_dissatisfied);
+        return Image.asset('assets/neutral.png', width: 40, height: 40);
+      case 'Sad':
+        return Image.asset('assets/sad.png', width: 40, height: 40);
+      case 'Fear':
+        return Image.asset('assets/fear.png', width: 40, height: 40);
+      case 'Disgust':
+        return Image.asset('assets/disgust.png', width: 40, height: 40);
       default:
-        return null;
+        return Image.asset('assets/logo.png', width: 40, height: 40);;
     }
   }
+
 
   String formatTimestamp(DateTime? dateTime) {
     if (dateTime == null) {
@@ -53,10 +56,10 @@ class MoodListWidget extends StatelessWidget {
           child: InkWell(
             onTap: () {
               // Navigator.push(
-                // context,
-                // MaterialPageRoute(
-                //   builder: (context) => MoodDetailsPage(moodId: record.id),
-                // ),
+              // context,
+              // MaterialPageRoute(
+              //   builder: (context) => MoodDetailsPage(moodId: record.id),
+              // ),
               // );
             },
             child: Column(
@@ -69,9 +72,10 @@ class MoodListWidget extends StatelessWidget {
                   ),
                   color: Color(0xFFE5FFD0).withOpacity(0.8),
                   child: ListTile(
-                    leading: getMoodIcon(mood) ?? Icon(
-                        Icons.sentiment_satisfied,
-                        color: Color(0xFF366021),
+                    leading: getMoodIcon(mood) ?? Image.asset(
+                      'assets/default.png', // Path to default image if mood doesn't match
+                      width: 40,
+                      height: 40,
                     ),
                     title: Text(
                       '${formatTimestamp(timestamp)}',
