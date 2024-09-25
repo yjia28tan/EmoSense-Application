@@ -120,7 +120,7 @@ class RecommendedSongsPage extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   // Implement Spotify play functionality here
-                  _playSongInSpotify(song); // Placeholder for Spotify play function
+                  _playSongInSpotify(song.id); // Placeholder for Spotify play function
                 },
                 child: Text("Play in Spotify",
                     style: inkwellText.copyWith(fontSize: 15, fontWeight: FontWeight.bold)
@@ -133,26 +133,40 @@ class RecommendedSongsPage extends StatelessWidget {
     );
   }
 
-  void _playSongInSpotify(Track song) async {
-    // Spotify URI for the app
-    final spotifyUri = song.spotifyUrl;
+  void _playSongInSpotify(String trackId) async {
+    final String appUrl = 'spotify:track:$trackId'; // Spotify URI
+    final String webUrl = 'https://open.spotify.com/track/$trackId'; // Web URL
 
-    // Create a Uri object for the Spotify app
-    final Uri appUri = Uri.parse(spotifyUri);
-
-    // Check if the Spotify app can handle the URI
-    if (await canLaunchUrl(appUri)) {
-      await launchUrl(appUri); // Launch the app if available
+    // Try to launch the app URL first
+    if (await canLaunch(appUrl)) {
+      await launch(appUrl);
+    } else if (await canLaunch(webUrl)) {
+      await launch(webUrl);
     } else {
-      // If Spotify app is not installed, open the web player
-      final Uri webUrl = Uri.parse('https://open.spotify.com/track/${song.id}');
-      if (await canLaunchUrl(webUrl)) {
-        await launchUrl(webUrl); // Open in web browser
-      } else {
-        // Handle the error if neither can be opened
-        print('Could not launch Spotify app or web URL');
-      }
+      print("Could not launch Spotify app or web URL");
     }
   }
+
+  // void _playSongInSpotify(Track song) async {
+  //   // Spotify URI for the app
+  //   final spotifyUri = song.spotifyUrl;
+  //
+  //   // Create a Uri object for the Spotify app
+  //   final Uri appUri = Uri.parse(spotifyUri);
+  //
+  //   // Check if the Spotify app can handle the URI
+  //   if (await canLaunchUrl(appUri)) {
+  //     await launchUrl(appUri); // Launch the app if available
+  //   } else {
+  //     // If Spotify app is not installed, open the web player
+  //     final Uri webUrl = Uri.parse('https://open.spotify.com/track/${song.id}');
+  //     if (await canLaunchUrl(webUrl)) {
+  //       await launchUrl(webUrl); // Open in web browser
+  //     } else {
+  //       // Handle the error if neither can be opened
+  //       print('Could not launch Spotify app or web URL');
+  //     }
+  //   }
+  // }
 
 }

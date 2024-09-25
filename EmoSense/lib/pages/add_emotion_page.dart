@@ -93,7 +93,6 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
     }
 
     final uri = Uri.parse('http://192.168.197.199:5000/predict');
-    // final uri = Uri.parse('http://192.168.197.199:5000/predict');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
