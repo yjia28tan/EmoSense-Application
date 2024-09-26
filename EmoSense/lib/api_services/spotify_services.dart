@@ -101,6 +101,7 @@ class SpotifyService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final playlists = data['playlists']['items'] as List;
+
         return playlists.map((playlist) => playlist['id'] as String).toList();
       } else {
         throw Exception('Failed to search playlists: ${response.statusCode} - ${response.body}');

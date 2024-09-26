@@ -163,6 +163,7 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                         onPressed: () {
                           setState(() {
                             _capturedImage = null; // Reset captured image
+                            isLoading = false; // Stop loading
                           });
                         },
                       ),

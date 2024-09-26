@@ -79,9 +79,11 @@ class _DescriptionPageState extends State<DescriptionPage> {
         String? genreForDetectedEmotion = emotionGenreMap[emotionIndexMap[widget
             .detectedEmotion] ?? 0];
 
-        final playlists = await spotifyService.searchPlaylists(
-            genreForDetectedEmotion);
-        print('Playlists: $playlists');
+        String? query = widget.detectedEmotion + ' ' +  genreForDetectedEmotion;
+
+        print('\n-----------------------------Query: $query\n');
+
+        final playlists = await spotifyService.searchPlaylists(query);
 
         // Fetch tracks from the playlists
         tracksRecommended =
@@ -215,6 +217,16 @@ class _DescriptionPageState extends State<DescriptionPage> {
                   ),
                 ),
               ),
+            // Positioned image at the top right
+            Positioned(
+              top: -85, // Adjust this value to change vertical position
+              right: -10, // Adjust this value to change horizontal position
+              child: Image.asset(
+                'assets/write.png',
+                width: screenWidth * 0.60, // Adjust width as needed
+                height: screenHeight * 0.60, // Adjust height as needed
+              ),
+            ),
             if (isLoading) // Show the loading indicator when loading
               Center(
                 child: CircularProgressIndicator(),
