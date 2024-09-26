@@ -1,17 +1,19 @@
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MoodDisplay extends StatelessWidget {
-  final Color moodColor;
-  final IconData moodIcon;
+class EmotionDisplay extends StatelessWidget {
+  final Color emotionContainerColor;
+  final Image emotionIcon; // This already holds the asset image.
   final String emotionText;
   final DateTime time;
 
-  MoodDisplay({
-    required this.moodColor,
-    required this.moodIcon,
+  EmotionDisplay({
+    required this.emotionContainerColor,
+    required this.emotionIcon,
     required this.emotionText,
     required this.time,
   });
@@ -23,20 +25,21 @@ class MoodDisplay extends StatelessWidget {
     return Container(
       width: 150.0, // Set a fixed width for horizontal scrolling
       margin: EdgeInsets.symmetric(horizontal: 4.0),
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
       decoration: BoxDecoration(
-        color: moodColor.withOpacity(0.6),
+        color: emotionContainerColor.withOpacity(0.6),
         borderRadius: BorderRadius.circular(8.0),
-        // border: Border.all(color: moodColor, width: 1.0),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            moodIcon,
-            size: 50.0,
+          // set the size of the icon
+          SizedBox(
+            height: screenHeight * 0.1,
+            width: screenHeight * 0.1,
+            child: emotionIcon,
           ),
-          SizedBox(width: 8.0),
+          SizedBox(width: 4.0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +48,6 @@ class MoodDisplay extends StatelessWidget {
                   emotionText,
                   style: GoogleFonts.leagueSpartan(
                     fontSize: 16.0,
-                    // fontWeight: FontWeight.bold,
                     color: AppColors.textColorBlack,
                   ),
                 ),

@@ -154,80 +154,92 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               // Elevated Buttons
               // edit profile
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: profile_Button(
-                  'Username',
-                  '$username',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                    // );
-                    // if (result == true) {
-                    //   // Refresh the user data
-                    //   fetchUserData();
-                    // }
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF2F2F2).withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: profile_Button(
+                        'Username',
+                        '$username',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          // final result = await Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                          // );
+                          // if (result == true) {
+                          //   // Refresh the user data
+                          //   fetchUserData();
+                          // }
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: profile_Button(
+                        'Email',
+                        '$email',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          // final result = await Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                          // );
+                          // if (result == true) {
+                          //   // Refresh the user data
+                          //   fetchUserData();
+                          // }
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: profile_Button(
+                        'Gender',
+                        '$gender',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          // final result = await Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                          // );
+                          // if (result == true) {
+                          //   // Refresh the user data
+                          //   fetchUserData();
+                          // }
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                      child: profile_Button(
+                        'Birthdate',
+                        '$birthday',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          // final result = await Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                          // );
+                          // if (result == true) {
+                          //   // Refresh the user data
+                          //   fetchUserData();
+                          // }
+                        },
+                      ),
+                    ),
+                    // set reminder button
+                    // SetReminder(),
+
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: profile_Button(
-                  'Email',
-                  '$email',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                    // );
-                    // if (result == true) {
-                    //   // Refresh the user data
-                    //   fetchUserData();
-                    // }
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: profile_Button(
-                  'Gender',
-                  '$gender',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                    // );
-                    // if (result == true) {
-                    //   // Refresh the user data
-                    //   fetchUserData();
-                    // }
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                child: profile_Button(
-                  'Birthdate',
-                  '$birthday',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                    // );
-                    // if (result == true) {
-                    //   // Refresh the user data
-                    //   fetchUserData();
-                    // }
-                  },
-                ),
-              ),
-              // set reminder button
-              // SetReminder(),
+
 
               // Security Text
               Align(
@@ -243,18 +255,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: profile_Button(
-                  'Change Password',
-                  '',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                    // );
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF2F2F2).withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: profile_Button(
+                    'Change Password',
+                    '',
+                    Icons.arrow_forward_ios,
+                        () async {
+                      // final result = await Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                      // );
+                    },
+                  ),
                 ),
               ),
 
@@ -272,18 +290,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: profile_Button(
-                  'Edit Preferences',
-                  '',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    // final result = await Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                    // );
-                  },
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF2F2F2).withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                  child: profile_Button(
+                    'Edit Preferences',
+                    '',
+                    Icons.arrow_forward_ios,
+                        () async {
+                      // final result = await Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                      // );
+                    },
+                  ),
                 ),
               ),
 
@@ -302,50 +326,61 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               // privacy policy
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: profile_Button(
-                  'Privacy Policy',
-                  '',
-                  Icons.arrow_forward_ios,
-                      () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PrivacyPolicyPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              // t&c
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                child: profile_Button(
-                  'Terms and Conditions',
-                  '',
-                  Icons.arrow_forward_ios,
-                      () async {
-                        await Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => TermsNConditionsPage()
-                            )
-                        );
-                      },
-                ),
-              ),
-              SizedBox(height: 20),
-              // sign out button
               Container(
-                width: double.infinity,  // Takes the full width of the screen
-                height: screenHeight * 0.07,
-                child: signout_Button(
-                  'Sign Out',
-                      () async {
-                    // Call the signOut function
-                    await signOut(context);
-                  },
+                decoration: BoxDecoration(
+                  color: Color(0xFFF2F2F2).withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                      child: profile_Button(
+                        'Privacy Policy',
+                        '',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PrivacyPolicyPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    // t&c
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                      child: profile_Button(
+                        'Terms and Conditions',
+                        '',
+                        Icons.arrow_forward_ios,
+                            () async {
+                          await Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => TermsNConditionsPage()
+                              )
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+                SizedBox(height: 20),
+              // sign out button
+                Container(
+                  width: double.infinity,  // Takes the full width of the screen
+                  height: screenHeight * 0.07,
+                  child: signout_Button(
+                    'Sign Out',
+                        () async {
+                      // Call the signOut function
+                      await signOut(context);
+                    },
+                  ),
+                ),
             ],
           ),
         ),

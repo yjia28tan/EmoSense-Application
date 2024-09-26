@@ -22,6 +22,14 @@ class AppColors {
   static const Color sad = Color(0xFF82b6e6);
   static const Color fear = Color(0xFFb8aeeb);
 
+  // Emotion Container colors in EmotionDisplayBox
+  static const Color angryContainer = Color(0xFFEFC0B8);
+  static const Color neutralContainer = Color(0xFFF4DBBC);
+  static const Color happyContainer = Color(0xFFF9F3D3);
+  static const Color disgustContainer = Color(0xFFC7E1D9);
+  static const Color sadContainer = Color(0xFFC0DAF1);
+  static const Color fearContainer = Color(0xFFDAD6F1);
+
   // Stress colors
   static const Color stress_extreme = Color(0xFFe48372);
   static const Color stress_high = Color(0xFFe8b878);

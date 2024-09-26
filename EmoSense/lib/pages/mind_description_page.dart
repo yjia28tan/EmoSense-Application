@@ -113,7 +113,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
           'uid': globalUID,
         };
 
-        await FirebaseFirestore.instance.collection('emotion records').add(
+        await FirebaseFirestore.instance.collection('emotionRecords').add(
             data);
 
         // Navigate to the RecommendedSongsPage after saving

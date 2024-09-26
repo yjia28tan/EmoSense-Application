@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/emotion_model.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/emotion_display_box.dart';
 import 'package:emosense/main.dart';
@@ -19,8 +20,11 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
-    _fetchDataForSelectedDay();
-    _fetchAllEmotions();
+    setState(() {
+      _selectedDay = DateTime.now();
+      _fetchDataForSelectedDay();
+      _fetchAllEmotions();
+    });
   }
 
   Future<void> _fetchDataForSelectedDay() async {
@@ -30,41 +34,69 @@ class _CalendarPageState extends State<CalendarPage> {
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
     final emotionSnapshot = await FirebaseFirestore.instance
-        .collection('emotionRecord')
+        .collection('emotionRecords')
         .where('uid', isEqualTo: uid)
         .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
         .where('timestamp', isLessThan: endOfDay)
         .limit(1)
         .get();
 
-    String? mood;
+    String? emotion;
     if (emotionSnapshot.docs.isNotEmpty) {
-      mood = emotionSnapshot.docs.first['emotion'];
+      emotion = emotionSnapshot.docs.first['emotion'];
     }
 
     setState(() {
-      _selectedEmotion = mood;
+      _selectedEmotion = emotion;
     });
   }
 
   Future<void> _fetchAllEmotions() async {
-    final uid = globalUID;
+    try {
+      final uid = globalUID;
 
-    final moodSnapshot = await FirebaseFirestore.instance
-        .collection('emotionRecord')
-        .where('uid', isEqualTo: uid)
-        .get();
+      // Fetch all emotion records for the user, ordered by timestamp descending
+      final emotionSnapshot = await FirebaseFirestore.instance
+          .collection('emotionRecord')
+          .where('uid', isEqualTo: uid)
+          .orderBy('timestamp', descending: true)
+          .get();
 
-    Map<DateTime, String> emotionMap = {};
-    for (var doc in moodSnapshot.docs) {
-      DateTime date = (doc['timestamp'] as Timestamp).toDate();
-      emotionMap[DateTime(date.year, date.month, date.day)] = doc['emotion'];
+      print('Emotion snapshot: $emotionSnapshot');
+
+      // Check if any data was fetched
+      if (emotionSnapshot.docs.isEmpty) {
+        print('No emotion data found for the user.');
+      }
+
+      Map<DateTime, String> emotionMap = {};
+
+      // Iterate through the fetched records and keep only the latest for each day
+      for (var doc in emotionSnapshot.docs) {
+        DateTime date = (doc['timestamp'] as Timestamp).toDate();
+        DateTime normalizedDate = DateTime(date.year, date.month, date.day);
+
+        // Debugging output to check which emotions are being processed
+        print('Processing emotion: ${doc['emotion']} on date: $normalizedDate');
+
+        // If the date is not yet in the map, add the emotion
+        if (!emotionMap.containsKey(normalizedDate)) {
+          emotionMap[normalizedDate] = doc['emotion'];
+          print('Added emotion for $normalizedDate: ${doc['emotion']}');
+        }
+      }
+
+      // Update the state with the filtered emotion map
+      setState(() {
+        _emotionMap = emotionMap;
+        print('Emotion map updated: $_emotionMap');
+      });
+    } catch (error) {
+      // Log any error that occurs during fetching
+      print('Error fetching emotions: $error');
     }
-
-    setState(() {
-      _emotionMap = emotionMap;
-    });
   }
+
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
@@ -73,56 +105,32 @@ class _CalendarPageState extends State<CalendarPage> {
     _fetchDataForSelectedDay();
   }
 
-  Icon _getMoodIcon(String mood) {
-    switch (mood) {
-      case 'Happy':
-        return const Icon(
-          Icons.sentiment_very_satisfied,
-          color: Colors.green,
-          size: 25,
-        );
-      case 'Neutral':
-        return const Icon(
-          Icons.sentiment_satisfied,
-          color: Colors.lightGreen,
-          size: 25,
-        );
-      case 'Disgust':
-        return const Icon(
-          Icons.sentiment_neutral,
-          color: Colors.amber,
-          size: 25,
-        );
-      case 'Fear':
-        return const Icon(
-          Icons.sentiment_dissatisfied,
-          color: Colors.orange,
-          size: 25,
-        );
-      case 'Angry':
-        return const Icon(
-          Icons.sentiment_very_dissatisfied,
-          color: Colors.red,
-          size: 25,
-        );
-      case 'Sad':
-        return const Icon(
-          Icons.sentiment_dissatisfied_rounded,
-          color: Colors.blue,
-          size: 25,
-        );
-      default:
-        return const Icon(null);
+  /// This function now fetches the icon from the Emotion model based on the mood
+  Widget _getEmotionIcon(String mood) {
+    // Use the Emotion model to find the matching icon and color
+    final emotion = Emotion.emotions.firstWhere(
+            (e) => e.name == mood,
+        orElse: () => Emotion(
+            name: 'Unknown',
+            assetPath: 'assets/logo.png',
+            color: Colors.transparent,
+            containerColor: Colors.transparent,
+        )
+    );
+
+    if (emotion.assetPath.isNotEmpty) {
+      return Image.asset(
+        emotion.assetPath,
+        width: 25,
+        height: 25,
+      );
     }
+    return const Icon(null);  // Return an empty icon if no match is found
   }
 
-  Icon _getDefaultIcon() {
+  /// Default icon if no emotion is found for the day
+  Widget _getDefaultIcon() {
     return const Icon(null);
-    // return const Icon(
-    //   Icons.sentiment_dissatisfied_rounded,
-    //   color: Colors.blue,
-    //   size: 25,
-    // );
   }
 
   @override
@@ -131,7 +139,6 @@ class _CalendarPageState extends State<CalendarPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      // set the background color of the page
       backgroundColor: AppColors.downBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
@@ -139,7 +146,6 @@ class _CalendarPageState extends State<CalendarPage> {
             Stack(
               children: [
                 Container(
-                 // Background color matching the design
                   child: Column(
                     children: [
                       Container(
@@ -151,90 +157,87 @@ class _CalendarPageState extends State<CalendarPage> {
                             bottomRight: Radius.circular(30),
                           ),
                         ),
-            
                       ),
                     ],
                   ),
-              ),
-            
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.05,
-                    vertical: screenHeight * 0.05
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.all(Radius.circular(30),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.05,
+                    vertical: screenHeight * 0.05,
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(30),
+                          ),
                         ),
-                      ),
-                      height: screenHeight * 0.57,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TableCalendar(
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                            titleTextStyle: titleBlack.copyWith(fontSize: screenHeight * 0.025),
-                          ),
-                          daysOfWeekStyle: DaysOfWeekStyle(
-                            weekdayStyle: TextStyle(fontSize: 12, color: Colors.black), // Customize as needed
-                            weekendStyle: TextStyle(fontSize: 12, color: Colors.black), // Customize as needed
-                          ),
-                          firstDay: DateTime.utc(1800, 1, 1),
-                          lastDay: DateTime.utc(2500, 12, 31),
-                          focusedDay: _selectedDay,
-                          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                          onDaySelected: _onDaySelected,
-                          calendarBuilders: CalendarBuilders(
-                            defaultBuilder: (context, day, focusedDay) {
-                              DateTime normalizedDay = DateTime(day.year, day.month, day.day);
-            
-                              return Container(
-                                height: 80,
-                                margin: const EdgeInsets.all(4.0),
-                                alignment: Alignment.center,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _emotionMap.containsKey(normalizedDay)
-                                        ? _getMoodIcon(_emotionMap[normalizedDay]!)
-                                        : _getDefaultIcon(),
-                                    Text(
-                                      '${day.day}',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        )
-            
-                      ),
-                    ),
-                    // Display moods
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'My Mood',
-                                style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
-                              ),
+                        height: screenHeight * 0.57,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TableCalendar(
+                            headerStyle: HeaderStyle(
+                              formatButtonVisible: false,
+                              titleCentered: true,
+                              titleTextStyle: titleBlack.copyWith(
+                                  fontSize: screenHeight * 0.025),
+                            ),
+                            daysOfWeekStyle: const DaysOfWeekStyle(
+                              weekdayStyle: TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                              weekendStyle: TextStyle(
+                                  fontSize: 12, color: Colors.black),
+                            ),
+                            firstDay: DateTime.utc(1800, 1, 1),
+                            lastDay: DateTime.utc(2500, 12, 31),
+                            focusedDay: _selectedDay,
+                            selectedDayPredicate: (day) =>
+                                isSameDay(_selectedDay, day),
+                            onDaySelected: _onDaySelected,
+                            calendarBuilders: CalendarBuilders(
+                              defaultBuilder: (context, day, focusedDay) {
+                                DateTime normalizedDay = DateTime(
+                                    day.year, day.month, day.day);
+
+                                return Container(
+                                  height: 80,
+                                  margin: const EdgeInsets.all(4.0),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      _emotionMap.containsKey(normalizedDay)
+                                          ? _getEmotionIcon(
+                                          _emotionMap[normalizedDay]!)
+                                          : _getDefaultIcon(),
+                                      Text(
+                                        '${day.day}',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                          Container(
-                            child: TextButton(
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, left: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'My emotions',
+                              style: titleBlack.copyWith(
+                                  fontSize: screenHeight * 0.025),
+                            ),
+                            TextButton(
                               onPressed: () {
                                 // Navigate to the desired page
-                                // Navigator.pushNamed(context, '/mood');
                               },
                               style: TextButton.styleFrom(
                                 foregroundColor: AppColors.textColorGrey,
@@ -244,9 +247,10 @@ class _CalendarPageState extends State<CalendarPage> {
                                 children: [
                                   Text(
                                     'View More',
-                                    style: greySmallText.copyWith(fontSize: screenHeight * 0.018),
+                                    style: greySmallText.copyWith(
+                                        fontSize: screenHeight * 0.018),
                                   ),
-                                  SizedBox(width: 4.0), // Add space between text and icon
+                                  SizedBox(width: 4.0),
                                   Icon(
                                     Icons.arrow_forward,
                                     size: screenHeight * 0.02,
@@ -254,62 +258,45 @@ class _CalendarPageState extends State<CalendarPage> {
                                 ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Display mood lists using mood display box
-                    Container(
-                      height: screenHeight * 0.1,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          MoodDisplay(
-                            moodColor: AppColors.happy,
-                            moodIcon: Icons.sentiment_satisfied,
-                            emotionText: 'Happy',
-                            time: DateTime.now(),
-                          ),
-                          MoodDisplay(
-                            moodColor: AppColors.angry,
-                            moodIcon: Icons.sentiment_very_dissatisfied,
-                            emotionText: 'Angry',
-                            time: DateTime.now().subtract(Duration(hours: 1)),
-                          ),
-                          MoodDisplay(
-                            moodColor: AppColors.neutral,
-                            moodIcon: Icons.sentiment_neutral,
-                            emotionText: 'Neutral',
-                            time: DateTime.now().subtract(Duration(hours: 2)),
-                          ),
-                          MoodDisplay(
-                            moodColor: AppColors.sad,
-                            moodIcon: Icons.sentiment_dissatisfied,
-                            emotionText: 'Sad',
-                            time: DateTime.now().subtract(Duration(hours: 3)),
-                          ),
-                          // Add more MoodDisplay widgets as needed
-                        ],
-                      ),
-                    ),
-                    // Song Recommendation
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20, bottom: 10, left: 10),
-                      child: Container(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Song Recommendation',
-                            style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    // Display song recommendation lists
-            
-                  ],
+                      // Emotion display logic (remains unchanged)
+                      Container(
+                        height: screenHeight * 0.1,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            // Example of using Emotion model for display
+                            EmotionDisplay(
+                              emotionContainerColor: AppColors.happyContainer,
+                              emotionIcon: Image.asset('assets/emotion/happy.png'),
+                              emotionText: 'Happy',
+                              time: DateTime.now(),
+                            ),
+                            // Add more EmotionDisplay widgets
+                          ],
+                        ),
+                      ),
+                      // Music recommendation section
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15, left: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Music Recommendations',
+                              style: titleBlack.copyWith(
+                                  fontSize: screenHeight * 0.025),
+                            ),
+
+                          ],
+                        ),
+                      ),
+
+                    ],
+                  ),
                 ),
-              ),
               ],
             ),
           ],
