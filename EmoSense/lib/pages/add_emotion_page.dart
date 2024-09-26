@@ -23,6 +23,7 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
   bool isFlashOn = false;
   String detectedEmotion = '';
   File? _capturedImage;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -30,7 +31,6 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
     setState(() {
       _initializeCamera();
     });
-
   }
 
   Future<void> _initializeCamera() async {
@@ -202,11 +202,15 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                   FloatingActionButton(
                     shape: CircleBorder(),
                     backgroundColor: AppColors.darkLogoColor,
-                    child: Icon(
+                    child: isLoading
+                        ? CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                        : Icon(
                       _capturedImage == null ? Icons.camera_alt : Icons.check,
                       color: Colors.white,
                     ),
-                    onPressed: () async {
+                    onPressed: isLoading ? null : () async {
                       if (_capturedImage == null) {
                         // Capture image logic
                         try {
@@ -228,8 +232,15 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                       } else {
                         // If image captured, upload it
                         try {
+                          setState(() {
+                            isLoading = true; // Start loading
+                          });
                           await _uploadImage(_capturedImage!);
+
                           if (detectedEmotion.isNotEmpty) {
+                            setState(() {
+                              isLoading = false; // Stop loading
+                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -240,6 +251,9 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                             );
                           }
                         } catch (e) {
+                          setState(() {
+                            isLoading = false; // Stop loading in case of error
+                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Error uploading image: $e'),

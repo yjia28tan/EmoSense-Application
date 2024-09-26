@@ -17,6 +17,7 @@ class RecommendedSongsPage extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
+        backgroundColor: Color(0xFFF2F2F2),
         body: Padding(
           padding: const EdgeInsets.only(top: 16.0),
           child: Column(

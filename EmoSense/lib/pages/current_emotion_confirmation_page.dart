@@ -227,7 +227,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  'Your current mood detected is',
+                  'Your current emotion detected is',
                   style: titleBlack,
                 ),
               ),
@@ -258,7 +258,7 @@ class _EmotionConfirmationPageState extends State<EmotionConfirmationPage> {
                     onPressed: () {
                       _showEmotionSelectionSheet(context);
                     },
-                    child: Text('Not my current mood', style: whiteText),
+                    child: Text('Not my current emotion', style: whiteText),
                   ),
                 ),
               ),
