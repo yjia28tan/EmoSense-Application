@@ -91,9 +91,9 @@ final TextStyle homeButtonText = GoogleFonts.leagueSpartan(
 );
 
 final TextStyle userName_display = GoogleFonts.leagueSpartan(
-  color: Color(0xFF8D68B8),
-  fontWeight: FontWeight.bold,
-  fontSize: 30,
+  color: AppColors.textColorBlack,
+  fontWeight: FontWeight.normal,
+  fontSize: 28,
 );
 
 const TextStyle moodText = TextStyle(

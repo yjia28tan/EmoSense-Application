@@ -21,6 +21,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String? username;
   String? email;
   bool? dailyReminder;
+  String? gender;
+  String? birthday;
 
   @override
   void initState() {
@@ -84,6 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           username = userData['username'];
           email = userData['email'];
+          gender = userData['gender'];
+          birthday = userData['birthdate'];
           dailyReminder = userData['dailyReminder'];
         });
       }).catchError((error) {
@@ -103,102 +107,231 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(screenWidth * 0.095),
+        padding: EdgeInsets.all(screenWidth * 0.075),
         child: Center(
           child: Column(
             children: [
               // Profile Picture
               Padding(
-                padding: const EdgeInsets.only(top: 3, bottom: 10),
+                padding: const EdgeInsets.only(top: 16, bottom: 8),
                 child: Align(
                   alignment: Alignment.center,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: AppColors.upBackgroundColor,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: AppColors.lightLogoColor,
+                  child: Container(
+                    width: 100,  // Set the width for the square shape
+                    height: 100, // Set the height for the square shape
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.textColorBlack, width: 2),
+                      image: DecorationImage(
+                        image: AssetImage('assets/logo 3d profile photo.png'),
+                        fit: BoxFit.cover, // Ensures the image fits the container
+                      ),
                     ),
                   ),
                 ),
               ),
+
               // Username
               Text(
                 '$username!',
-                style: userName_display,
+                style: inkwellText.copyWith(fontWeight: FontWeight.bold, fontSize: 25),
               ),
-              SizedBox(height: 20),
-              // set reminder button
-              // SetReminder(),
-              SizedBox(height: 15),
-              // Elevated Buttons
-              // edit profile
-              profile_Button(
-                'Edit Profile',
-                Icons.arrow_forward_ios,
-                    () async {
-                  // final result = await Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                  // );
-                  // if (result == true) {
-                  //   // Refresh the user data
-                  //   fetchUserData();
-                  // }
-                },
-              ),
-              SizedBox(height: 20),
 
-              profile_Button(
-                'Edit Preferences',
-                Icons.arrow_forward_ios,
-                    () async {
-                  // final result = await Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                  // );
-                },
-              ),
-              SizedBox(height: 20),
-
-              // 'More' text
+              // Profile Text
               Align(
-
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    'More',
-                    style: homepageText,
+                      'Profile',
+                      style: greySmallText.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      )
                   ),
                 ),
               ),
-              SizedBox(height: 15),
-              // privacy policy
-          profile_Button(
-            'Privacy Policy',
-            Icons.arrow_forward_ios,
-                () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PrivacyPolicyPage(),
+              // Elevated Buttons
+              // edit profile
+              Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: profile_Button(
+                  'Username',
+                  '$username',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    // );
+                    // if (result == true) {
+                    //   // Refresh the user data
+                    //   fetchUserData();
+                    // }
+                  },
                 ),
-              );
-            },
-          ),
-          SizedBox(height: 15),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: profile_Button(
+                  'Email',
+                  '$email',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    // );
+                    // if (result == true) {
+                    //   // Refresh the user data
+                    //   fetchUserData();
+                    // }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: profile_Button(
+                  'Gender',
+                  '$gender',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    // );
+                    // if (result == true) {
+                    //   // Refresh the user data
+                    //   fetchUserData();
+                    // }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: profile_Button(
+                  'Birthdate',
+                  '$birthday',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditProfilePage()),
+                    // );
+                    // if (result == true) {
+                    //   // Refresh the user data
+                    //   fetchUserData();
+                    // }
+                  },
+                ),
+              ),
+              // set reminder button
+              // SetReminder(),
+
+              // Security Text
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18.0),
+                  child: Text(
+                      'Security',
+                      style: greySmallText.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      )
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: profile_Button(
+                  'Change Password',
+                  '',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                    // );
+                  },
+                ),
+              ),
+
+              // Prefrences Text
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18.0),
+                  child: Text(
+                      'Preferences',
+                      style: greySmallText.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      )
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: profile_Button(
+                  'Edit Preferences',
+                  '',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    // final result = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
+                    // );
+                  },
+                ),
+              ),
+
+              // 'More' text
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18.0),
+                  child: Text(
+                    'More',
+                    style: greySmallText.copyWith(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                    )
+                  ),
+                ),
+              ),
+              // privacy policy
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: profile_Button(
+                  'Privacy Policy',
+                  '',
+                  Icons.arrow_forward_ios,
+                      () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PrivacyPolicyPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
               // t&c
-              profile_Button(
-                'Terms and Conditions',
-                Icons.arrow_forward_ios,
-                    () async {
-                      await Navigator.push(context,
-                          MaterialPageRoute(
-                              builder: (context) => TermsNConditionsPage()
-                          )
-                      );
-                    },
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: profile_Button(
+                  'Terms and Conditions',
+                  '',
+                  Icons.arrow_forward_ios,
+                      () async {
+                        await Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (context) => TermsNConditionsPage()
+                            )
+                        );
+                      },
+                ),
               ),
               SizedBox(height: 20),
               // sign out button
