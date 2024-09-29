@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/pages/current_emotion_confirmation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,13 +26,36 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
   String detectedEmotion = '';
   File? _capturedImage;
   bool isLoading = false;
+  String serverIp = '';
 
   @override
   void initState() {
     super.initState();
     setState(() {
       _initializeCamera();
+      _fetchServerIp();
     });
+  }
+
+  // Fetch the server IP address from Firebase
+  Future<void> _fetchServerIp() async {
+    try {
+      final ipSnapshot = await FirebaseFirestore.instance
+          .collection('serverConfig')
+          .doc('flaskServer')
+          .get();
+
+      if (ipSnapshot.exists) {
+        setState(() {
+          serverIp = ipSnapshot['ip_address'];
+        });
+        print('Server IP fetched: $serverIp');
+      } else {
+        print('No IP address found in Firebase.');
+      }
+    } catch (e) {
+      print('Error fetching server IP: $e');
+    }
   }
 
   Future<void> _initializeCamera() async {
@@ -92,7 +117,9 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       return;
     }
 
-    final uri = Uri.parse('http://192.168.158.34:5000/predict');
+    final uri = Uri.parse('http://$serverIp:5000/predict');
+
+    // final uri = Uri.parse('http://192.168.158.34:5000/predict');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
@@ -134,17 +161,17 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
               child: Stack(
                 children: [
                   _controller == null
-                      ? Center(child: CircularProgressIndicator())
+                      ? Center(child: CustomLoadingIndicator()) // Use the custom loading indicator here
                       : FutureBuilder<void>(
-                      future: _initializeControllerFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return CameraPreview(_controller!);
-                        } else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                    },
-                  ),
+                        future: _initializeControllerFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            return CameraPreview(_controller!);
+                          } else {
+                            return Center(child: CustomLoadingIndicator()); // Use custom loading indicator
+                          }
+                        },
+                      ),
                   if (_capturedImage != null)
                     Positioned.fill(
                       child: Center(
@@ -204,9 +231,7 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                     shape: CircleBorder(),
                     backgroundColor: AppColors.darkLogoColor,
                     child: isLoading
-                        ? CircularProgressIndicator(
-                      color: Colors.white,
-                    )
+                        ? CustomLoadingIndicator() // Use the custom loading indicator
                         : Icon(
                       _capturedImage == null ? Icons.camera_alt : Icons.check,
                       color: Colors.white,
@@ -277,8 +302,6 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
                       await _initializeCamera();
                     },
                   ),
-                  // X Button to discard the image
-
                 ],
               ),
             ),
@@ -287,5 +310,4 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       ),
     );
   }
-
 }

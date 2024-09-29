@@ -1,5 +1,6 @@
 import 'package:emosense/api_services/spotify_services.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/music_recommends.dart';
@@ -134,90 +135,82 @@ class _DescriptionPageState extends State<DescriptionPage> {
     }
   }
 
-    @override
-    Widget build(BuildContext context) {
-      final screenHeight = MediaQuery
-          .of(context)
-          .size
-          .height;
-      final screenWidth = MediaQuery
-          .of(context)
-          .size
-          .width;
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-      return Scaffold(
-        backgroundColor: Color(0xFFF2F2F2),
-        body: Stack(
-          children: [
-            if (!isLoading) // Display the main content when not loading
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 35.0, left: 18.0, right: 16.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'What’s on your mind?',
-                            style: titleBlack,
-                          ),
-                        ),
+    return Scaffold(
+      backgroundColor: Color(0xFFF2F2F2),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 35.0, left: 18.0, right: 16.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'What’s on your mind?',
+                        style: titleBlack,
                       ),
-                      SizedBox(height: 125),
-                      Container(
-                        width: double.infinity,
-                        height: screenHeight * 0.6,
-                        decoration: BoxDecoration(
-                          color: AppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: AppColors.textColorBlack, width: 2),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: TextField(
-                            controller: _descriptionController,
-                            maxLines: null,
-                            decoration: InputDecoration(
-                              hintText: 'Write your thoughts here...',
-                              hintStyle: greySmallText.copyWith(fontSize: 16),
-                              alignLabelWithHint: true,
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, right: 16, bottom: 2),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: Container(
-                            height: screenHeight * 0.06,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.upBackgroundColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                              ),
-                              onPressed: () {
-                                _getSongandSaveEntry();
-                              },
-                              child: Icon(
-                                Icons.check,
-                                color: AppColors.darkPurpleColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  SizedBox(height: 125),
+                  Container(
+                    width: double.infinity,
+                    height: screenHeight * 0.6,
+                    decoration: BoxDecoration(
+                      color: AppColors.whiteColor,
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(color: AppColors.textColorBlack, width: 2),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextField(
+                        controller: _descriptionController,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          hintText: 'Write your thoughts here...',
+                          hintStyle: greySmallText.copyWith(fontSize: 16),
+                          alignLabelWithHint: true,
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, right: 16, bottom: 2),
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        height: screenHeight * 0.06,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.upBackgroundColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                          onPressed: _getSongandSaveEntry,
+                          child: Icon(
+                            Icons.check,
+                            color: AppColors.darkPurpleColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            // Positioned image at the top right
+            ),
+          ),
+          // Positioned image at the top right
+          if (!isLoading) // Display the image only when not loading
             Positioned(
               top: -85, // Adjust this value to change vertical position
               right: -10, // Adjust this value to change horizontal position
@@ -227,12 +220,15 @@ class _DescriptionPageState extends State<DescriptionPage> {
                 height: screenHeight * 0.60, // Adjust height as needed
               ),
             ),
-            if (isLoading) // Show the loading indicator when loading
-              Center(
-                child: CircularProgressIndicator(),
+          if (isLoading) // Display loading indicator when loading
+            Container(
+              color: Color(0xFFF2F2F2),
+              child: Center(
+                child: CustomLoadingIndicator(),
               ),
-          ],
-        ),
-      );
-    }
+            ),
+        ],
+      ),
+    );
   }
+}
