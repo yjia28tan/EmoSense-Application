@@ -424,7 +424,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: isSelected ? Colors.white : AppColors.textColorGrey,
-            backgroundColor: isSelected ? AppColors.darkPurpleColor : AppColors.lightBackgroundColor, // Text color
+            backgroundColor: isSelected ? AppColors.darkPurpleColor : AppColors.downBackgroundColor, // Text color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50.0),
               // no border
