@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/emotion_data_model.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/emotion_display_box.dart';
 import 'package:emosense/design_widgets/music_lists_widget.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/emotion_lists_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -49,9 +51,6 @@ class _CalendarPageState extends State<CalendarPage> {
           .orderBy('timestamp', descending: true)
           .get();
 
-      print('Emotion snapshot: $emotionSnapshot');
-      print('Emotion snapshot size: ${emotionSnapshot.docs.length}');
-
       // Check if any data was fetched
       if (emotionSnapshot.docs.isEmpty) {
         print('No emotion data found for the user.');
@@ -64,13 +63,9 @@ class _CalendarPageState extends State<CalendarPage> {
         DateTime date = (doc['timestamp'] as Timestamp).toDate();
         DateTime normalizedDate = DateTime(date.year, date.month, date.day);
 
-        // Debugging output to check which emotions are being processed
-        print('Processing emotion: ${doc['emotion']} on date: $normalizedDate');
-
         // If the date is not yet in the map, add the emotion
         if (!emotionMap.containsKey(normalizedDate)) {
           emotionMap[normalizedDate] = doc['emotion'];
-          print('Added emotion for $normalizedDate: ${doc['emotion']}');
         }
       }
 
@@ -90,9 +85,6 @@ class _CalendarPageState extends State<CalendarPage> {
     final startOfDay = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
     final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
-    print("Start day: $startOfDay");
-    print("End day: $endOfDay");
-
     final emotionSnapshot = await FirebaseFirestore.instance
         .collection('emotionRecords')
         .where('uid', isEqualTo: uid)
@@ -109,6 +101,8 @@ class _CalendarPageState extends State<CalendarPage> {
         emotions.add({
           'emotion': doc['emotion'],
           'timestamp': doc['timestamp'],
+          'stressLevel': doc['stressLevel'],
+          'description': doc['description'],
         });
 
         // Fetch and add tracks if available
@@ -121,7 +115,6 @@ class _CalendarPageState extends State<CalendarPage> {
       }
     }
     print(emotions);
-    print(tracks);
 
     // Update the state with both emotions and tracks for the selected day
     setState(() {
@@ -306,9 +299,6 @@ class _CalendarPageState extends State<CalendarPage> {
                                 );
                               },
                             ),
-
-
-
                           ),
                         ),
                       ),
@@ -319,9 +309,30 @@ class _CalendarPageState extends State<CalendarPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('My emotions', style: titleBlack.copyWith(fontSize: screenHeight * 0.025)),
+                            Text('My emotions',
+                                style: titleBlack.copyWith(fontSize: screenHeight * 0.025)
+                            ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: _emotionListForSelectedDay.isNotEmpty
+                                  ? () {
+                                // Convert List<Map<String, dynamic>> to List<Emotion>
+                                List<EmotionData> emotionsList = _emotionListForSelectedDay
+                                    .map((map) => EmotionData.fromMap(map))
+                                    .toList();
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EmotionListPage(
+                                      selectedDate: _selectedDay,
+                                      emotions: emotionsList, // Pass the converted list
+                                    ),
+                                  ),
+                                );
+
+                                print('View more button pressed.');
+                              }
+                                  : null, // Disable the button if there are no emotions
                               style: TextButton.styleFrom(foregroundColor: AppColors.textColorGrey),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -386,23 +397,23 @@ class _CalendarPageState extends State<CalendarPage> {
                             : screenHeight * 0.12, // Lower height when no tracks are available
                         child: _trackListForSelectedDay.isNotEmpty
                             ? ListView.builder(
-                          itemCount: _trackListForSelectedDay.length,
-                          itemBuilder: (context, index) {
-                            final track = _trackListForSelectedDay[index];
-                            return MusicRecommendedLists(
-                              musicImage: track['imageUrl'],
-                              musicTitle: track['name'] ?? 'Unknown Track',
-                              artist: track['artist'] ?? 'Unknown Artist',
-                              trackId: track['id'] ?? 'unknown_id',
-                            );
-                          },
-                        )
+                              itemCount: _trackListForSelectedDay.length,
+                              itemBuilder: (context, index) {
+                                final track = _trackListForSelectedDay[index];
+                                return MusicRecommendedLists(
+                                  musicImage: track['imageUrl'],
+                                  musicTitle: track['name'] ?? 'Unknown Track',
+                                  artist: track['artist'] ?? 'Unknown Artist',
+                                  trackId: track['id'] ?? 'unknown_id',
+                                );
+                              },
+                            )
                             : Center(
-                          child: Text(
-                            'No tracks for this day.',
-                            style: greySmallText.copyWith(fontSize: screenHeight * 0.022),
-                          ),
-                        ),
+                              child: Text(
+                                'No tracks for this day.',
+                                style: greySmallText.copyWith(fontSize: screenHeight * 0.022),
+                              ),
+                            ),
                       ),
 
                     ],
