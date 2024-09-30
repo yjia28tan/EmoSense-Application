@@ -25,7 +25,7 @@ class EmotionData {
     // Retrieve the stress level as a double, handle nulls
     double stressLevelValue = (map['stressLevel'] is double)
         ? map['stressLevel'] as double
-        : double.tryParse(map['stressLevel']?.toString() ?? '2.0') ?? 2.0; // Default to 2.0 if null
+        : double.tryParse(map['stressLevel']?.toString() ?? '') ?? 2.0; // Default to 2.0 if null
 
     // Find the corresponding StressModel using the double value
     StressModel stressModel;

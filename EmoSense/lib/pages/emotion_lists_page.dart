@@ -33,7 +33,7 @@ class _EmotionListPageState extends State<EmotionListPage> {
     super.initState();
     setState(() {
       Firebase.initializeApp();
-      widget.emotions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      fetchEmotionsForDate();
     });
   }
 
@@ -42,7 +42,6 @@ class _EmotionListPageState extends State<EmotionListPage> {
     final uid = globalUID; // Make sure you have access to the global UID
     final startOfDay = DateTime(widget.selectedDate.year, widget.selectedDate.month, widget.selectedDate.day);
     final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
-    // final docId = '';
 
     final emotionSnapshot = await FirebaseFirestore.instance
         .collection('emotionRecords') // Ensure you're using the correct collection name
@@ -57,7 +56,10 @@ class _EmotionListPageState extends State<EmotionListPage> {
       for (var doc in emotionSnapshot.docs) {
         // Get the emotion name as a string
         String emotionName = doc['emotion'] as String;
-        String stressLevel = doc['stressLevel'] as String;
+
+        // Retrieve the stress level, ensuring it's treated correctly
+        String stressLevelString = doc['stressLevel'];
+        double stressLevelValue = double.tryParse(stressLevelString) ?? 2.0; // Default to 2.0 if parsing fails
 
         // Find the corresponding Emotion object from the Emotion class
         Emotion emotion = Emotion.emotions.firstWhere(
@@ -65,9 +67,10 @@ class _EmotionListPageState extends State<EmotionListPage> {
           orElse: () => Emotion.emotions.first, // Fallback to the first emotion if not found
         );
 
+        // Find the corresponding StressModel using the double value
         StressModel stressModel = stressModels.firstWhere(
-              (s) => s.level == stressLevel,
-          orElse: () => stressModels.first, // Fallback to the first stress model if not found
+              (s) => s.level == EmotionData.getStressLevelAsString(stressLevelValue),
+          orElse: () => stressModels.last,
         );
 
         // Get the description, providing a default value if null
@@ -84,6 +87,7 @@ class _EmotionListPageState extends State<EmotionListPage> {
         );
       }
     }
+
 
     setState(() {
       widget.emotions.clear(); // Clear the current list
@@ -139,7 +143,6 @@ class _EmotionListPageState extends State<EmotionListPage> {
           actions: [
             TextButton(
               onPressed: () async{
-                print("Cancel delete operation");
                 Navigator.pop(context, true); // Close the dialog
 
               },
@@ -158,15 +161,33 @@ class _EmotionListPageState extends State<EmotionListPage> {
     );
   }
 
-
-
   // Function to update emotion description in Firestore and refresh UI
   void updateEmotionDescription(String docId, String newDescription) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('emotions')
+      print("Attempting to update description for emotion with ID: $docId");
+      // Get the current emotion and stress level from Firestore
+      DocumentSnapshot emotionDoc = await FirebaseFirestore.instance
+          .collection('emotionRecords')
           .doc(docId)
-          .update({'description': newDescription});
+          .get();
+
+      String currentEmotion = emotionDoc['emotion'];
+      String currentStressLevel = emotionDoc['stressLevel'];
+
+      // Create the update map with the current values
+      Map<String, dynamic> updatedEmotionRecord = {
+        'emotion': currentEmotion, // Keep the existing emotion
+        'stressLevel': currentStressLevel, // Keep the existing stress level
+        'description': newDescription, // Update the description
+      };
+
+      // Update the emotion record in Firestore
+      await FirebaseFirestore.instance
+          .collection('emotionRecords')
+          .doc(docId)
+          .update(updatedEmotionRecord);
+
+      print("Updated description for emotion with ID: $docId");
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -175,14 +196,15 @@ class _EmotionListPageState extends State<EmotionListPage> {
         ),
       );
 
-      // Re-fetch emotions for the selected date after update
-      await fetchEmotionsForDate();
-
       setState(() {
         _editingIndex = null; // Exit edit mode
+        // Re-fetch emotions for the selected date after update
+        fetchEmotionsForDate();
+
       });
 
     } catch (e) {
+      print("Error updating emotion: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update emotion: $e'),
@@ -191,6 +213,7 @@ class _EmotionListPageState extends State<EmotionListPage> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -239,11 +262,8 @@ class _EmotionListPageState extends State<EmotionListPage> {
                 final emotionData = widget.emotions[index];
                 final stressLevelColor = emotionData.stressLevel.containerColor;
                 final DateTime timestamp = emotionData.timestamp;
-
-                print("emotionData: $emotionData");
-
                 final docId = emotionData.docId;
-                print("Here is docId when 1st get the emotion lists: $docId");
+                print("Stress Level at emotion lists page 1st : ${emotionData.stressLevel.level}"); // Debugging statement
 
                 return Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0, top: 4.0),
@@ -340,7 +360,7 @@ class _EmotionListPageState extends State<EmotionListPage> {
                                 child: _editingIndex == index
                                     ? TextField(
                                   controller: _descriptionController..text = emotionData.description,
-                                  style: greySmallText.copyWith(fontSize: 14),
+                                  style: greySmallText.copyWith(fontSize: 14, color: AppColors.textColorBlack),
                                   maxLines: null,
                                   decoration: InputDecoration.collapsed(
                                     hintText: '', // No hint or border
@@ -375,9 +395,11 @@ class _EmotionListPageState extends State<EmotionListPage> {
                                 GestureDetector(
                                   onTap: () {
                                     if (_editingIndex == index) {
+                                      print("Updating description for emotion with ID: ${emotionData.docId}"); // Debugging statement
                                       updateEmotionDescription(emotionData.docId, _descriptionController.text);
                                     } else {
                                       setState(() {
+                                        print("Editing description for emotion with ID: ${emotionData.docId}"); // Debugging statement
                                         _editingIndex = index;
                                         _descriptionController.text = emotionData.description; // Pre-fill the controller
                                       });

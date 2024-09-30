@@ -332,19 +332,12 @@ class _CalendarPageState extends State<CalendarPage> {
                                     .values
                                     .toList();
 
-                                print('Emotions list: $emotionsList');
-
                                 // print the data in the emotionsList
                                 for (var emotion in emotionsList) {
                                   print('Document ID: ${emotion.docId}');
                                   print('Emotion: ${emotion.emotion.name}');
-                                  print('Stress Level: ${emotion.stressLevel.level}');
-                                  print('Description: ${emotion.description}');
-                                  print('Timestamp: ${emotion.timestamp}');
+                                  print('Stress Level at calendar page: ${emotion.stressLevel.level}');
                                 }
-
-                                // why the documentId is not being printed?
-
 
                                 Navigator.push(
                                   context,
