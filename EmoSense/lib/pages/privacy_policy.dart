@@ -16,7 +16,7 @@ class PrivacyPolicyPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Color(0xFFF2F2F2),
         appBar: AppBar(
-          title: Text("Privacy Policy for EmoSense", style: ProfileTitleText),
+          title: Text("Privacy Policy", style: ProfileTitleText),
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back_ios_outlined,
