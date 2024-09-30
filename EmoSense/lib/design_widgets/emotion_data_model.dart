@@ -1,24 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emosense/design_widgets/emotion_model.dart'; // Import your Emotion model
-import 'package:emosense/design_widgets/stress_model.dart'; // Import your Stress model
+import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/design_widgets/stress_model.dart';
 
 class EmotionData {
+  final String docId; // Add docId field
   final Emotion emotion;
   final StressModel stressLevel;
   final String description;
   final DateTime timestamp;
 
   EmotionData({
+    required this.docId, // Include docId in the constructor
     required this.emotion,
     required this.stressLevel,
     required this.description,
     required this.timestamp,
   });
 
-  factory EmotionData.fromMap(Map<String, dynamic> map) {
+  factory EmotionData.fromMap(Map<String, dynamic> map, String documentId) {
     // Handle null values for emotion and description
-    String emotionName = map['emotion'] as String? ?? 'Unknown';
-    String description = map['description'] as String? ?? 'No description......';
+    String emotionName = map['emotion'] as String? ?? '';
+    String description = map['description'] as String? ?? '';
 
     // Retrieve the stress level as a double, handle nulls
     double stressLevelValue = (map['stressLevel'] is double)
@@ -47,6 +49,7 @@ class EmotionData {
     }
 
     return EmotionData(
+      docId: documentId, // Assign the document ID
       emotion: Emotion.emotions.firstWhere(
             (e) => e.name == emotionName,
         orElse: () => Emotion.emotions.first, // Fallback to first emotion if not found

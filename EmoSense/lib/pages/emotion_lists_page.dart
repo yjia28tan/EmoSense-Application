@@ -1,16 +1,196 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/emotion_data_model.dart';
+import 'package:emosense/design_widgets/emotion_model.dart';
 import 'package:emosense/design_widgets/font_style.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/main.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class EmotionListPage extends StatelessWidget {
+class EmotionListPage extends StatefulWidget {
   final DateTime selectedDate;
-  final List<EmotionData> emotions; // List of emotions passed to the page
+  final List<EmotionData> emotions;
+  final VoidCallback onUpdate;  // Callback to refresh other pages
 
-  EmotionListPage({required this.selectedDate, required this.emotions});
+  EmotionListPage({
+    required this.selectedDate,
+    required this.emotions,
+    required this.onUpdate, // Pass this callback from Home/Calendar pages
+  });
+
+  @override
+  State<EmotionListPage> createState() => _EmotionListPageState();
+}
+
+class _EmotionListPageState extends State<EmotionListPage> {
+  int? _editingIndex;
+  final TextEditingController _descriptionController = TextEditingController();
+  final docId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      Firebase.initializeApp();
+      widget.emotions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    });
+  }
+
+  // Function to fetch emotions for the selected date after delete or edit
+  Future<void> fetchEmotionsForDate() async {
+    final uid = globalUID; // Make sure you have access to the global UID
+    final startOfDay = DateTime(widget.selectedDate.year, widget.selectedDate.month, widget.selectedDate.day);
+    final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
+    // final docId = '';
+
+    final emotionSnapshot = await FirebaseFirestore.instance
+        .collection('emotionRecords') // Ensure you're using the correct collection name
+        .where('uid', isEqualTo: uid)
+        .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
+        .where('timestamp', isLessThan: endOfDay)
+        .get();
+
+    List<EmotionData> fetchedEmotions = [];
+
+    if (emotionSnapshot.docs.isNotEmpty) {
+      for (var doc in emotionSnapshot.docs) {
+        // Get the emotion name as a string
+        String emotionName = doc['emotion'] as String;
+        String stressLevel = doc['stressLevel'] as String;
+
+        // Find the corresponding Emotion object from the Emotion class
+        Emotion emotion = Emotion.emotions.firstWhere(
+              (e) => e.name == emotionName,
+          orElse: () => Emotion.emotions.first, // Fallback to the first emotion if not found
+        );
+
+        StressModel stressModel = stressModels.firstWhere(
+              (s) => s.level == stressLevel,
+          orElse: () => stressModels.first, // Fallback to the first stress model if not found
+        );
+
+        // Get the description, providing a default value if null
+        String description = doc['description'] as String? ?? '';
+
+        fetchedEmotions.add(
+          EmotionData(
+            emotion: emotion, // Pass the Emotion object instead of the String
+            timestamp: (doc['timestamp'] as Timestamp).toDate(),
+            stressLevel: stressModel,
+            description: description,
+            docId: doc.id, // Include document ID for further operations
+          ),
+        );
+      }
+    }
+
+    setState(() {
+      widget.emotions.clear(); // Clear the current list
+      widget.emotions.addAll(fetchedEmotions); // Update with new data
+    });
+  }
+
+  Future<void> deleteEmotion(String emotionRecordId) async {
+    try {
+      print("Attempting to delete emotion with ID: $emotionRecordId"); // Debugging statement
+      await FirebaseFirestore.instance
+          .collection('emotionRecords')
+          .doc(emotionRecordId)
+          .delete();
+
+      print("Deleted emotion with ID: $emotionRecordId");
+
+      // Remove the deleted emotion from the list
+      setState(() {
+        widget.emotions.removeWhere((emotion) => emotion.docId == emotionRecordId);
+        // Refresh emotions for the selected date after deletion
+        fetchEmotionsForDate();
+
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Emotion deleted successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Refresh other pages as well
+      widget.onUpdate();
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete emotion: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void showDeleteConfirmationDialog(String emotionId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this emotion record?'),
+          actions: [
+            TextButton(
+              onPressed: () async{
+                print("Cancel delete operation");
+                Navigator.pop(context, true); // Close the dialog
+
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {  // Make the onPressed async
+                Navigator.pop(context, true); // Close the dialog
+                deleteEmotion(emotionId); // Perform delete operation
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+  // Function to update emotion description in Firestore and refresh UI
+  void updateEmotionDescription(String docId, String newDescription) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('emotions')
+          .doc(docId)
+          .update({'description': newDescription});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Emotion updated successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Re-fetch emotions for the selected date after update
+      await fetchEmotionsForDate();
+
+      setState(() {
+        _editingIndex = null; // Exit edit mode
+      });
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update emotion: $e'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,36 +207,44 @@ class EmotionListPage extends StatelessWidget {
           },
         ),
         backgroundColor: AppColors.textFieldColor,
-        title: Center(
+        title: Container(
+          alignment: Alignment.center,
           child: Text(
             'My Emotion',
             style: titleBlack,
           ),
         ),
+        actions: [
+          Container(width: 48),
+        ],
       ),
-      body: SingleChildScrollView( // Make the whole screen scrollable
+      body: SingleChildScrollView(
         child: Column(
           children: [
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.centerRight,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 8.0),
                 child: Text(
-                  '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                  '${widget.selectedDate.day}/${widget.selectedDate.month}/${widget.selectedDate.year}',
                   style: titleBlack.copyWith(fontSize: 15),
                 ),
               ),
             ),
             ListView.builder(
-              itemCount: emotions.length,
-              shrinkWrap: true, // Use shrinkWrap to prevent unbounded height
-              physics: NeverScrollableScrollPhysics(), // Disable scrolling for inner ListView
+              itemCount: widget.emotions.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final emotionData = emotions[index];
+                final emotionData = widget.emotions[index];
                 final stressLevelColor = emotionData.stressLevel.containerColor;
                 final DateTime timestamp = emotionData.timestamp;
-                print('Timestamp: $timestamp');
-                print('Emotion: ${emotionData.emotion.name}, Stress: ${emotionData.stressLevel.level}');
+
+                print("emotionData: $emotionData");
+
+                final docId = emotionData.docId;
+                print("Here is docId when 1st get the emotion lists: $docId");
+
                 return Padding(
                   padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0, top: 4.0),
                   child: Container(
@@ -72,6 +260,7 @@ class EmotionListPage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
+                            // Emotion Container
                             Container(
                               height: screenHeight * 0.1,
                               width: screenWidth * 0.4,
@@ -81,11 +270,10 @@ class EmotionListPage extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  // Set the size of the icon
                                   SizedBox(
                                     height: screenHeight * 0.21,
                                     width: screenWidth * 0.21,
-                                    child: Image.asset(emotionData.emotion.assetPath), // Retrieve emotion icon
+                                    child: Image.asset(emotionData.emotion.assetPath),
                                   ),
                                   SizedBox(width: 4.0),
                                   Align(
@@ -95,7 +283,7 @@ class EmotionListPage extends StatelessWidget {
                                         Padding(
                                           padding: const EdgeInsets.only(top: 12.0),
                                           child: Text("Emotion",
-                                            style: greySmallText.copyWith(fontSize: 13, fontWeight: FontWeight.normal),
+                                            style: greySmallText.copyWith(fontSize: 13),
                                           ),
                                         ),
                                         Text(
@@ -108,7 +296,7 @@ class EmotionListPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-
+                            // Stress Container
                             Container(
                               height: screenHeight * 0.1,
                               width: screenWidth * 0.4,
@@ -121,7 +309,7 @@ class EmotionListPage extends StatelessWidget {
                                   SizedBox(
                                     height: screenHeight * 0.1,
                                     width: screenHeight * 0.1,
-                                    child: Image.asset(emotionData.stressLevel.assetPath), // Retrieve stress icon
+                                    child: Image.asset(emotionData.stressLevel.assetPath),
                                   ),
                                   Column(
                                     children: [
@@ -142,90 +330,80 @@ class EmotionListPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
+                        // Description and Edit Mode (No Border)
                         Expanded(
-                          child: SingleChildScrollView( // Make the description text scrollable
+                          child: SingleChildScrollView(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 4.0),
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
+                                child: _editingIndex == index
+                                    ? TextField(
+                                  controller: _descriptionController..text = emotionData.description,
+                                  style: greySmallText.copyWith(fontSize: 14),
+                                  maxLines: null,
+                                  decoration: InputDecoration.collapsed(
+                                    hintText: '', // No hint or border
+                                  ),
+                                )
+                                    : Text(
                                   emotionData.description,
                                   style: greySmallText.copyWith(fontSize: 14),
-                                  maxLines: null, // Allow text to take multiple lines
-                                  overflow: TextOverflow.visible, // Show all text without clipping
+                                  maxLines: null,
+                                  overflow: TextOverflow.visible,
                                 ),
                               ),
                             ),
                           ),
                         ),
-
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4.0),
-                                child: Text(
-                                  // Display only the time
-                                  timestamp.toLocal().toString().split(' ')[1].substring(0, 5),
-                                  style: greySmallText.copyWith(fontSize: 12),
+                        // Timestamp, Edit, and Delete Buttons
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.bottomRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, right: 12.0),
+                                  child: Text(
+                                    timestamp.toLocal().toString().split(' ')[1].substring(0, 5),
+                                    style: greySmallText.copyWith(fontSize: 12),
+                                  ),
                                 ),
-                              ),
-                              // Delete icon button
-                              Padding(
-                                padding: const EdgeInsets.only(top: 0),
-                                child: IconButton(
-                                  icon: Icon(Icons.delete_forever_rounded, color: AppColors.textColorGrey, size: 18.0),
-                                  onPressed: () {
-                                    print('Delete emotion');
-
-                                    // Delete the emotion from Firestore
-                                    // ask for confirmation
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text('Delete Emotion'),
-                                          content: Text('Are you sure you want to delete this emotion?'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('Cancel'),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                // Delete the emotion from Firestore
-                                                FirebaseFirestore.instance.collection('emotions').doc(emotionData.timestamp.toString()).delete();
-                                                Navigator.pop(context);
-
-                                                // Show a snackbar to confirm deletion
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('Emotion deleted'),
-                                                    duration: Duration(seconds: 2),
-                                                  ),
-                                                );
-                                              },
-                                              child: Text('Delete'),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-
+                                // Edit Button
+                                GestureDetector(
+                                  onTap: () {
+                                    if (_editingIndex == index) {
+                                      updateEmotionDescription(emotionData.docId, _descriptionController.text);
+                                    } else {
+                                      setState(() {
+                                        _editingIndex = index;
+                                        _descriptionController.text = emotionData.description; // Pre-fill the controller
+                                      });
+                                    }
                                   },
+                                  child: Icon(
+                                    _editingIndex == index ? Icons.check : Icons.edit_note,
+                                    color: AppColors.textColorBlack,
+                                    size: 25.0,
+                                  ),
                                 ),
-                              ),
-
-                            ],
+                                // Delete Button
+                                GestureDetector(
+                                  onTap: () {
+                                    showDeleteConfirmationDialog(emotionData.docId);
+                                  },
+                                  child: Icon(
+                                    Icons.delete_forever,
+                                    color: AppColors.textColorBlack,
+                                    size: 25.0,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-
-
                       ],
                     ),
                   ),

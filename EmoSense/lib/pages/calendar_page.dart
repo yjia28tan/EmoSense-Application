@@ -28,6 +28,8 @@ class _CalendarPageState extends State<CalendarPage> {
     setState(() {
       _selectedDay = DateTime.now();
       _initializeFirebaseAndFetchData();
+      _fetchDataForSelectedDay();
+      _fetchAllEmotions();
     });
   }
 
@@ -99,6 +101,7 @@ class _CalendarPageState extends State<CalendarPage> {
       for (var doc in emotionSnapshot.docs) {
         // Add the emotions
         emotions.add({
+          'docId': doc.id,
           'emotion': doc['emotion'],
           'timestamp': doc['timestamp'],
           'stressLevel': doc['stressLevel'],
@@ -315,17 +318,48 @@ class _CalendarPageState extends State<CalendarPage> {
                             TextButton(
                               onPressed: _emotionListForSelectedDay.isNotEmpty
                                   ? () {
-                                // Convert List<Map<String, dynamic>> to List<Emotion>
+                                // Convert List<Map<String, dynamic>> to List<EmotionData>
                                 List<EmotionData> emotionsList = _emotionListForSelectedDay
-                                    .map((map) => EmotionData.fromMap(map))
+                                    .asMap()
+                                    .map((index, map) {
+                                  // Debugging: print out the map and its expected values
+                                  print('Map at index $index: $map');
+
+                                  String documentId = map['docId'] ?? ''; // Use a default or handle null case
+                                  EmotionData emotionData = EmotionData.fromMap(map, documentId);
+                                  return MapEntry(index, emotionData);
+                                })
+                                    .values
                                     .toList();
+
+                                print('Emotions list: $emotionsList');
+
+                                // print the data in the emotionsList
+                                for (var emotion in emotionsList) {
+                                  print('Document ID: ${emotion.docId}');
+                                  print('Emotion: ${emotion.emotion.name}');
+                                  print('Stress Level: ${emotion.stressLevel.level}');
+                                  print('Description: ${emotion.description}');
+                                  print('Timestamp: ${emotion.timestamp}');
+                                }
+
+                                // why the documentId is not being printed?
+
 
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EmotionListPage(
                                       selectedDate: _selectedDay,
-                                      emotions: emotionsList, // Pass the converted list
+                                      emotions: emotionsList,
+                                      onUpdate: () {
+                                        setState(() {
+                                          print('Emotions updated');
+                                          // Update the emotion list for the selected day
+                                          _fetchDataForSelectedDay();
+                                          _fetchAllEmotions();
+                                        });
+                                      },
                                     ),
                                   ),
                                 );
