@@ -29,6 +29,9 @@ class _HomeContentPageState extends State<HomeContentPage> {
     setState(() {
       _resetToToday(); // Set the initial date and view
       fetchUserData();
+      DailyViewHome();
+      WeeklyViewHome();
+      MonthlyViewHome();
     });
   }
 
