@@ -117,7 +117,6 @@ class _CalendarPageState extends State<CalendarPage> {
           }
       }
     }
-    print(emotions);
 
     // Update the state with both emotions and tracks for the selected day
     setState(() {

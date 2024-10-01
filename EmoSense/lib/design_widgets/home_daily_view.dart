@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/emotion_data_model.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/design_widgets/stress_level_chart.dart';
 import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -20,6 +22,14 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   List<Map<String, dynamic>> _emotionForToday = [];
   double _averageStressLevel = 0.0;
   StressModel _currentStressLevel = stressModels.last;
+
+  Map<String, int> stressCounts = {
+    "Extreme": 0,
+    "High": 0,
+    "Optimal": 0,
+    "Moderate": 0,
+    "Low": 0,
+  };
 
   @override
   void initState() {
@@ -51,7 +61,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
 
       List<Map<String, dynamic>> emotions = [];
 
-      print('Emotion snapshot: $emotionSnapshot');
       print(emotionSnapshot.docs);
 
       if (emotionSnapshot.docs.isNotEmpty) {
@@ -68,6 +77,10 @@ class _DailyViewHomeState extends State<DailyViewHome> {
 
       // Calculate the average stress level and update the state
       _calculateAverageStressLevel(emotions);
+      // Calculate stress level counts
+      stressCounts = _calculateStressLevelCounts(emotions);
+
+      print("Stress Counts: $stressCounts");
 
       setState(() {
         _emotionForToday = emotions;
@@ -88,14 +101,12 @@ class _DailyViewHomeState extends State<DailyViewHome> {
           print('Error converting stress level to double: $e');
         }
       }
+      print('Total Stress Level: $totalStress');
       _averageStressLevel = totalStress / emotions.length;
       print('Average Stress Level: $_averageStressLevel');
 
       // Get the current stress level based on the average stress level
-      _currentStressLevel = getStressLevel(_averageStressLevel); // Update the variable here
-
-      // Use the current stress level as needed, for example, you could store it or update the UI
-      print('Current Stress Level: ${_currentStressLevel.level}');
+      _currentStressLevel = getStressLevel(_averageStressLevel);
 
     } else {
       _averageStressLevel = 0.0; // No emotions recorded for the day
@@ -103,7 +114,62 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     }
   }
 
+  Map<String, int> _calculateStressLevelCounts(List<Map<String, dynamic>> emotions) {
+    Map<String, int> stressCounts = {
+      "Low": 0,
+      "Moderate": 0,
+      "Optimal": 0,
+      "High": 0,
+      "Extreme": 0,
+    };
 
+    for (var emotion in emotions) {
+      // Fetch stress level as dynamic and handle potential type issues
+      var stressLevelValue = emotion['stressLevel'];
+
+      // Ensure stressLevelValue is a double
+      double stressLevelAsDouble;
+      if (stressLevelValue is String) {
+        // Convert String to double
+        stressLevelAsDouble = double.tryParse(stressLevelValue) ?? 2.0; // Default to 2.0 if conversion fails
+      } else if (stressLevelValue is double) {
+        stressLevelAsDouble = stressLevelValue;
+      } else {
+        print('Warning: Unrecognized stress level type: ${stressLevelValue.runtimeType}');
+        continue; // Skip this iteration if the type is not recognized
+      }
+
+      String stressLevel = getStressLevelAsString(stressLevelAsDouble); // Map it to a string
+
+      if (stressCounts.containsKey(stressLevel)) {
+        stressCounts[stressLevel] = (stressCounts[stressLevel] ?? 0) + 1;
+      } else {
+        // Error handling for unrecognized stress levels
+        print('Warning: Unrecognized stress level: $stressLevelAsDouble');
+      }
+    }
+
+    print('Stress Counts: $stressCounts'); // Debug output to verify the counts
+    return stressCounts;
+  }
+
+
+  static String getStressLevelAsString(double level) {
+    switch (level) {
+      case 4.0:
+        return "Extreme";
+      case 3.0:
+        return "High";
+      case 2.0:
+        return "Optimal";
+      case 1.0:
+        return "Moderate";
+      case 0.0:
+        return "Low";
+      default:
+        return "Unknown"; // Handle cases that don't match
+    }
+  }
 
   Widget _getEmotionIcon(String mood, double iconSize) {
     final emotion = Emotion.emotions.firstWhere(
@@ -273,58 +339,92 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   Widget _buildStressLevelContainer() {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      height: 185,
-      width: 158,
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Stress Level',
-                style: titleBlack.copyWith(fontSize: 14),
-              ),
+    return Stack(
+      children: [
+        Container(
+        height: 185,
+        width: 158,
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.whiteColor,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
             ),
-          ),
-          // Add the pie chart for stress levels here if needed
-          // _buildStressLevelPieChart(),
-          
-          // Display the current stress level that was calculated
-          Center(
-            child: Container(
-              height: 30,
-              width: screenWidth * 0.25,
-              decoration: BoxDecoration(
-                color: _currentStressLevel.containerColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+              child: Align(
+                alignment: Alignment.centerLeft,
                 child: Text(
-                  '${_currentStressLevel.level}', // Show the current stress level
+                  'Stress Level',
                   style: titleBlack.copyWith(fontSize: 14),
                 ),
               ),
             ),
-          ),
+            // Add the half pie chart for stress levels here if needed
+            SizedBox(
+              height: 110,
+              width: 150,
+              child: HalfDonutChart(stressCounts: stressCounts),
+            ),
 
-        ],
+            // Display the current stress level that was calculated
+            Center(
+              child: Container(
+                height: 32,
+                width: screenWidth * 0.25,
+                decoration: BoxDecoration(
+                  color: _currentStressLevel.containerColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    '${_currentStressLevel.level}', // Show the current stress level
+                    style: titleBlack.copyWith(fontSize: 14),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+        Positioned(
+          top: 5,
+          right: 5,
+          child: Tooltip(
+            message: "This chart shows the distribution of stress levels throughout the day. "
+                "The stress level displayed below is the average stress throughout the day.",
+            padding: EdgeInsets.all(8.0),  // Control the padding inside the tooltip box
+            verticalOffset: 15,  // Adjust how far the tooltip is from the target widget
+            preferBelow: false,  // Show the tooltip above the widget
+            margin: EdgeInsets.only(left: 85, right: 10),  // Adjust the margin between the tooltip and the widget
+            textStyle: TextStyle(
+              fontSize: 14.0,  // Set the text size
+              color: Colors.white,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.textColorGrey,  // Background color of the tooltip
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.info_outline,
+              color: Colors.grey,
+              size: 19,
+            ),
+          ),
+        ),
+    ],
     );
   }
+
+
 
   Widget _buildEmotionCountChart(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -478,7 +578,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     );
   }
 
-
   Widget _getDefaultIcon(double iconSize) {
     return Image.asset(
       'assets/logo.png',
@@ -486,3 +585,4 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     );
   }
 }
+

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class StressModel {
   final String level;
   final Color color;
+  final Color? chartColor;
   final Color containerColor;
   final String description;
   final String description2;
@@ -13,6 +14,7 @@ class StressModel {
   StressModel({
     required this.level,
     required this.color,
+    this.chartColor,
     required this.containerColor,
     required this.description,
     required this.description2,
@@ -24,6 +26,7 @@ final List<StressModel> stressModels = [
   StressModel(
     level: "Extreme", // 4.0
     color: AppColors.stress_low,
+    chartColor: AppColors.stress_extreme,
     containerColor: AppColors.angryContainer,
     description: "Exhaustion, anxiety, burnout",
     description2: "\"I can't take this anymore\"",
@@ -32,6 +35,7 @@ final List<StressModel> stressModels = [
   StressModel(
     level: "High", // 3.0
     color: AppColors.stress_moderate,
+    chartColor: AppColors.stress_high,
     containerColor: AppColors.neutralContainer,
     description: "Distracted, fatigue, overwhelm",
     description2: "\"I feel anxious & unfocused\"",
@@ -40,6 +44,7 @@ final List<StressModel> stressModels = [
   StressModel(
     level: "Optimal", // 2.0
     color: AppColors.stress_optimal,
+    chartColor: AppColors.stress_optimal,
     containerColor: AppColors.happyContainer,
     description: "Confident, in control, productive",
     description2: "\"I'm really in the zone\"",
@@ -48,6 +53,7 @@ final List<StressModel> stressModels = [
   StressModel(
     level: "Moderate", // 1.0
     color: AppColors.stress_high,
+    chartColor: AppColors.stress_moderate,
     containerColor: AppColors.disgustContainer,
     description: "Engaged, focused, motivated",
     description2: "\"I feel focused & energized\"",
@@ -56,6 +62,7 @@ final List<StressModel> stressModels = [
   StressModel(
     level: "Low", // 0.0
     color: AppColors.stress_extreme,
+    chartColor: AppColors.stress_low,
     containerColor: AppColors.sadContainer,
     description: "Inactive, bored, unchallenged",
     description2: "\"I wish I had more to do\"",
@@ -73,7 +80,9 @@ StressModel getStressLevel(double averageStressLevel) {
     return stressModels.firstWhere((model) => model.level == "Optimal");
   } else if (averageStressLevel >= 0.5) {
     return stressModels.firstWhere((model) => model.level == "Moderate");
-  } else {
+  } else if (averageStressLevel < 0.5) {
     return stressModels.firstWhere((model) => model.level == "Low");
+  } else {
+    return stressModels.firstWhere((model) => model.level == "Optimal");
   }
 }

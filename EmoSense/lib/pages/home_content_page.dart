@@ -142,7 +142,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Mood Stats',
+                                    'Emotion Stats',
                                     style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
                                   ),
                                 ),
@@ -198,14 +198,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
               _selectedDate = DateTime.now();
               _resetToToday();
               _selectedView = view;
-              if (view == 'Daily') {
-                // Display the daily view
-
-              } else if (view == 'Weekly') {
-                // Display the weekly view
-              } else if (view == 'Monthly') {
-                // Display the monthly view
-              }
             });
           },
           style: ElevatedButton.styleFrom(
