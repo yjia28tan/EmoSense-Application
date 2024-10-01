@@ -24,8 +24,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     super.initState();
     _resetToToday();
     setState(() {
-      print('Selected date: $_selectedDate');
-      print("Fetching data for $_selectedDate");
       _fetchDataForSelectedDate(); // Fetch data on initialization
     });
   }
@@ -174,9 +172,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       latestEmotion = _emotionForToday.last;
     }
 
-    print(_emotionForToday);
-    print('Last Emotion for today: $latestEmotion');
-
     return Column(
       children: [
         Container(
@@ -207,9 +202,11 @@ class _DailyViewHomeState extends State<DailyViewHome> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Today's Emotion
                 _buildEmotionContainer(
                     latestEmotion != null ? _getEmotionIcon(latestEmotion['emotion'], screenHeight * 0.4)
                         : _getDefaultIcon(screenHeight * 0.08)),
+                // Stress Level
                 _buildStressLevelContainer(),
               ],
             ),
