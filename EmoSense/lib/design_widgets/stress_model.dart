@@ -62,3 +62,18 @@ final List<StressModel> stressModels = [
     assetPath: 'assets/stress/low.png',
   ),
 ];
+
+// Method to get the stress level based on the average stress level
+StressModel getStressLevel(double averageStressLevel) {
+  if (averageStressLevel >= 3.5) {
+    return stressModels.firstWhere((model) => model.level == "Extreme");
+  } else if (averageStressLevel >= 2.5) {
+    return stressModels.firstWhere((model) => model.level == "High");
+  } else if (averageStressLevel >= 1.5) {
+    return stressModels.firstWhere((model) => model.level == "Optimal");
+  } else if (averageStressLevel >= 0.5) {
+    return stressModels.firstWhere((model) => model.level == "Moderate");
+  } else {
+    return stressModels.firstWhere((model) => model.level == "Low");
+  }
+}

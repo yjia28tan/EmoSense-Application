@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   late String formattedDate;
   List<Map<String, dynamic>> _emotionForToday = [];
   double _averageStressLevel = 0.0;
+  StressModel _currentStressLevel = stressModels.last;
 
   @override
   void initState() {
@@ -65,7 +67,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       }
 
       // Calculate the average stress level and update the state
-      // _calculateAverageStressLevel(emotions);
+      _calculateAverageStressLevel(emotions);
 
       setState(() {
         _emotionForToday = emotions;
@@ -79,13 +81,29 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     if (emotions.isNotEmpty) {
       double totalStress = 0.0;
       for (var emotion in emotions) {
-        totalStress += emotion['stressLevel'] as double;
+        // Convert stressLevel to double, handling potential conversion errors
+        try {
+          totalStress += double.parse(emotion['stressLevel'] as String);
+        } catch (e) {
+          print('Error converting stress level to double: $e');
+        }
       }
       _averageStressLevel = totalStress / emotions.length;
+      print('Average Stress Level: $_averageStressLevel');
+
+      // Get the current stress level based on the average stress level
+      _currentStressLevel = getStressLevel(_averageStressLevel); // Update the variable here
+
+      // Use the current stress level as needed, for example, you could store it or update the UI
+      print('Current Stress Level: ${_currentStressLevel.level}');
+
     } else {
       _averageStressLevel = 0.0; // No emotions recorded for the day
+      _currentStressLevel = stressModels.last; // Set to Low or default level
     }
   }
+
+
 
   Widget _getEmotionIcon(String mood, double iconSize) {
     final emotion = Emotion.emotions.firstWhere(
@@ -253,6 +271,8 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   }
 
   Widget _buildStressLevelContainer() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       height: 185,
       width: 158,
@@ -280,14 +300,27 @@ class _DailyViewHomeState extends State<DailyViewHome> {
               ),
             ),
           ),
-          Center(
-            child: Text(
-              'Avg: ${_averageStressLevel.toStringAsFixed(1)}', // Show average stress level
-              style: titleBlack.copyWith(fontSize: 14),
-            ),
-          ),
           // Add the pie chart for stress levels here if needed
           // _buildStressLevelPieChart(),
+          
+          // Display the current stress level that was calculated
+          Center(
+            child: Container(
+              height: 30,
+              width: screenWidth * 0.25,
+              decoration: BoxDecoration(
+                color: _currentStressLevel.containerColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  '${_currentStressLevel.level}', // Show the current stress level
+                  style: titleBlack.copyWith(fontSize: 14),
+                ),
+              ),
+            ),
+          ),
+
         ],
       ),
     );
