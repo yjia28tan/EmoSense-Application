@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/design_widgets/stress_level_chart.dart';
+import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,7 +22,17 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
   late String startFormatted;
   late String endFormatted;
   List<Map<String, dynamic>> _emotionForThisWeek = [];
-  double _averageStressLevel = 0.0;
+  StressModel _currentStressLevel = stressModels.last;
+  int counter = 0;
+
+  Map<String, int> stressCounts = {
+    "Extreme": 0,
+    "High": 0,
+    "Optimal": 0,
+    "Moderate": 0,
+    "Low": 0,
+  };
+
 
   @override
   void initState() {
@@ -33,8 +45,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
 
   Future<void> _fetchDataForSelectedWeek() async {
     try {
-      print('Fetching data for week starting $_selectedDate');
-
       final uid = globalUID;
 
       // Calculate the start and end of the selected week
@@ -47,9 +57,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
       final endOfWeek = startOfWeek.add(
         const Duration(days: 6, hours: 23, minutes: 59, seconds: 59),
       );
-
-      // Log the start and end dates for debugging
-      print('Week range in fetching data: $startOfWeek - $endOfWeek');
 
       // Fetch emotion records for the selected week
       final emotionSnapshot = await FirebaseFirestore.instance
@@ -72,17 +79,88 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
           });
         }
       }
+      // Calculate the average stress level and update the state
+      _calculateAverageStressLevel(emotions);
+
+      // Calculate stress level counts and update the counter
+      stressCounts = _calculateStressLevelCounts(emotions);
+      counter = emotions.length;
 
       // Update state with the emotions fetched for the week
       setState(() {
         _emotionForThisWeek = emotions;
       });
-
-      print('Fetched weekly emotions: ${_emotionForThisWeek.length}');
-      print('Emotions: $_emotionForThisWeek');
-
     } catch (error) {
       showAlert(context, 'Error', 'Error fetching weekly data: $error');
+    }
+  }
+
+  void _calculateAverageStressLevel(List<Map<String, dynamic>> emotions) {
+    if (emotions.isNotEmpty) {
+      double totalStress = emotions.fold(0.0, (sum, emotion) {
+        try {
+          return sum + double.parse(emotion['stressLevel'] as String);
+        } catch (e) {
+          print('Error converting stress level to double: $e');
+          return sum;
+        }
+      });
+
+      double averageStressLevel = totalStress / emotions.length;
+      print('Average Stress Level: $averageStressLevel');
+
+      _currentStressLevel = getStressLevel(averageStressLevel);
+    } else {
+      _currentStressLevel = stressModels.last;
+    }
+  }
+
+  Map<String, int> _calculateStressLevelCounts(List<Map<String, dynamic>> emotions) {
+    Map<String, int> stressCounts = {
+      "Low": 0,
+      "Moderate": 0,
+      "Optimal": 0,
+      "High": 0,
+      "Extreme": 0,
+    };
+
+    emotions.forEach((emotion) {
+      double stressLevelAsDouble = _parseStressLevel(emotion['stressLevel']);
+      String stressLevel = getStressLevelAsString(stressLevelAsDouble);
+
+      if (stressCounts.containsKey(stressLevel)) {
+        stressCounts[stressLevel] = (stressCounts[stressLevel] ?? 0) + 1;
+      }
+    });
+
+    return stressCounts;
+  }
+
+  double _parseStressLevel(dynamic stressLevelValue) {
+    if (stressLevelValue is String) {
+      return double.tryParse(stressLevelValue) ?? 2.0;
+    } else if (stressLevelValue is double) {
+      return stressLevelValue;
+    } else {
+      print('Warning: Unrecognized stress level type: ${stressLevelValue.runtimeType}');
+      return 2.0; // Default if type unrecognized
+    }
+  }
+
+  static String getStressLevelAsString(double level) {
+    switch (level) {
+      case 4.0:
+        return "Extreme";
+      case 3.0:
+        return "High";
+      case 2.0:
+        return "Optimal";
+      case 1.0:
+        return "Moderate";
+      case 0.0:
+        return "Low";
+      default:
+        return "Unknown"; // Handle cases that don't match
     }
   }
 
@@ -90,7 +168,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     setState(() {
       _selectedDate = DateTime.now(); // Reset to today's date
       _updateFormattedDate(); // Update the date display based on the selected view
-
     });
   }
 
@@ -98,9 +175,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     formattedDate = _getWeeklyDateRange();
     startFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate.subtract(Duration(days: _selectedDate.weekday - 1)));
     endFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate.add(Duration(days: DateTime.daysPerWeek - _selectedDate.weekday)));
-    print('Formatted date: $formattedDate');
-    print('Start formatted: $startFormatted');
-    print('End formatted: $endFormatted');
   }
 
   String _getWeeklyDateRange() {
@@ -109,7 +183,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     final endOfWeek = _selectedDate.add(Duration(days: DateTime.daysPerWeek - _selectedDate.weekday));
     final startFormatted = DateFormat('d MMM').format(startOfWeek);
     final endFormatted = DateFormat('d MMM').format(endOfWeek);
-    print('Week range _getWeeklyDateRange: $startFormatted - $endFormatted');
+
     formattedDate = '$startFormatted - $endFormatted';
     return formattedDate;
   }
@@ -218,39 +292,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         _buildEmotionCountChart(context),
 
         // Display the stress level chart
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Stress Level',
-                      style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
-                    ),
-                  ),
-                ),
-                // Calculate the average stress level for the week and display the graph
-
-              ],
-            ),
-          ),
-        ),
+        _buildStressLevelContainer(),
 
         // Display the emotion trends chart
         Padding(
@@ -446,6 +488,111 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
 
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStressLevelContainer() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 3,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Stress Level',
+                            style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                          ),
+                        ),
+                      ),
+                      // Add the half pie chart for stress levels here if needed
+                      if (counter == 0)
+                        SizedBox(
+                          height: 110,
+                          width: 150,
+                        ),
+                      if (counter > 0)
+                        SizedBox(
+                          height: 110,
+                          width: 150,
+                          child: HalfDonutChart(stressCounts: stressCounts),
+                        ),
+
+                      // Display the current stress level that was calculated
+                      Center(
+                        child: Container(
+                          height: 32,
+                          width: screenWidth * 0.25,
+                          decoration: BoxDecoration(
+                            color: counter == 0 ? AppColors.textFieldColor : _currentStressLevel.containerColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              counter == 0 ? "None" : _currentStressLevel.level, // Show the current stress level
+                              style: titleBlack.copyWith(fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: Tooltip(
+              message: "This chart shows the distribution of stress levels throughout the week.\n"
+                  "Color Indicator: \nRed - Extreme, \nOrange - High, \nYellow - Optimal, \nGreen - Moderate, \nBlue - Low.\n\n"
+                  "The stress level displayed below is the average stress throughout the week.",
+              padding: EdgeInsets.all(8.0),  // Control the padding inside the tooltip box
+              verticalOffset: 15,  // Adjust how far the tooltip is from the target widget
+              preferBelow: false,  // Show the tooltip above the widget
+              margin: EdgeInsets.only(left: 85, right: 10),  // Adjust the margin between the tooltip and the widget
+              textStyle: TextStyle(
+                fontSize: 14.0,  // Set the text size
+                color: Colors.white,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.textColorGrey,  // Background color of the tooltip
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.info_outline,
+                color: AppColors.textColorGrey,
+                size: 19,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

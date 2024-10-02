@@ -33,9 +33,6 @@ class HalfDonutChart extends StatelessWidget {
         borderData: FlBorderData(show: false),
         centerSpaceRadius: 10,
         sectionsSpace: 0,
-        pieTouchData: PieTouchData(touchCallback: (FlTouchEvent event, pieTouchResponse) {
-          // Handle touch events if needed
-        }),
       ),
     );
   }

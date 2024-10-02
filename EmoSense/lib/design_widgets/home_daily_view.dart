@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_data_model.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
 import 'package:emosense/design_widgets/stress_model.dart';
@@ -20,8 +19,8 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   DateTime _selectedDate = DateTime.now();
   late String formattedDate;
   List<Map<String, dynamic>> _emotionForToday = [];
-  double _averageStressLevel = 0.0;
   StressModel _currentStressLevel = stressModels.last;
+  int counter = 0;
 
   Map<String, int> stressCounts = {
     "Extreme": 0,
@@ -30,6 +29,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     "Moderate": 0,
     "Low": 0,
   };
+
 
   @override
   void initState() {
@@ -42,13 +42,9 @@ class _DailyViewHomeState extends State<DailyViewHome> {
 
   Future<void> _fetchDataForSelectedDate() async {
     try {
-      print('Fetching data for $_selectedDate');
-
       final uid = globalUID;
 
-      // Convert formattedDate to DateTime for filtering
       DateTime dateTime = DateFormat('E, d MMM, yyyy').parse(formattedDate);
-
       final startOfDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
       final endOfDay = startOfDay.add(const Duration(hours: 23, minutes: 59, seconds: 59));
 
@@ -59,28 +55,22 @@ class _DailyViewHomeState extends State<DailyViewHome> {
           .where('timestamp', isLessThan: endOfDay)
           .get();
 
-      List<Map<String, dynamic>> emotions = [];
-
-      print(emotionSnapshot.docs);
-
-      if (emotionSnapshot.docs.isNotEmpty) {
-        for (var doc in emotionSnapshot.docs) {
-          emotions.add({
-            'docId': doc.id,
-            'emotion': doc['emotion'],
-            'timestamp': doc['timestamp'],
-            'stressLevel': doc['stressLevel'],
-            'description': doc['description'],
-          });
-        }
-      }
+      List<Map<String, dynamic>> emotions = emotionSnapshot.docs.map((doc) {
+        return {
+          'docId': doc.id,
+          'emotion': doc['emotion'],
+          'timestamp': doc['timestamp'],
+          'stressLevel': doc['stressLevel'],
+          'description': doc['description'],
+        };
+      }).toList();
 
       // Calculate the average stress level and update the state
       _calculateAverageStressLevel(emotions);
-      // Calculate stress level counts
-      stressCounts = _calculateStressLevelCounts(emotions);
 
-      print("Stress Counts: $stressCounts");
+      // Calculate stress level counts and update the counter
+      stressCounts = _calculateStressLevelCounts(emotions);
+      counter = emotions.length;
 
       setState(() {
         _emotionForToday = emotions;
@@ -92,25 +82,21 @@ class _DailyViewHomeState extends State<DailyViewHome> {
 
   void _calculateAverageStressLevel(List<Map<String, dynamic>> emotions) {
     if (emotions.isNotEmpty) {
-      double totalStress = 0.0;
-      for (var emotion in emotions) {
-        // Convert stressLevel to double, handling potential conversion errors
+      double totalStress = emotions.fold(0.0, (sum, emotion) {
         try {
-          totalStress += double.parse(emotion['stressLevel'] as String);
+          return sum + double.parse(emotion['stressLevel'] as String);
         } catch (e) {
           print('Error converting stress level to double: $e');
+          return sum;
         }
-      }
-      print('Total Stress Level: $totalStress');
-      _averageStressLevel = totalStress / emotions.length;
-      print('Average Stress Level: $_averageStressLevel');
+      });
 
-      // Get the current stress level based on the average stress level
-      _currentStressLevel = getStressLevel(_averageStressLevel);
+      double averageStressLevel = totalStress / emotions.length;
+      print('Average Stress Level: $averageStressLevel');
 
+      _currentStressLevel = getStressLevel(averageStressLevel);
     } else {
-      _averageStressLevel = 0.0; // No emotions recorded for the day
-      _currentStressLevel = stressModels.last; // Set to Low or default level
+      _currentStressLevel = stressModels.last;
     }
   }
 
@@ -123,36 +109,29 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       "Extreme": 0,
     };
 
-    for (var emotion in emotions) {
-      // Fetch stress level as dynamic and handle potential type issues
-      var stressLevelValue = emotion['stressLevel'];
-
-      // Ensure stressLevelValue is a double
-      double stressLevelAsDouble;
-      if (stressLevelValue is String) {
-        // Convert String to double
-        stressLevelAsDouble = double.tryParse(stressLevelValue) ?? 2.0; // Default to 2.0 if conversion fails
-      } else if (stressLevelValue is double) {
-        stressLevelAsDouble = stressLevelValue;
-      } else {
-        print('Warning: Unrecognized stress level type: ${stressLevelValue.runtimeType}');
-        continue; // Skip this iteration if the type is not recognized
-      }
-
-      String stressLevel = getStressLevelAsString(stressLevelAsDouble); // Map it to a string
+    emotions.forEach((emotion) {
+      double stressLevelAsDouble = _parseStressLevel(emotion['stressLevel']);
+      String stressLevel = getStressLevelAsString(stressLevelAsDouble);
 
       if (stressCounts.containsKey(stressLevel)) {
         stressCounts[stressLevel] = (stressCounts[stressLevel] ?? 0) + 1;
-      } else {
-        // Error handling for unrecognized stress levels
-        print('Warning: Unrecognized stress level: $stressLevelAsDouble');
       }
-    }
+    });
 
-    print('Stress Counts: $stressCounts'); // Debug output to verify the counts
+    print('Stress Counts: $stressCounts');
     return stressCounts;
   }
 
+  double _parseStressLevel(dynamic stressLevelValue) {
+    if (stressLevelValue is String) {
+      return double.tryParse(stressLevelValue) ?? 2.0;
+    } else if (stressLevelValue is double) {
+      return stressLevelValue;
+    } else {
+      print('Warning: Unrecognized stress level type: ${stressLevelValue.runtimeType}');
+      return 2.0; // Default if type unrecognized
+    }
+  }
 
   static String getStressLevelAsString(double level) {
     switch (level) {
@@ -369,6 +348,12 @@ class _DailyViewHomeState extends State<DailyViewHome> {
               ),
             ),
             // Add the half pie chart for stress levels here if needed
+            if (counter == 0)
+              SizedBox(
+                height: 110,
+                width: 150,
+              ),
+            if (counter > 0)
             SizedBox(
               height: 110,
               width: 150,
@@ -381,12 +366,12 @@ class _DailyViewHomeState extends State<DailyViewHome> {
                 height: 32,
                 width: screenWidth * 0.25,
                 decoration: BoxDecoration(
-                  color: _currentStressLevel.containerColor,
+                  color: counter == 0 ? AppColors.textFieldColor : _currentStressLevel.containerColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
-                    '${_currentStressLevel.level}', // Show the current stress level
+                    counter == 0 ? "None" : _currentStressLevel.level, // Show the current stress level
                     style: titleBlack.copyWith(fontSize: 14),
                   ),
                 ),
@@ -399,7 +384,8 @@ class _DailyViewHomeState extends State<DailyViewHome> {
           top: 5,
           right: 5,
           child: Tooltip(
-            message: "This chart shows the distribution of stress levels throughout the day. "
+            message: "This chart shows the distribution of stress levels throughout the day.\n"
+                "Color Indicator: \nRed - Extreme, \nOrange - High, \nYellow - Optimal, \nGreen - Moderate, \nBlue - Low.\n\n"
                 "The stress level displayed below is the average stress throughout the day.",
             padding: EdgeInsets.all(8.0),  // Control the padding inside the tooltip box
             verticalOffset: 15,  // Adjust how far the tooltip is from the target widget
@@ -415,7 +401,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
             ),
             child: Icon(
               Icons.info_outline,
-              color: Colors.grey,
+              color: AppColors.textColorGrey,
               size: 19,
             ),
           ),
@@ -423,8 +409,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     ],
     );
   }
-
-
 
   Widget _buildEmotionCountChart(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;

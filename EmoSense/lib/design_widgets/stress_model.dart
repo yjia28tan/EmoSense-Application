@@ -83,6 +83,6 @@ StressModel getStressLevel(double averageStressLevel) {
   } else if (averageStressLevel < 0.5) {
     return stressModels.firstWhere((model) => model.level == "Low");
   } else {
-    return stressModels.firstWhere((model) => model.level == "Optimal");
+    return stressModels.firstWhere((model) => model.level == "None");
   }
 }
