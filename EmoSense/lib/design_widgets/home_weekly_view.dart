@@ -497,71 +497,68 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: Stack(
         children: [
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.whiteColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 3,
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.whiteColor,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Stress Level',
+                          style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
+                    ),
+                    // Add the half pie chart for stress levels here if needed
+                    if (counter == 0)
+                      SizedBox(
+                        height: 110,
+                        width: 150,
+                      ),
+                    if (counter > 0)
+                      SizedBox(
+                        height: 110,
+                        width: 150,
+                        child: HalfDonutChart(stressCounts: stressCounts),
+                      ),
+
+                    // Display the current stress level that was calculated
+                    Center(
+                      child: Container(
+                        height: 32,
+                        width: screenWidth * 0.25,
+                        decoration: BoxDecoration(
+                          color: counter == 0 ? AppColors.textFieldColor : _currentStressLevel.containerColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
                           child: Text(
-                            'Stress Level',
-                            style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                            counter == 0 ? "None" : _currentStressLevel.level, // Show the current stress level
+                            style: titleBlack.copyWith(fontSize: 14),
                           ),
                         ),
                       ),
-                      // Add the half pie chart for stress levels here if needed
-                      if (counter == 0)
-                        SizedBox(
-                          height: 110,
-                          width: 150,
-                        ),
-                      if (counter > 0)
-                        SizedBox(
-                          height: 110,
-                          width: 150,
-                          child: HalfDonutChart(stressCounts: stressCounts),
-                        ),
+                    ),
 
-                      // Display the current stress level that was calculated
-                      Center(
-                        child: Container(
-                          height: 32,
-                          width: screenWidth * 0.25,
-                          decoration: BoxDecoration(
-                            color: counter == 0 ? AppColors.textFieldColor : _currentStressLevel.containerColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              counter == 0 ? "None" : _currentStressLevel.level, // Show the current stress level
-                              style: titleBlack.copyWith(fontSize: 14),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ],
