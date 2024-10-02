@@ -228,6 +228,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
         assetPath: 'assets/logo.png',
         color: Colors.transparent,
         containerColor: Colors.transparent,
+        valence: 0,
       ),
     );
 

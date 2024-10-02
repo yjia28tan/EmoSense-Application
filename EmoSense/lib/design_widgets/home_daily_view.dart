@@ -158,6 +158,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
         assetPath: 'assets/logo.png',
         color: Colors.transparent,
         containerColor: Colors.transparent,
+        valence: 0,
       ),
     );
 

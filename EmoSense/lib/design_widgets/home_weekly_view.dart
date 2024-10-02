@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/design_widgets/emotion_trends_line_graphs.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
 import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '/design_widgets/font_style.dart';
@@ -245,6 +245,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         assetPath: 'assets/logo.png',
         color: Colors.transparent,
         containerColor: Colors.transparent,
+        valence: 0,
       ),
     );
 
@@ -257,7 +258,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Column(
       children: [
@@ -295,51 +295,16 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         _buildStressLevelContainer(),
 
         // Display the emotion trends chart
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10.0),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Emotion Trends',
-                      style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
-                    ),
-                  ),
-                ),
-                // Calculate the average stress level for the week and display the graph
-
-              ],
-            ),
-          ),
-        ),
+        _buildEmotionTrendsChart(),
 
         SizedBox(height: 25),
-
-
       ],
-
     );
   }
 
+
   Widget _buildEmotionCountChart(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     // Define all possible emotions
     List<String> allEmotions = ["Angry", "Neutral", "Happy", "Disgust", "Sad", "Fear"];
@@ -590,6 +555,54 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmotionTrendsChart() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.whiteColor,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Emotion Trends',
+                  style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                ),
+              ),
+            ),
+            // Calculate the average stress level for the week and display the graph
+            if (counter == 0)
+              SizedBox(
+                height: 110,
+                width: 150,
+              ),
+            if (counter > 0)
+              SizedBox(
+                width: double.infinity,
+                child: EmotionTrendLineChart(emotionData: _emotionForThisWeek),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -141,6 +141,7 @@ class _CalendarPageState extends State<CalendarPage> {
         assetPath: 'assets/logo.png',
         color: Colors.transparent,
         containerColor: Colors.transparent,
+        valence: 0
       ),
     );
 
@@ -390,7 +391,13 @@ class _CalendarPageState extends State<CalendarPage> {
                                 // Fetch the corresponding emotion details
                                 final emotionDetails = Emotion.emotions.firstWhere(
                                       (e) => e.name == emotionName,
-                                  orElse: () => Emotion(name: 'Unknown', assetPath: 'assets/logo.png', color: Colors.grey, containerColor: Colors.grey.withOpacity(0.6)),
+                                  orElse: () => Emotion(
+                                      name: 'Unknown',
+                                      assetPath: 'assets/logo.png',
+                                      color: Colors.grey,
+                                      containerColor: Colors.grey.withOpacity(0.6),
+                                      valence: 0
+                                  ),
                                 );
 
                                 return EmotionDisplay(
