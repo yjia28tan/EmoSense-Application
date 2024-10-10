@@ -349,7 +349,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
-                      'Stress Suggestions',
+                      'Stress Relief Suggestions',
                       style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
                     ),
                   ),
