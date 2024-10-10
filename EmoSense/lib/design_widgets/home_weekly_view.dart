@@ -297,6 +297,9 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         // Display the emotion trends chart
         _buildEmotionTrendsChart(),
 
+        // build analysis/reflection based on the charts above
+
+
         SizedBox(height: 25),
       ],
     );
@@ -423,7 +426,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
                       tooltipBorder: BorderSide.none,
-                      tooltipPadding: EdgeInsets.all(5), // Remove any padding
+                      tooltipPadding: EdgeInsets.only(bottom: 2), // Remove any padding
                       tooltipMargin: 0, // Remove the margin
                       // Customize the tooltip appearance
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -445,7 +448,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
 
                   gridData: FlGridData(show: false), // Disable grid lines
                   alignment: BarChartAlignment.spaceAround, // Space the bars evenly
-                  maxY: 5, // Maximum Y value (assuming 5 for visual consistency)
+                  maxY: 12, // Maximum Y value (assuming 5 for visual consistency)
                 ),
               ),
             ),
@@ -565,44 +568,77 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.whiteColor,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 3,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Emotion Trends',
-                  style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+      child: Stack(
+        children: [
+
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Emotional Trends',
+                    style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                  ),
                 ),
               ),
-            ),
-            // Calculate the average stress level for the week and display the graph
-            if (counter == 0)
-              SizedBox(
-                height: 110,
-                width: 150,
-              ),
-            if (counter > 0)
-              SizedBox(
-                width: double.infinity,
-                child: EmotionTrendLineChart(emotionData: _emotionForThisWeek),
-              ),
-          ],
+              // Calculate the average stress level for the week and display the graph
+              if (counter == 0)
+                SizedBox(
+                  height: 110,
+                  width: 150,
+                ),
+              if (counter > 0)
+                SizedBox(
+                  width: double.infinity,
+                  child: EmotionTrendLineChart(emotionData: _emotionForThisWeek),
+                ),
+            ],
+          ),
         ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: Tooltip(
+              message: "This chart displays fluctuations in emotional valence over time,"
+                  "with the X-axis representing timestamps and "
+                  "the Y-axis quantifying emotions from -5 (negative) to 5 (positive).\n"
+                  "\nThis visualization helps users reflect on their emotional well-being "
+                  "and identify patterns in their feelings.",
+              padding: EdgeInsets.all(8.0),  // Control the padding inside the tooltip box
+              verticalOffset: 15,  // Adjust how far the tooltip is from the target widget
+              preferBelow: false,  // Show the tooltip above the widget
+              margin: EdgeInsets.only(left: 85, right: 10),  // Adjust the margin between the tooltip and the widget
+              textStyle: TextStyle(
+                fontSize: 14.0,  // Set the text size
+                color: Colors.white,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.textColorGrey,  // Background color of the tooltip
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.info_outline,
+                color: AppColors.textColorGrey,
+                size: 19,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
