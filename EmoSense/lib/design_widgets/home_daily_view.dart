@@ -20,6 +20,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
   late String formattedDate;
   List<Map<String, dynamic>> _emotionForToday = [];
   StressModel _currentStressLevel = stressModels.last;
+  double? _currentStressLevelValue;
   int counter = 0;
 
   Map<String, int> stressCounts = {
@@ -91,10 +92,12 @@ class _DailyViewHomeState extends State<DailyViewHome> {
         }
       });
 
-      double averageStressLevel = totalStress / emotions.length;
-      print('Average Stress Level: $averageStressLevel');
+      _currentStressLevelValue = totalStress / emotions.length;
+      print('Average Stress Level: $_currentStressLevelValue');
 
-      _currentStressLevel = getStressLevel(averageStressLevel);
+      _currentStressLevel = getStressLevel(_currentStressLevelValue!);
+
+
     } else {
       _currentStressLevel = stressModels.last;
     }
@@ -236,6 +239,26 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       latestEmotion = _emotionForToday.last;
     }
 
+    print('Latest Emotion: $latestEmotion');
+    print('Average Stress Level: $_currentStressLevelValue');
+
+    // Safely access the 'emotion' field, providing a default value if null
+    String currentEmotion = latestEmotion?['emotion'] ?? 'NONE';
+
+    print('Latest Emotion: $currentEmotion');
+
+    // Use currentEmotion for your reflections
+    List<String> reflections = _getReflectionQuestions(currentEmotion);
+
+    // Check if _averageStressLevel is null before accessing it
+    List<String> stressSuggestion = _currentStressLevelValue != null
+        ? _getSuggestions(_currentStressLevelValue!)
+        : []; // Provide an empty list or handle the null case
+
+    print("Reflections: $reflections");
+    print("Stress Suggestions: $stressSuggestion");
+
+
     return Column(
       children: [
         Container(
@@ -277,6 +300,73 @@ class _DailyViewHomeState extends State<DailyViewHome> {
           ),
         ),
         _buildEmotionCountChart(context),
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+              ),
+            ],
+          ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Reflections',
+                      style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                    ),
+                  ),
+                ),
+                if (counter == 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'No reflections available for today.',
+                      style: greySmallText.copyWith(fontSize: 14),
+                    ),
+                  ),
+                if (counter > 0) ...[
+                  // Display reflections
+                  for (var reflection in reflections)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        reflection,
+                        style: greySmallText.copyWith(fontSize: 14),
+                      ),
+                    ),
+
+                  // Display the stress suggestions header
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'Stress Suggestions',
+                      style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                    ),
+                  ),
+
+                  // Display stress suggestions
+                  for (var suggestion in stressSuggestion)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        suggestion,
+                        style: greySmallText.copyWith(fontSize: 14),
+                      ),
+                    ),
+                ],
+              ],
+        ),
+        ),
         SizedBox(height: 25),
       ],
     );
@@ -456,109 +546,112 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     });
 
     // Return the bar chart widget
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Emotion Count',
-                style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.whiteColor,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Emotion Count',
+                  style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                ),
               ),
             ),
-          ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.3,
-            width: MediaQuery.of(context).size.width * 0.9,
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-            ),
-            child: BarChart(
-              BarChartData(
-                borderData: FlBorderData(show: false), // Remove the border around the chart
-                titlesData: FlTitlesData(
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // Remove Y-axis labels
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // No Y-axis labels
-                  ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // No Y-axis on the right
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 60,
-                      getTitlesWidget: (double value, TitleMeta meta) {
-                        String emotion = allEmotions[value.toInt()]; // Get emotion based on value
+            Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                color: AppColors.whiteColor,
+              ),
+              child: BarChart(
+                BarChartData(
+                  borderData: FlBorderData(show: false), // Remove the border around the chart
+                  titlesData: FlTitlesData(
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // Remove Y-axis labels
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // No Y-axis labels
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false), // No Y-axis on the right
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 60,
+                        getTitlesWidget: (double value, TitleMeta meta) {
+                          String emotion = allEmotions[value.toInt()]; // Get emotion based on value
 
-                        return Column(
-                          // mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _getEmotionIcon(emotion, 45),
-                            Text(
-                              emotion, // Display the emotion name below the icon
-                              style: TextStyle(
-                                color: AppColors.textColorBlack,
-                                fontSize: 9,
+                          return Column(
+                            // mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _getEmotionIcon(emotion, 45),
+                              Text(
+                                emotion, // Display the emotion name below the icon
+                                style: TextStyle(
+                                  color: AppColors.textColorBlack,
+                                  fontSize: 9,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+
+                  ),
+                  barGroups: barChartGroups,
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      tooltipBorder: BorderSide.none,
+                      tooltipPadding: EdgeInsets.all(5), // Remove any padding
+                      tooltipMargin: 0, // Remove the margin
+                      // Customize the tooltip appearance
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        return BarTooltipItem(
+                          '${rod.toY.toInt()}', // Show the emotion count on top of the bar
+                          greySmallText.copyWith(
+                            fontSize: 12,
+                            color: AppColors.textColorBlack,
+                            backgroundColor: Colors.transparent, // Remove background color
+                          ),
                         );
                       },
+                      getTooltipColor: (group) {
+                        return Colors.transparent;
+                      },
+
                     ),
                   ),
 
+                  gridData: FlGridData(show: false), // Disable grid lines
+                  alignment: BarChartAlignment.spaceAround, // Space the bars evenly
+                  maxY: 5, // Maximum Y value (assuming 5 for visual consistency)
                 ),
-                barGroups: barChartGroups,
-                barTouchData: BarTouchData(
-                  enabled: true,
-                  touchTooltipData: BarTouchTooltipData(
-                    tooltipBorder: BorderSide.none,
-                    tooltipPadding: EdgeInsets.all(5), // Remove any padding
-                    tooltipMargin: 0, // Remove the margin
-                    // Customize the tooltip appearance
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      return BarTooltipItem(
-                        '${rod.toY.toInt()}', // Show the emotion count on top of the bar
-                        greySmallText.copyWith(
-                          fontSize: 12,
-                          color: AppColors.textColorBlack,
-                          backgroundColor: Colors.transparent, // Remove background color
-                        ),
-                      );
-                    },
-                    getTooltipColor: (group) {
-                      return Colors.transparent;
-                    },
-
-                  ),
-                ),
-
-                gridData: FlGridData(show: false), // Disable grid lines
-                alignment: BarChartAlignment.spaceAround, // Space the bars evenly
-                maxY: 5, // Maximum Y value (assuming 5 for visual consistency)
               ),
             ),
-          ),
-          SizedBox(height: 10),
+            SizedBox(height: 10),
 
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -569,5 +662,72 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       width: 120,
     );
   }
+
+  List<String> _getReflectionQuestions(String emotion) {
+    switch (emotion) {
+      case 'Happy':
+        return [
+          'What specific events contributed to your happiness today?',
+          'How can you maintain or increase this positive feeling in the future?'
+        ];
+      case 'Sad':
+        return [
+          'What triggered your feelings of sadness today?',
+          'What strategies can you use to cope with these feelings in the future?'
+        ];
+      case 'Angry':
+        return [
+          'What situations or events caused your anger today?',
+          'What steps can you take to manage your anger more effectively in the future?'
+        ];
+      case 'Fear':
+        return [
+          'What were the specific fears you experienced today?',
+          'How can you confront or mitigate these fears moving forward?'
+        ];
+      case 'Disgust':
+        return [
+          'What experiences or thoughts made you feel disgusted today?',
+          'How can you reduce or avoid such triggers in the future?'
+        ];
+      case 'Neutral':
+        return [
+          'What activities did you engage in that left you feeling neutral?',
+          'How can you introduce more stimulating activities to your routine?'
+        ];
+      default:
+        return [];
+    }
+  }
+
+  List<String> _getSuggestions(double stressLevel) {
+    List<String> suggestions = [];
+
+    if (stressLevel >= 3.0) {
+      return [
+        'Practice deep breathing exercises for 5-10 minutes.',
+        'Engage in physical activity, such as a short walk or stretching.'
+      ];
+    } else if (stressLevel == 2.0) {
+      return [
+        'Take a short break to clear your mind. Consider mindfulness or meditation.',
+        'Journal your thoughts to process your feelings.'
+      ];
+    } else if (stressLevel < 2.0 && stressLevel > 0.0) {
+      return [
+        'Spend time on hobbies or activities you enjoy.',
+        'Connect with friends or family to share your positive experiences.'
+      ];
+    } else if (stressLevel == 0.0) {
+      return [
+        'Reflect on the positive aspects of your day.',
+        'Plan activities for tomorrow that you look forward to.'
+      ];
+    } else {
+      return suggestions; // Return an empty list if no conditions match
+    }
+  }
+
+
 }
 
