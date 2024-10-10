@@ -439,7 +439,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
                       tooltipBorder: BorderSide.none,
-                      tooltipPadding: EdgeInsets.all(5), // Remove any padding
+                      tooltipPadding: EdgeInsets.only(bottom: 2), // Remove any padding
                       tooltipMargin: 0, // Remove the margin
                       // Customize the tooltip appearance
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -461,7 +461,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
 
                   gridData: FlGridData(show: false), // Disable grid lines
                   alignment: BarChartAlignment.spaceAround, // Space the bars evenly
-                  maxY: 5, // Maximum Y value (assuming 5 for visual consistency)
+                  maxY: 15, // Maximum Y value (assuming 5 for visual consistency)
                 ),
               ),
             ),

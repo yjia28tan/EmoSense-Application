@@ -3,9 +3,11 @@ import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class EmotionTrendLineChart extends StatelessWidget {
   final List<Map<String, dynamic>> emotionData;
+
 
   const EmotionTrendLineChart({Key? key, required this.emotionData}) : super(key: key);
 
@@ -14,7 +16,7 @@ class EmotionTrendLineChart extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0), // Increased bottom padding
+      padding: const EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
       child: Container(
         height: screenHeight * 0.3,
         decoration: BoxDecoration(
@@ -27,15 +29,15 @@ class EmotionTrendLineChart extends StatelessWidget {
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
               topTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false), // Remove top titles
+                sideTitles: SideTitles(showTitles: false),
               ),
               rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false), // Remove right titles
+                sideTitles: SideTitles(showTitles: false),
               ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30, // Reserve more space for bottom titles
+                  reservedSize: 30,
                   getTitlesWidget: _buildBottomTitles,
                 ),
               ),
@@ -50,35 +52,37 @@ class EmotionTrendLineChart extends StatelessWidget {
               touchTooltipData: LineTouchTooltipData(
                 getTooltipItems: (List<LineBarSpot> spots) {
                   return spots.map((spot) {
+                    final timestamp = (emotionData[spot.x.toInt()]['timestamp'] as Timestamp).toDate();
+
+                    // Format the timestamp to dd/MM HH:mm:ss
+                    String formattedDate = DateFormat('dd/MM \nHH:mm:ss').format(timestamp);
+
                     return LineTooltipItem(
-                      '${spot.y.toInt()}',
+                      formattedDate, // Use the formatted date in the tooltip
                       greySmallText.copyWith(
-                        fontSize: 16,
+                        fontSize: 10,
                         color: AppColors.textColorBlack,
-                        backgroundColor: Colors.transparent, // Text background color (optional)
+                        backgroundColor: Colors.transparent,
                       ),
                     );
                   }).toList();
                 },
                 getTooltipColor: (touchedSpot) {
-                  return Colors.transparent; // Set tooltip background color to transparent
+                  return AppColors.downBackgroundColor;
                 },
-                tooltipRoundedRadius: 8.0, // Customize the tooltip radius if needed
+                tooltipRoundedRadius: 8.0,
               ),
             ),
 
-
-            // Add horizontal line at y = 0
             extraLinesData: ExtraLinesData(
               horizontalLines: [
                 HorizontalLine(
-                  y: 0, // Position the line at y = 0
-                  color: AppColors.upBackgroundColor, // Define the color of the horizontal line
-                  strokeWidth: 2, // Set the thickness of the line
+                  y: 0,
+                  color: AppColors.upBackgroundColor,
+                  strokeWidth: 2,
                 ),
               ],
             ),
-
           ),
         ),
       ),
@@ -91,25 +95,22 @@ class EmotionTrendLineChart extends StatelessWidget {
     // Populate spots based on the emotionData and valence
     for (var i = 0; i < emotionData.length; i++) {
       final emotion = emotionData[i]['emotion'];
+      double valence = _getEmotionValence(emotion);
 
-      // Convert emotion to valence
-      double valence = _getEmotionValence(emotion) as double;
-
-      // Create FlSpot with the x-value as index and y-value as valence
       spots.add(FlSpot(i.toDouble(), valence));
     }
 
     return LineChartBarData(
-        spots: spots,
-        isCurved: true,
-        dotData: FlDotData(show: true),
-    color: AppColors.darkPurpleColor, // Define the color of the line
-    belowBarData: BarAreaData(
-    show: true,
-    color: (spots.any((spot) => spot.y > 0) // Change this logic based on your requirement
-    ? AppColors.fearContainer // Color for the area below y=0
-        : AppColors.happyContainer), // Color for the area above y=0
-    ),
+      spots: spots,
+      isCurved: true,
+      dotData: FlDotData(show: true),
+      color: AppColors.darkPurpleColor,
+      belowBarData: BarAreaData(
+        show: true,
+        color: (spots.any((spot) => spot.y > 0)
+            ? AppColors.fearContainer
+            : AppColors.happyContainer),
+      ),
     );
   }
 
@@ -133,16 +134,25 @@ class EmotionTrendLineChart extends StatelessWidget {
   }
 
   Widget _buildBottomTitles(double value, TitleMeta meta) {
-    // Fetch the timestamp from the emotionData and convert it to DateTime
-    final timestamp = (emotionData[value.toInt()]['timestamp'] as Timestamp).toDate();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Text(
-        '${timestamp.day}/${timestamp.month}',
-        style: titleBlack.copyWith(fontSize: 10),
-      ),
-    );
+    // Assuming the first and last indices represent the start and end of the week
+    if (value == 0) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          '${(emotionData.first['timestamp'] as Timestamp).toDate().day}/${(emotionData.first['timestamp'] as Timestamp).toDate().month}',
+          style: titleBlack.copyWith(fontSize: 10),
+        ),
+      );
+    } else if (value == (emotionData.length - 1).toDouble()) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          '${(emotionData.last['timestamp'] as Timestamp).toDate().day}/${(emotionData.last['timestamp'] as Timestamp).toDate().month}',
+          style: titleBlack.copyWith(fontSize: 10),
+        ),
+      );
+    }
+    return Container(); // Return empty for intermediate values
   }
 
   Widget _buildLeftTitles(double value, TitleMeta meta) {
