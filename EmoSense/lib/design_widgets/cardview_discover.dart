@@ -1,73 +1,50 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emosense/design_widgets//font_style.dart';
 
 class MeditationToolCard extends StatelessWidget {
   final String backgroundImage;
-  final IconData iconData;
   final String title;
-  final String description;
   final VoidCallback? onTap;
 
   MeditationToolCard({
     required this.backgroundImage,
-    required this.iconData,
     required this.title,
-    required this.description,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        elevation: 2.0, // Adds shadow under the card
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure children expand horizontally
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-                image: DecorationImage(
-                  image: AssetImage(backgroundImage),
-                  fit: BoxFit.cover,
-                ),
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+              child: Image.asset(
+                backgroundImage,
+                fit: BoxFit.cover,
+                height: screenHeight * 0.24 ,
+                width: double.infinity,
               ),
-              height: 150.0,
-              width: double.infinity,
             ),
-            Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Card(
-                      color: Colors.transparent,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        iconData,
-                        color: Color(0xFF366021),
-                      ),
-                      SizedBox(width: 8.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: whiteText,
-                            ),
-
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: greySmallText.copyWith(fontSize: 16.0)
+                ),
               ),
             ),
           ],

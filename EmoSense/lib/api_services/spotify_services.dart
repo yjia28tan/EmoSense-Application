@@ -152,9 +152,36 @@ class SpotifyService {
     }
   }
 
+  /// Fetch podcast details including image and external URL
+  Future<Map<String, dynamic>> getPodcastDetails(String podcastId) async {
+    if (accessToken == null) {
+      throw Exception('Access token is not set');
+    }
+
+    final url = 'https://api.spotify.com/v1/shows/$podcastId';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return {
+        'name': data['name'],
+        'description': data['description'],
+        'imageUrl': data['images'] != null && data['images'].isNotEmpty
+            ? data['images'][0]['url']
+            : '',
+        'externalUrl': data['external_urls']['spotify'] ?? '',
+      };
+    } else {
+      throw Exception('Failed to load podcast details');
+    }
+  }
+
+
 
 }
-
 
 
 

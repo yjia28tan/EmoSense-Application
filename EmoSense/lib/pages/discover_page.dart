@@ -1,8 +1,10 @@
 import 'dart:math';
-
 import 'package:emosense/api_services/quote_services.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/cardview_discover.dart';
 import 'package:emosense/design_widgets/font_style.dart';
+import 'package:emosense/design_widgets/meditation_tools_model.dart';
+import 'package:emosense/pages/meditation_guides_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,6 +29,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
     final random = Random();
     return fallbackQuotes[random.nextInt(fallbackQuotes.length)];
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +73,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     return Container(
                       decoration: BoxDecoration(
                         color: AppColors.upBackgroundColor, // Background color
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -162,7 +166,39 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   style: titleBlack,
                 ),
               ),
-              SizedBox(height: screenHeight * 0.01),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: meditationTools.length,
+                padding: EdgeInsets.zero,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 1,
+                  crossAxisSpacing: 0,
+                  mainAxisSpacing: 0,
+                  childAspectRatio: 1.335, // Adjust this ratio as per your design
+                ),
+                itemBuilder: (context, index) {
+                  final tool = meditationTools[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MeditationGuidePage(tool: tool),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0),
+                      child: MeditationToolCard(
+                        backgroundImage: tool.backgroundImage,
+                        title: tool.title,
+                      ),
+                    ),
+                  );
+                },
+              ),
+
             ],
           ),
         ),
