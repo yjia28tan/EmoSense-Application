@@ -300,6 +300,8 @@ class _DailyViewHomeState extends State<DailyViewHome> {
           ),
         ),
         _buildEmotionCountChart(context),
+
+        // Reflections and Stress Suggestions
         Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(

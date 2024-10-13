@@ -313,6 +313,75 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
           ),
         ),
 
+        // Display the reflections and stress relief suggestions
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5, left: 4, right: 5),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Reflections',
+                    style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                  ),
+                ),
+              ),
+              if (counter == 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'No reflections available for today.',
+                    style: greySmallText.copyWith(fontSize: 14),
+                  ),
+                ),
+              if (counter > 0) ...[
+                // Display reflections
+                // for (var reflection in reflections)
+                //   Padding(
+                //     padding: const EdgeInsets.only(bottom: 5),
+                //     child: Text(
+                //       reflection,
+                //       style: greySmallText.copyWith(fontSize: 14),
+                //     ),
+                //   ),
+
+                // Display the stress suggestions header
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Stress Relief Suggestions',
+                    style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
+                  ),
+                ),
+
+                // Display stress suggestions
+                // for (var suggestion in stressSuggestion)
+                //   Padding(
+                //     padding: const EdgeInsets.only(bottom: 5),
+                //     child: Text(
+                //       suggestion,
+                //       style: greySmallText.copyWith(fontSize: 14),
+                //     ),
+                //   ),
+              ],
+            ],
+          ),
+        ),
+
       ],
 
     );
@@ -465,6 +534,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
                 ),
               ),
             ),
+
             SizedBox(height: 10),
 
           ],
