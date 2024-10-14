@@ -1,6 +1,7 @@
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/meditation_tools_model.dart';
+import 'package:emosense/pages/dicover_sleeping_page.dart';
 import 'package:emosense/pages/discover_breathing_page.dart';
 import 'package:emosense/pages/discover_mindfulness_page.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,7 @@ class MeditationGuidePage extends StatelessWidget {
         guideContentWidget = BreathingGuideContent();
         break;
       case 'Sleeping guide':
-        // guideContentWidget = SleepingGuideContent();
-        guideContentWidget = Container();
+        guideContentWidget = SleepingGuideContent();
         break;
       case 'Stress relief':
         // guideContentWidget = StressReliefGuideContent();

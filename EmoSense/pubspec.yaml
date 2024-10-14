@@ -60,6 +60,7 @@ dependencies:
   syncfusion_flutter_sliders: ^27.1.48
   flutter_native_splash: ^2.2.16
   audioplayers: ^6.0.0
+  flutter_tts: ^4.0.2
 
 dev_dependencies:
   flutter_test:
@@ -93,6 +94,7 @@ flutter:
     - assets/onboarding/
     - assets/otherLogo/
     - assets/audio/5mins mindfulness audio.mp3
+    - assets/audio/deepMeditation.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

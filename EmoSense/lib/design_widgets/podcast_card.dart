@@ -10,18 +10,20 @@ class PodcastCard extends StatelessWidget {
   final String description;
   final String imageUrl;
   final String spotifyLink;
-  final String youtubeLink;
+  final String? youtubeLink; // Make youtubeLink nullable
 
   PodcastCard({
     required this.title,
     required this.description,
     required this.imageUrl,
     required this.spotifyLink,
-    required this.youtubeLink,
+    this.youtubeLink, // Change here to make it optional
   });
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0,
@@ -39,8 +41,8 @@ class PodcastCard extends StatelessWidget {
               ),
               child: Image.network(
                 imageUrl,
-                height: 80,
-                width: 80,
+                height: 100,
+                width: 100,
                 fit: BoxFit.cover,
               ),
             ),
@@ -65,7 +67,7 @@ class PodcastCard extends StatelessWidget {
                     style: greySmallText.copyWith(fontSize: 12),
                     textAlign: TextAlign.justify,
                   ),
-                  SizedBox(height: 25),
+                  SizedBox(height: screenHeight * 0.025),
                   Align(
                     alignment: Alignment.center,
                     child: Column(
@@ -86,29 +88,27 @@ class PodcastCard extends StatelessWidget {
                               },
                               child: Image.asset(
                                 'assets/otherLogo/spotify.png',
-                                height: 120.0,
+                                height: 60.0,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () async {
-                                if (await canLaunch(youtubeLink)) {
-                                  await launch(youtubeLink);
-                                }
-                              },
-                              child: Image.asset(
-                                'assets/otherLogo/youtube.png',
-                                height: 120.0,
+                            // Conditionally display YouTube logo
+                            if (youtubeLink != null) // Only display if youtubeLink is not null
+                              GestureDetector(
+                                onTap: () async {
+                                  if (await canLaunch(youtubeLink!)) {
+                                    await launch(youtubeLink!);
+                                  }
+                                },
+                                child: Image.asset(
+                                  'assets/otherLogo/youtube.png',
+                                  height: 60.0,
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
-
-
-
-
                 ],
               ),
             ),

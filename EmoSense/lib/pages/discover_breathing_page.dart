@@ -13,62 +13,27 @@ class BreathingGuideContent extends StatefulWidget {
 }
 
 class _BreathingGuideContentState extends State<BreathingGuideContent > {
-  // final FlutterTts flutterTts = FlutterTts();
-  final AudioPlayer audioPlayer = AudioPlayer();
-  bool isPlaying = false;
+  final SpotifyService spotifyService = SpotifyService();
+  Map<String, dynamic>? breathing_podcastData;
 
   @override
-  void dispose() {
-    // flutterTts.stop();
-    audioPlayer.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _fetchPodcastData();
   }
 
-  // Future<void> _speakInstructions() async {
-  //   await flutterTts.speak(
-  //     // Insert the breathing exercise instructions here
-  //     'Three Steps to Deep Breathing\n\n'
-  //         'In order to experience deep breathing,\n first\n you will have to identify\n and experience\n the three types of breathing that comprise it.\n For this exercise\n it is better to lay down on your back if possible.\n Place the right hand\n on top of your navel\n and the left hand\n on top of your chest.\n\n Start by observing the natural flow of your breath for a few cycles.\n\n'
-  //         '\n\nAbdominal breathing.\n\n'
-  //         'With the next inhalation,\n think of intentionally sending the air\n towards the navel\n by letting your abdomen expand and rise freely.\n\n'
-  //         'Feel the right hand rising while the left hand remains almost still on top of the chest.\n\n'
-  //         'Feel the right hand coming down as you exhale while keeping the abdomen relaxed.\n\n'
-  //         'Continue to repeat this for a few minutes without straining the abdomen,\n but rather allowing it to expand and relax freely.\n\n'
-  //         'After some repetitions,\n return to your natural breathing.\n\n'
-  //         '\n\nThoracic breathing.\n\n'
-  //         'Without changing your position,\n you will now shift your attention to your ribcage.\n\n'
-  //         'With the next inhalation,\n think of intentionally sending the air\n towards your rib cage\n instead of the abdomen.\n\n'
-  //         'Let the thorax expand\n and rise freely,\n allowing your left hand\n to move up\n and down\n as you keep breathing.\n\n'
-  //         'Breath through the chest\n without engaging your diaphragm,\n slowly\n and deeply.\n\n'
-  //         'Your right hand\n should remain almost still.\n\n'
-  //         'Continue to repeat this breathing pattern for a few minutes.\n\n'
-  //         'After some repetitions,\n return to your natural breathing.\n\n'
-  //         '\n\nClavicular breathing.\n\n'
-  //         'With the next inhalation,\n repeat the thoracic breathing pattern.\n\n'
-  //         'When the ribcage is completely expanded,\n inhale a bit more thinking\n of allowing the air\n to fill the upper section of your lungs\n at the base of your neck.\n\n'
-  //         'Feel the shoulders\n and collar bone\n rise up gently\n to find some space for the extra air to come in.\n\n'
-  //         'Exhale slowly\n letting the collarbone\n and shoulders\n drop first\n and then\n continue to relax the ribcage.\n\n'
-  //         'Continue to repeat this for a few minutes.\n\n'
-  //         'After some repetitions,\n return to your natural breathing.',
-  //   );
-  // }
+  Future<void> _fetchPodcastData() async {
+    try {
+      await spotifyService.authenticate(); // Authenticate first
+      breathing_podcastData = await spotifyService.getPodcastDetails('7tPtOD4FvVPvWKRentMzVd?si=0a09fc09835e4f88');
 
-  // Future<void> _playSound() async {
-  //   await audioPlayer.play(AssetSource('audio/deepMeditation.mp3'), volume: 1); // Adjust the volume as needed
-  // }
-  //
-  // Future<void> _stopSound() async {
-  //   await audioPlayer.stop();
-  // }
-  //
-  // Future<void> _playInstructionsWithMusic() async {
-  //   // Play the background music
-  //   await _playSound();
-  //   // Speak the instructions
-  //   await _speakInstructions();
-  //   // Stop the music after speaking
-  //   await _stopSound();
-  // }
+      print('Breathing podcast data: $breathing_podcastData');
+      setState(() {});
+    } catch (error) {
+      print('Error fetching podcast data: $error');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,39 +57,6 @@ class _BreathingGuideContentState extends State<BreathingGuideContent > {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Positioned(
-                  right: 16.0,
-                  bottom: 16.0,
-                  child: GestureDetector(
-                    onTap: () async {
-                      // if (isPlaying) {
-                      //   await flutterTts.stop();
-                      //   await _stopSound();
-                      // } else {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(
-                      //       content: Text('Playing Instructions...'),
-                      //       duration: Duration(seconds: 2),
-                      //     ),
-                      //   );
-                      //   await _playSound();
-                      //   await _playInstructionsWithMusic();
-                      // }
-                      // setState(() {
-                      //   isPlaying = !isPlaying;
-                      // });
-                    },
-                    child: CircleAvatar(
-                      radius: 24.0,
-                      backgroundColor: AppColors.upBackgroundColor,
-                      child: Icon(
-                        isPlaying ? Icons.stop : Icons.play_arrow,
-                        color: AppColors.darkPurpleColor,
-                        size: 32.0,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
             Padding(
@@ -138,14 +70,6 @@ class _BreathingGuideContentState extends State<BreathingGuideContent > {
                     child: Text(
                       'Breathing exercises',
                       style: titleBlack.copyWith(fontSize: 18.0, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(height: 4.0),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '5 mins',
-                      style: greySmallText.copyWith(fontSize: 14.0),
                     ),
                   ),
                   SizedBox(height: 8.0),
@@ -222,18 +146,17 @@ class _BreathingGuideContentState extends State<BreathingGuideContent > {
             // Additional content
             SizedBox(height: screenHeight * 0.025),
             Text(
-              'Here are the podcast sessions to help you get started: \n',
+              'Here are the podcast sessions to help you get started on breathing exercise: \n',
               style: greySmallText.copyWith(fontSize: 16.0, fontWeight: FontWeight.bold),
               textAlign: TextAlign.justify,
             ),
-            // if (mindfulness_podcastData != null) // Check if podcast data is available
-            //   PodcastCard(
-            //     title: 'Mindful Meditations by Mindful.org',
-            //     description: mindfulness_podcastData!['description'],
-            //     imageUrl: mindfulness_podcastData!['imageUrl'],
-            //     spotifyLink: mindfulness_podcastData!['externalUrl'],
-            //     youtubeLink: 'https://www.youtube.com/channel/UCXsjej0djMYxtGC3RMHBUvg',
-            //   ),
+            if (breathing_podcastData != null) // Check if podcast data is available
+              PodcastCard(
+                title: 'Mindful Breathing Exercise',
+                description: breathing_podcastData!['description'],
+                imageUrl: breathing_podcastData!['imageUrl'],
+                spotifyLink: breathing_podcastData!['externalUrl'],
+              ),
           ],
         ),
       ),

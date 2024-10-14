@@ -13,9 +13,6 @@ class MindfulnessGuideContent extends StatefulWidget {
 }
 
 class _MindfulnessGuideContentState extends State<MindfulnessGuideContent> {
-  final AudioPlayer audioPlayer = AudioPlayer();
-  bool isPlaying = false;
-  String currentAudio = '';
   final SpotifyService spotifyService = SpotifyService();
   Map<String, dynamic>? mindfulness_podcastData;
 
@@ -33,26 +30,6 @@ class _MindfulnessGuideContentState extends State<MindfulnessGuideContent> {
     } catch (error) {
       print('Error fetching podcast data: $error');
     }
-  }
-
-  Future<void> _togglePlayback(String audioPath) async {
-    if (isPlaying && currentAudio == audioPath) {
-      await _stopSound();
-    } else {
-      await _playSound(audioPath);
-    }
-    setState(() {
-      isPlaying = !isPlaying;
-      currentAudio = isPlaying ? audioPath : '';
-    });
-  }
-
-  Future<void> _playSound(String audioPath) async {
-    await audioPlayer.play(AssetSource(audioPath), volume: 1);
-  }
-
-  Future<void> _stopSound() async {
-    await audioPlayer.stop();
   }
 
   @override
@@ -77,24 +54,6 @@ class _MindfulnessGuideContentState extends State<MindfulnessGuideContent> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                // Positioned(
-                //   right: 16.0,
-                //   bottom: 16.0,
-                //   child: GestureDetector(
-                //     onTap: () {
-                //       _togglePlayback('assets/audio/5mins mindfulness audio.mp3');
-                //     },
-                //     child: CircleAvatar(
-                //       radius: 24.0,
-                //       backgroundColor: AppColors.upBackgroundColor,
-                //       child: Icon(
-                //         isPlaying ? Icons.pause : Icons.play_arrow,
-                //         color: AppColors.darkPurpleColor,
-                //         size: 32.0,
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
             Padding(
@@ -110,14 +69,6 @@ class _MindfulnessGuideContentState extends State<MindfulnessGuideContent> {
                       style: titleBlack.copyWith(fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  // SizedBox(height: 4.0),
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Text(
-                  //     '5 mins',
-                  //     style: greySmallText.copyWith(fontSize: 14.0),
-                  //   ),
-                  // ),
                   SizedBox(height: 8.0),
                   // Description
                   Align(
@@ -135,7 +86,7 @@ class _MindfulnessGuideContentState extends State<MindfulnessGuideContent> {
             // Additional content
             SizedBox(height: screenHeight * 0.025),
             Text(
-              'Here are the podcast sessions to help you get started: \n',
+              'Here are the podcast sessions to help you get started on mindfulness meditation: \n',
               style: greySmallText.copyWith(fontSize: 16.0, fontWeight: FontWeight.bold),
               textAlign: TextAlign.justify,
             ),
