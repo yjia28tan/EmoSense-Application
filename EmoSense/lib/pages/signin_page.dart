@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,23 +32,17 @@ class _SigninPageState extends State<SigninPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background color and emoji/logo
           Container(
-            color: AppColors.upBackgroundColor, // Background color matching the design
-            child: Column(
-              children: [
-                SizedBox(height: screenHeight * 0.08),// Spacing from the top
-                Padding(
-                  padding: EdgeInsets.all(screenWidth * 0.08),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: AppColors.darkLogoColor,
-                    ),
-                  ),
-                ),
-              ],
+            color: AppColors.upBackgroundColor,
+          ),
+          // Image asset positioned in the stack
+          Positioned(
+            top: screenHeight * 0.00015,
+            right: screenWidth * 0,
+            child: CircleAvatar(
+              radius: 200,
+              backgroundColor: AppColors.upBackgroundColor,
+              backgroundImage: AssetImage('assets/hi.png'), // Use your image asset here
             ),
           ),
           // Form container with rounded top corners
@@ -79,7 +74,7 @@ class _SigninPageState extends State<SigninPage> {
                         onTap: () async {
                           showDialog(
                             context: context,
-                            builder: (context) => Center(child: CircularProgressIndicator()),
+                            builder: (context) => Center(child: CustomLoadingIndicator()),
                           );
               
                           try {
@@ -130,7 +125,7 @@ class _SigninPageState extends State<SigninPage> {
                         onPressed: () async {
                           showDialog(
                             context: context,
-                            builder: (context) => Center(child: CircularProgressIndicator()),
+                            builder: (context) => Center(child: CustomLoadingIndicator()),
                           );
               
                           try {
