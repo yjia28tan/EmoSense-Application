@@ -239,13 +239,8 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       latestEmotion = _emotionForToday.last;
     }
 
-    print('Latest Emotion: $latestEmotion');
-    print('Average Stress Level: $_currentStressLevelValue');
-
     // Safely access the 'emotion' field, providing a default value if null
     String currentEmotion = latestEmotion?['emotion'] ?? 'NONE';
-
-    print('Latest Emotion: $currentEmotion');
 
     // Use currentEmotion for your reflections
     List<String> reflections = _getReflectionQuestions(currentEmotion);
@@ -254,10 +249,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
     List<String> stressSuggestion = _currentStressLevelValue != null
         ? _getSuggestions(_currentStressLevelValue!)
         : []; // Provide an empty list or handle the null case
-
-    print("Reflections: $reflections");
-    print("Stress Suggestions: $stressSuggestion");
-
 
     return Column(
       children: [
@@ -344,6 +335,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
                       child: Text(
                         reflection,
                         style: greySmallText.copyWith(fontSize: 14),
+                        textAlign: TextAlign.justify,
                       ),
                     ),
 
@@ -363,6 +355,7 @@ class _DailyViewHomeState extends State<DailyViewHome> {
                       child: Text(
                         suggestion,
                         style: greySmallText.copyWith(fontSize: 14),
+                        textAlign: TextAlign.justify,
                       ),
                     ),
                 ],
@@ -707,16 +700,21 @@ class _DailyViewHomeState extends State<DailyViewHome> {
 
     if (stressLevel >= 3.0) {
       return [
+        'You may be experiencing high stress levels. Take a moment to relax and unwind.',
         'Practice deep breathing exercises for 5-10 minutes.',
         'Engage in physical activity, such as a short walk or stretching.'
+        '\n\nMore stress relief suggestions refer to the "Stress Relief" section in the Discover Page.'
       ];
-    } else if (stressLevel == 2.0) {
+    } else if (stressLevel > 2.0 && stressLevel < 3.0) {
       return [
-        'Take a short break to clear your mind. Consider mindfulness or meditation.',
+        'You are doing well, but could benefit from some relaxation techniques.',
+        'You may take a short break to clear your mind. Consider mindfulness or meditation.',
         'Journal your thoughts to process your feelings.'
+        '\n\nMore suggestions refer to the Meditation Guides in the Discover Page.'
       ];
-    } else if (stressLevel < 2.0 && stressLevel > 0.0) {
+    } else if (stressLevel <= 2.0 && stressLevel > 0.0) {
       return [
+        'Well done! You are managing your stress well. Keep it up!',
         'Spend time on hobbies or activities you enjoy.',
         'Connect with friends or family to share your positive experiences.'
       ];
