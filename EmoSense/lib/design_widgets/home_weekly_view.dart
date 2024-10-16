@@ -107,6 +107,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         }
       });
 
+      // Calculate the average stress level
       _currentStressLevelValue = totalStress / emotions.length;
       print('Average Stress Level: $_currentStressLevelValue');
 
@@ -357,7 +358,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
             ],
           ),
         ),
-
         SizedBox(height: 25),
       ],
     );
