@@ -96,8 +96,6 @@ class _DailyViewHomeState extends State<DailyViewHome> {
       print('Average Stress Level: $_currentStressLevelValue');
 
       _currentStressLevel = getStressLevel(_currentStressLevelValue!);
-
-
     } else {
       _currentStressLevel = stressModels.last;
     }

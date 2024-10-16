@@ -23,6 +23,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
   late String endFormatted;
   List<Map<String, dynamic>> _emotionForThisWeek = [];
   StressModel _currentStressLevel = stressModels.last;
+  double? _currentStressLevelValue;
   int counter = 0;
 
   Map<String, int> stressCounts = {
@@ -84,7 +85,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
 
       // Calculate stress level counts and update the counter
       stressCounts = _calculateStressLevelCounts(emotions);
-
       counter = emotions.length;
 
       // Update state with the emotions fetched for the week
@@ -107,10 +107,10 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
         }
       });
 
-      double averageStressLevel = totalStress / emotions.length;
-      print('Average Stress Level: $averageStressLevel');
+      _currentStressLevelValue = totalStress / emotions.length;
+      print('Average Stress Level: $_currentStressLevelValue');
 
-      _currentStressLevel = getStressLevel(averageStressLevel);
+      _currentStressLevel = getStressLevel(_currentStressLevelValue!);
     } else {
       _currentStressLevel = stressModels.last;
     }
@@ -188,7 +188,6 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     return formattedDate;
   }
 
-
   void _showPreviousWeek() {
     setState(() {
       _selectedDate = _selectedDate.subtract(Duration(days: 7));
@@ -258,6 +257,14 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // Generate reflections and suggestions
+    List<String> reflections = generateReflections(_emotionForThisWeek);
+
+    print('to get suggestion Stress Level: $_currentStressLevelValue');
+    List<String> stressSuggestion = _currentStressLevelValue != null
+        ? generateSuggestions(_currentStressLevelValue!)
+        : [];
 
     return Column(
       children: [
@@ -333,15 +340,8 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
                   ),
                 ),
               if (counter > 0) ...[
-                // Display reflections
-                // for (var reflection in reflections)
-                //   Padding(
-                //     padding: const EdgeInsets.only(bottom: 5),
-                //     child: Text(
-                //       reflection,
-                //       style: greySmallText.copyWith(fontSize: 14),
-                //     ),
-                //   ),
+                // display the reflections
+                ..._buildReflections(reflections),
 
                 // Display the stress suggestions header
                 Padding(
@@ -351,16 +351,8 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
                     style: titleBlack.copyWith(fontSize: screenHeight * 0.02),
                   ),
                 ),
-
-                // Display stress suggestions
-                // for (var suggestion in stressSuggestion)
-                //   Padding(
-                //     padding: const EdgeInsets.only(bottom: 5),
-                //     child: Text(
-                //       suggestion,
-                //       style: greySmallText.copyWith(fontSize: 14),
-                //     ),
-                //   ),
+                // Display the stress relief suggestions
+                ..._buildSuggestions(stressSuggestion),
               ],
             ],
           ),
@@ -371,6 +363,120 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     );
   }
 
+  List<Widget> _buildReflections(List<String> reflections) {
+    return reflections.map((reflection) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 5.0),
+        child: Text(
+          reflection,
+          style: greySmallText.copyWith(
+              fontSize: 14, fontStyle: FontStyle.normal),
+          textAlign: TextAlign.justify,
+        ),
+      );
+    }).toList();
+  }
+
+  List<Widget> _buildSuggestions(List<String> suggestions) {
+    return suggestions.map((suggestion) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 5.0),
+        child: Text(
+          suggestion,
+          style: greySmallText.copyWith(fontSize: 14, fontStyle: FontStyle.normal),
+          textAlign: TextAlign.justify,
+        ),
+      );
+    }).toList();
+  }
+
+  List<String> generateReflections(List<Map<String, dynamic>> emotionData) {
+    List<String> reflections = [];
+
+    if (emotionData.isNotEmpty) {
+      int positiveCount = emotionData.where((emotion) => emotion['emotion'] == 'Happy').length;
+      int negativeCount = emotionData.where((emotion) => emotion['emotion'] == 'Sad').length;
+
+      double averageValence = emotionData.map((e) => _getEmotionValence(e['emotion'])).reduce((a, b) => a + b) / emotionData.length;
+
+      if (positiveCount > negativeCount) {
+        reflections.add('You experienced more happiness emotion than sad emotion this week. \nKeep focusing on the positive moments!');
+        reflections.add('Consider what made you happy and how you can replicate those moments.');
+        reflections.add('Reflect on the positive aspects of your life.\n\n');
+      } else if (negativeCount > positiveCount) {
+        reflections.add('You had some sad moments this week. \nConsider what might have caused those feelings.');
+        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
+        reflections.add('Remember that it is normal to experience a range of emotions.');
+        reflections.add('Consider what can make you happy and how you can replicate those moments.\n\n');
+      } else { // when happy == sad
+        reflections.add('You experienced an equal number of happy and sad emotions this week. \n');
+      }
+
+      if (averageValence < 0) {
+        reflections.add('Overall, the emotional trend indicates more negative emotions. \n');
+        reflections.add('Consider what might have caused these feelings and how you can address them.');
+        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
+        reflections.add('Remember that it is normal to experience a negative emotions, but it is important to address them.');
+      } else if (averageValence > 0) {
+        reflections.add('Overall, the emotional trend indicates more positive emotions. \n');
+        reflections.add('Consider what made you happy and how you can replicate those moments.');
+        reflections.add('Reflect on the positive aspects of your life and seek to maintain this positive trend.');
+      } else {
+        reflections.add('You experienced a mix of emotions this week. \n');
+        reflections.add('Consider what might have caused the mix feelings and how you can address them.');
+        reflections.add('Try to maintain a balance between positive and negative emotions.');
+        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
+        reflections.add('Remember that it is normal to experience a range of emotions.');
+      }
+    }
+
+    return reflections;
+  }
+
+  List<String> generateSuggestions(double averageStressLevel) {
+    List<String> suggestions = [];
+
+    if (averageStressLevel >= 3.0) {
+      suggestions.add('Consider practicing mindfulness or meditation to reduce stress.');
+      suggestions.add('Engage in physical activities to relieve tension.');
+      suggestions.add('Seek support from friends or family to discuss your feelings.');
+      suggestions.add('\nMore suggestions for stress relief can be found in the "Stress Relief" section of the Discover page.');
+
+    } else if (averageStressLevel > 2.0 && averageStressLevel < 3.0) {
+      suggestions.add('You have maintained an optimal stress level this week. Keep up the good work! ><');
+      suggestions.add('Practice deep breathing exercises to relax your mind and body.');
+      suggestions.add('Take regular breaks during your day to refresh your mind.');
+      suggestions.add('Try journaling your thoughts and feelings.');
+    } else if (averageStressLevel <= 2.0 && averageStressLevel > 0.0) {
+      suggestions.add('WELL DONE! You are managing your stress well. Keep it up! ^^');
+      suggestions.add('Spend time on hobbies or activities you enjoy.');
+      suggestions.add('Practice gratitude by reflecting on positive aspects of your life.');
+      suggestions.add('Connect with friends or family to share your positive experiences.');
+    }else {
+      suggestions.add('Maintain a healthy balance of work and leisure.');
+    }
+
+    return suggestions;
+  }
+
+  double _getEmotionValence(String emotion) {
+    switch (emotion) {
+      case 'Happy':
+        return 5.0;
+      case 'Neutral':
+        return 0.0;
+      case 'Sad':
+        return -3.0;
+      case 'Fear':
+        return -4.0;
+      case 'Angry':
+        return -5.0;
+      case 'Disgust':
+        return -4.0;
+      default:
+        return 0.0;
+    }
+  }
 
   Widget _buildEmotionCountChart(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
