@@ -1,4 +1,5 @@
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/font_style.dart';
 import 'package:flutter/material.dart';
 
 TextField forTextField(String text, IconData icon, bool isPasswordType,
@@ -34,6 +35,50 @@ TextField forTextField(String text, IconData icon, bool isPasswordType,
   );
 }
 
+Widget forPasswordTextField(String text, IconData icon, bool isPasswordType,
+    TextEditingController controller, bool isPasswordVisible, VoidCallback toggleVisibility) {
+  return TextField(
+    controller: controller,
+    obscureText: isPasswordType ? !isPasswordVisible : false, // Toggle password visibility
+    cursorColor: Colors.black12,
+    style: TextStyle(
+      fontSize: 14.0,
+      color: AppColors.textColorBlack,
+    ),
+    decoration: InputDecoration(
+      prefixIcon: Icon(
+        icon,
+        size: 17.0,
+        color: AppColors.textColorGrey,
+      ),
+      hintText: text,
+      labelStyle: TextStyle(color: AppColors.textColorGrey),
+      filled: true,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      fillColor: AppColors.textFieldColor,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15.0),
+        borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 13.0, horizontal: 15.0),
+
+      // Show/Hide password toggle for password fields
+      suffixIcon: isPasswordType
+          ? IconButton(
+            icon: Icon(
+              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+              size: 17.0,
+              color: AppColors.textColorGrey,
+            ),
+            onPressed: toggleVisibility, // Toggle visibility when icon is pressed
+          )
+          : null,
+    ),
+    keyboardType: isPasswordType
+        ? TextInputType.visiblePassword
+        : TextInputType.emailAddress,
+  );
+}
 
 TextField forReadTextField(String text, IconData icon, bool isPasswordType,
     bool isWriteType, String detail) {

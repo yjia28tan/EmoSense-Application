@@ -25,9 +25,22 @@ class _SignUpPageState extends State<SignUpPage> {
 
   // New variable to track agreement with terms and conditions
   bool _isAgreedToTerms = false;
+  bool _isPasswordVisible = false; // Password visibility toggle
 
   bool passwordConfirmed() {
     return _passwordTextController.text.trim() == _confirmTextController.text.trim();
+  }
+
+  bool isValidPassword(String password) {
+    // At least 6 characters, one uppercase, one lowercase, one number, and one special character
+    RegExp passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$');
+    return passwordRegex.hasMatch(password);
+  }
+
+  bool isValidEmail(String email) {
+    // Basic email validation
+    RegExp emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
   }
 
   @override
@@ -76,9 +89,31 @@ class _SignUpPageState extends State<SignUpPage> {
                     SizedBox(height: screenHeight * 0.015),
                     forTextField("Email", Icons.email, false, _emailTextController),
                     SizedBox(height: screenHeight * 0.015),
-                    forTextField("Password", Icons.lock, true, _passwordTextController),
+                    forPasswordTextField(
+                        "Password",
+                        Icons.lock,
+                        true,
+                        _passwordTextController,
+                        _isPasswordVisible,
+                            () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible; // Toggle password visibility
+                          });
+                        }
+                    ),
                     SizedBox(height: screenHeight * 0.015),
-                    forTextField("Confirm Password", Icons.lock, true, _confirmTextController),
+                    forPasswordTextField(
+                        "Confirm Password",
+                        Icons.lock,
+                        true,
+                        _confirmTextController,
+                        _isPasswordVisible,
+                            () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible; // Toggle password visibility
+                          });
+                        }
+                        ),
 
                     // Checkbox for terms and conditions
                     CheckboxListTile(
@@ -118,13 +153,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
 
                     Container(
-                      width: double.infinity,  // Takes the full width of the screen
+                      width: double.infinity,
                       height: screenHeight * 0.07,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.darkPurpleColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100),  // Add rounded corners if needed
+                            borderRadius: BorderRadius.circular(100),
                           ),
                         ),
                         onPressed: () async {
@@ -132,23 +167,57 @@ class _SignUpPageState extends State<SignUpPage> {
                           String email = _emailTextController.text.trim();
                           String password = _passwordTextController.text.trim();
 
-                          if (username.isEmpty || email.isEmpty || password.isEmpty) {
+                          if (username.isEmpty) {
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
                                 title: const Text('Registration Failed'),
-                                content: const Text('Please fill in all details.'),
+                                content: const Text('Please enter your username.'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context); // Close the dialog
+                                      Navigator.pop(context);
                                     },
                                     child: Text('OK'),
                                   ),
                                 ],
                               ),
                             );
-                            return; // Stop further execution
+                            return;
+                          } else if (!isValidEmail(email)) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Invalid Email'),
+                                content: const Text('Please enter a valid email address.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          } else if (!isValidPassword(password)) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Weak Password'),
+                                content: const Text('Password must be at least 6 characters long and include at least one uppercase letter, one number, and one special character.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
                           } else if (!passwordConfirmed()) {
                             showDialog(
                               context: context,
@@ -158,7 +227,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context); // Close the dialog
+                                      Navigator.pop(context);
                                     },
                                     child: Text('OK'),
                                   ),
@@ -175,7 +244,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context); // Close the dialog
+                                      Navigator.pop(context);
                                     },
                                     child: Text('OK'),
                                   ),
@@ -188,15 +257,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           // Show custom loading indicator
                           showDialog(
                             context: context,
-                            barrierDismissible: false, // Prevent dismissal by tapping outside
+                            barrierDismissible: false,
                             builder: (context) => Center(child: CustomLoadingIndicator()),
                           );
 
                           try {
-                            // Register new user with email and password
                             final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                              email: _emailTextController.text,
-                              password: _passwordTextController.text,
+                              email: email,
+                              password: password,
                             );
 
                             // Save user data in Firestore
@@ -210,39 +278,31 @@ class _SignUpPageState extends State<SignUpPage> {
                               'reminderTime': null,
                             });
 
-                            // Send email verification
                             await userCredential.user!.sendEmailVerification();
 
-                            // Notify the user that the account has been created
                             final snackbar = SnackBar(
-                              content: Text("Account Created!\n Check your email to verify your account before signing in."),
+                              content: Text("Account Created! Check your email to verify your account before signing in."),
                               action: SnackBarAction(
                                 label: 'OK',
-                                onPressed: () {
-                                },
+                                onPressed: () {},
                               ),
                             );
 
-                            // Clear the text fields after success
                             _usernameTextController.clear();
                             _emailTextController.clear();
                             _passwordTextController.clear();
                             _confirmTextController.clear();
-                            // Uncheck the terms and conditions checkbox after success
+
                             setState(() {
-                              _isAgreedToTerms = false;  // Uncheck terms and conditions
+                              _isAgreedToTerms = false;
                             });
 
-                            // Dismiss custom loading indicator
                             try {
-                              Navigator.pop(context); // Dismiss the loading indicator if still present
-                            } catch (e) {
-                              // Ignore error if the loading indicator is already dismissed
-                            }
+                              Navigator.pop(context);
+                            } catch (e) {}
 
                             ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
-                            // Navigate to the sign-in page
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const SigninPage()));
 
                           } catch (error) {
@@ -262,31 +322,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               errorMessage = 'An unknown error occurred.';
                             }
 
-                            // Dismiss custom loading indicator in case of an error
-                            try {
-                              Navigator.pop(context); // Dismiss the loading indicator if still present
-                            } catch (e) {
-                              // Ignore error if the loading indicator is already dismissed
-                            }
+                            Navigator.pop(context);
 
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text("Registration Failed"),
-                                content: Text(errorMessage),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
+                            final snackbar = SnackBar(
+                              content: Text(errorMessage),
+                              action: SnackBarAction(
+                                label: 'OK',
+                                onPressed: () {},
                               ),
                             );
+
+                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           }
                         },
-
                         child: Text('Sign Up', style: whiteText),
                       ),
                     ),

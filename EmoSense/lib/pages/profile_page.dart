@@ -243,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return AlertDialog(
           title: Text(
             readOnly ? "$title" : "Edit $title",
-            style: titleBlack, // Title style
+            style: titleBlack,
           ),
           content: TextField(
             controller: _editController,
@@ -276,6 +276,149 @@ class _ProfilePageState extends State<ProfilePage> {
                 },
                 child: Text("Save"),
               ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to show the change password dialog
+  Future<void> showChangePasswordDialog(BuildContext context) async {
+    String currentPassword = '';
+    String newPassword = '';
+    String confirmPassword = '';
+
+    User? user = FirebaseAuth.instance.currentUser;
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Change Password",
+            style: titleBlack,
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                    obscureText: true,
+                    onChanged: (value) {
+                      currentPassword = value;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Current Password",
+                      labelStyle: titleBlack.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    style: greySmallText.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                    obscureText: true,
+                    onChanged: (value) {
+                      newPassword = value;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "New Password",
+                      labelStyle: titleBlack.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal),
+                    ),
+                    style: greySmallText.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                    obscureText: true,
+                    onChanged: (value) {
+                      confirmPassword = value;
+                    },
+                    decoration: InputDecoration(
+                      labelText: "Confirm New Password",
+                      labelStyle: titleBlack.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal
+                      ),
+                    ),
+                    style: greySmallText.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (newPassword != confirmPassword) {
+                  // Show an error message if passwords do not match
+                  showAlert(context, 'Error', 'New passwords do not match.');
+                  return;
+                }
+
+                // Enforce password validation: At least 6 characters, a number, an uppercase letter, and a special character
+                RegExp passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$');
+
+                if (!passwordRegex.hasMatch(newPassword)) {
+                  // Show an error message if the password doesn't meet the requirements
+                  showAlert(context, 'Error', 'Password must be at least 6 characters long, contain at least one number, one uppercase letter, and one special character.');
+                  return;
+                }
+
+                try {
+                  // Re-authenticate the user before changing the password
+                  AuthCredential credential = EmailAuthProvider.credential(
+                    email: user!.email!,
+                    password: currentPassword,
+                  );
+
+                  // Re-authenticate the user
+                  await user.reauthenticateWithCredential(credential);
+
+                  // If re-authentication is successful, update the password
+                  await user.updatePassword(newPassword);
+
+                  Navigator.pop(context); // Close the dialog
+                  showAlert(context, 'Success', 'Password changed successfully.');
+                } catch (e) {
+                  // Check for specific error messages
+                  if (e is FirebaseAuthException) {
+                    if (e.code == 'wrong-password') {
+                      showAlert(context, 'Error', 'Current password is incorrect.');
+                    } else if (e.code == 'weak-password') {
+                      showAlert(context, 'Error', 'The new password is too weak.');
+                    } else {
+                      showAlert(context, 'Error', 'Failed to change password: ${e.message}');
+                    }
+                  } else {
+                    // General error handling
+                    showAlert(context, 'Error', 'Failed to change password: $e');
+                  }
+                }
+              },
+              child: Text("Submit"),
+            ),
           ],
         );
       },
@@ -315,7 +458,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-
               // Username
               Text(
                 '$username',
@@ -424,7 +566,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-
               // Security Text
               Align(
                 alignment: Alignment.centerLeft,
@@ -451,7 +592,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     '',
                     Icons.arrow_forward_ios,
                         () async {
-                      // await showChangePasswordDialog(context);
+                      await showChangePasswordDialog(context);
                     },
                   ),
                 ),
