@@ -22,10 +22,6 @@ class _GetStartedPageState extends State<GetStartedPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve screen height and width using MediaQuery
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       bottomSheet: Container(
         color: Colors.white,
@@ -86,17 +82,10 @@ class _GetStartedPageState extends State<GetStartedPage> {
                     textAlign: TextAlign.center,),
                 ],
               );
-
             }),
       ),
     );
   }
-
-  //Now the problem is when press get started button
-  // after re run the app we see again the onboarding screen
-  // so lets do one time onboarding
-
-  //Get started button
 
   Widget getStarted(){
     return Container(
@@ -118,7 +107,7 @@ class _GetStartedPageState extends State<GetStartedPage> {
                 MaterialPageRoute(builder: (context)=>SignUpPage())
             );
           },
-          child: Text("Get started", style: whiteText.copyWith(fontSize: 20),),
+          child: Text("Get started", style: whiteText),
     ),
     );
   }
