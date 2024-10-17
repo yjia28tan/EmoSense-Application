@@ -444,17 +444,17 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
   List<String> generateMonthlySuggestions(double averageStressLevel) {
     List<String> suggestions = [];
 
-    if (averageStressLevel >= 3.0) {
+    if (averageStressLevel >= 2.5) {
       suggestions.add('For this month, consider integrating mindfulness practices into your routine to manage stress effectively.');
       suggestions.add('Engage in regular physical activities to relieve tension and boost your mood.');
       suggestions.add('Talk to friends or family about your feelings to gain support and perspective.');
       suggestions.add('\nExplore additional stress relief resources in the "Stress Relief" section of the Discover page.');
-    } else if (averageStressLevel > 2.0 && averageStressLevel < 3.0) {
+    } else if (averageStressLevel >= 1.8 && averageStressLevel < 2.5) {
       suggestions.add('You have maintained a good stress level this month. Keep it up! ^^');
       suggestions.add('Consider introducing deep breathing exercises into your daily routine to enhance relaxation.');
       suggestions.add('Taking breaks regularly is key; continue to refresh your mind throughout the day.');
       suggestions.add('Journaling your experiences can help process emotions and reduce stress.');
-    } else if (averageStressLevel <= 2.0 && averageStressLevel > 0.0) {
+    } else if (averageStressLevel < 1.8 && averageStressLevel > 0.0) {
         suggestions.add('Excellent work! You are managing your stress well. Continue it! :D');
       suggestions.add('Invest time in hobbies or activities that bring you joy to maintain this balance.');
       suggestions.add('Practice gratitude by reflecting on the positive aspects of your life regularly.');

@@ -402,12 +402,12 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
       if (positiveCount > negativeCount) {
         reflections.add('You experienced more happiness emotion than sad emotion this week. \nKeep focusing on the positive moments!');
         reflections.add('Consider what made you happy and how you can replicate those moments.');
-        reflections.add('Reflect on the positive aspects of your life.\n\n');
+        reflections.add('Reflect on the positive aspects of your life.\n');
       } else if (negativeCount > positiveCount) {
         reflections.add('You had some sad moments this week. \nConsider what might have caused those feelings.');
         reflections.add('Reflect on ways to improve your mood and seek support if needed.');
         reflections.add('Remember that it is normal to experience a range of emotions.');
-        reflections.add('Consider what can make you happy and how you can replicate those moments.\n\n');
+        reflections.add('Consider what can make you happy and how you can replicate those moments.\n');
       } else { // when happy == sad
         reflections.add('You experienced an equal number of happy and sad emotions this week. \n');
       }
@@ -436,18 +436,18 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
   List<String> generateSuggestions(double averageStressLevel) {
     List<String> suggestions = [];
 
-    if (averageStressLevel >= 3.0) {
+    if (averageStressLevel >= 2.5) {
       suggestions.add('Consider practicing mindfulness or meditation to reduce stress.');
       suggestions.add('Engage in physical activities to relieve tension.');
       suggestions.add('Seek support from friends or family to discuss your feelings.');
       suggestions.add('\nMore suggestions for stress relief can be found in the "Stress Relief" section of the Discover page.');
 
-    } else if (averageStressLevel > 2.0 && averageStressLevel < 3.0) {
-      suggestions.add('You have maintained an optimal stress level this week. Keep up the good work! ><');
+    } else if (averageStressLevel >= 1.8 && averageStressLevel < 2.5) {
+      suggestions.add('You have maintained an optimal  stress level this week. Keep up the good work! ><');
       suggestions.add('Practice deep breathing exercises to relax your mind and body.');
       suggestions.add('Take regular breaks during your day to refresh your mind.');
       suggestions.add('Try journaling your thoughts and feelings.');
-    } else if (averageStressLevel <= 2.0 && averageStressLevel > 0.0) {
+    } else if (averageStressLevel < 1.8 && averageStressLevel > 0.0) {
       suggestions.add('WELL DONE! You are managing your stress well. Keep it up! ^^');
       suggestions.add('Spend time on hobbies or activities you enjoy.');
       suggestions.add('Practice gratitude by reflecting on positive aspects of your life.');

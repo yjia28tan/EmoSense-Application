@@ -127,8 +127,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           ],
                         ),
                       ),
-
-
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.05,
@@ -162,6 +160,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 20),
                     ],
                   ),
                 ),
