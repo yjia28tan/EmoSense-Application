@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/forgot_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
@@ -72,38 +73,13 @@ class _SigninPageState extends State<SigninPage> {
                       alignment: Alignment.centerRight,
                       child: InkWell(
                         onTap: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) => Center(child: CustomLoadingIndicator()),
+
+                          Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordPage()
+                              )
                           );
-              
-                          try {
-                            await FirebaseAuth.instance.sendPasswordResetEmail(
-                              email: _emailTextController.text,
-                            );
-              
-                            Navigator.pop(context);
-              
-                            final snackbar = SnackBar(
-                              content: Text("Password reset email sent. Please check your email."),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                          } catch (error) {
-                            Navigator.pop(context);
-              
-                            final snackbar = SnackBar(
-                              content: Text("Failed to send password reset email."),
-                              action: SnackBarAction(
-                                label: 'OK',
-                                onPressed: () {},
-                              ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                          }
+
                         },
                         child: Text(
                           "Forgot password?",
@@ -155,7 +131,7 @@ class _SigninPageState extends State<SigninPage> {
               
                                   // Navigate to the preferences survey page
                                   Future.delayed(Duration(milliseconds: 300), () {
-                                    Navigator.push(context,
+                                    Navigator.pushReplacement(context,
                                         MaterialPageRoute(
                                             builder: (context) => GenreSelectionPage()
                                         )
@@ -164,7 +140,7 @@ class _SigninPageState extends State<SigninPage> {
                                 } else {
                                   // Navigate to the home page
                                   Future.delayed(Duration(milliseconds: 300), () {
-                                    Navigator.push(context,
+                                    Navigator.pushReplacement(context,
                                         MaterialPageRoute(
                                             builder: (context) => HomePage()
                                         )

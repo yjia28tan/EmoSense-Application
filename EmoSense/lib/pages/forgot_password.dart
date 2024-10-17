@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/textfield_style.dart';
@@ -22,55 +24,53 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Stack(
       children: [
         Scaffold(
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 60),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        child: Center(
-                          // Logo or App Name
-                        ),
+            child: Center(
+              child: Column(
+                children: [
+                  SizedBox(height: screenHeight * 0.24),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30, right: 30, top: 80, bottom: 10),
+                    child: Center(
+                      child: Text(
+                        'Forgot Password',
+                        style: titleBlack,
                       ),
-                      Container(
-                        height: 100,
-                        child: Center(
-                          child: Text(
-                            'Forgot Password',
-                            style: titleBlack,
-                          ),
-                        ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 30),
+                    child: Center(
+                      child: Text(
+                        'Please enter your email address to reset your password.',
+                        style: greySmallText.copyWith(fontSize: 15),
+                        textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 20),
-                    ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    children: [
-                      forTextField("Email", Icons.email, false, _emailTextController),
-                      SizedBox(height: 15),
-                    ],
+
+                  Container(
+                    padding: const EdgeInsets.only(left: 30, right: 30, top: 10, bottom: 10),
+                    child: forTextField("Email", Icons.email, false, _emailTextController),
                   ),
-                ),
-                Column(
-                  children: [
-                    Container(
-                      height: 45,
-                      width: 250,
-                      child: ElevatedButton.icon(
+                  SizedBox(height: screenHeight * 0.2),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                    child: Container(
+                      width: double.infinity,
+                      height: screenHeight * 0.07,
+                      child: ElevatedButton(
                         style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF453276)),
                         onPressed: () async {
                           showDialog(
                             context: context,
-                            builder: (context) => Center(child: CircularProgressIndicator()),
+                            builder: (context) => Center(child: CustomLoadingIndicator()),
                           );
 
                           try {
@@ -81,13 +81,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Navigator.pop(context);
 
                             final snackbar = SnackBar(
-                              content: Text("Password reset email sent. Please check your email."),
+                              content: Text("Password reset email sent. Please check your email.\nYou can reset your password using the link in the email and sign in again."),
                               action: SnackBarAction(
                                 label: 'OK',
                                 onPressed: () {},
                               ),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(snackbar);
+
+                            // clear the email field
+                            _emailTextController.clear();
+                            // Navigate back to the sign in page
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(
+                                    builder: (context) => SigninPage()
+                                )
+                            );
 
                           } catch (error) {
                             Navigator.pop(context);
@@ -102,15 +111,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             ScaffoldMessenger.of(context).showSnackBar(snackbar);
                           }
                         },
-                        icon: Icon(Icons.check, color: Color(0xFFF2F2F2)),
-                        label: Text('Send Code', style: whiteText),
+                        child: Text('Send Email', style: whiteText),
                       ),
                     ),
-
-                  ],
-                ),
-
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
