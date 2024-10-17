@@ -7,10 +7,10 @@ import 'package:emosense/main.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
 import 'package:emosense/pages/get_starter_page.dart';
 import 'package:emosense/pages/privacy_policy.dart';
-import 'package:emosense/pages/signin_page.dart';
 import 'package:emosense/pages/terms_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -27,7 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    setState(() {
+      fetchUserData();
+    });
   }
 
   // Sign out function
@@ -87,15 +89,197 @@ class _ProfilePageState extends State<ProfilePage> {
           username = userData['username'];
           email = userData['email'];
           gender = userData['gender'];
-          birthday = userData['birthdate'];
+          // Check the type of the birthdate field
+          var birthdateData = userData['birthdate'];
+          if (birthdateData is Timestamp) {
+            DateTime birthDate = birthdateData.toDate();
+            birthday = DateFormat('yyyy-MM-dd').format(birthDate);
+          } else if (birthdateData is String) {
+            // If it's a string, parse it directly
+            birthday = birthdateData; // Assuming it's already in 'yyyy-MM-dd' format
+          } else {
+            birthday = null; // Handle cases where it's null or an unexpected type
+          }
+
+
           dailyReminder = userData['dailyReminder'];
         });
       }).catchError((error) {
+        print("Error: $error");
         showAlert(context, 'Error', 'Error fetching user data: $error');
       });
     } else {
       showAlert(context, 'Error', 'globalUID is null');
     }
+  }
+
+  void _showEditDialog(String title, String currentValue, Function(String?)? onSave, {bool readOnly = false}) {
+    TextEditingController _editController = TextEditingController(text: currentValue);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        // For gender selection
+        if (title == 'Gender') {
+          String? selectedGender = currentValue.isEmpty ? null : currentValue; // Allow null selection
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text(
+                  "Select Gender",
+                  style: titleBlack,
+                ),
+                content: DropdownButton<String?>(
+                  value: selectedGender,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text('None', style: greySmallText),
+                      value: null,
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Male', style: greySmallText),
+                      value: 'Male',
+                    ),
+                    DropdownMenuItem(
+                      child: Text('Female', style: greySmallText),
+                      value: 'Female',
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedGender = value;
+                    });
+                  },
+                  hint: Text('Select gender'),
+                  isExpanded: true,
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close without saving
+                    },
+                    child: Text("Close"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      onSave!(selectedGender); // Save the selected gender
+                      Navigator.pop(context);
+                    },
+                    child: Text("Save"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+
+        if (title == 'Birthdate') {
+          DateTime? selectedDate = currentValue.isNotEmpty ? DateTime.parse(currentValue) : null;
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text(
+                  "Select Birthdate",
+                  style: titleBlack,
+                ),
+                content: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        selectedDate != null
+                            ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                            : 'No date selected',
+                        style: greySmallText.copyWith(fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate ?? DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            selectedDate = pickedDate; // Store the picked date directly
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close without saving
+                    },
+                    child: Text("Close"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      String? dateString = selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : null;
+                      onSave!(dateString);
+                      Navigator.pop(context);
+                    },
+                    child: Text("Save"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      onSave!(null); // Clear the date (set to null)
+                      Navigator.pop(context);
+                    },
+                    child: Text("Clear"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+
+        return AlertDialog(
+          title: Text(
+            readOnly ? "$title" : "Edit $title",
+            style: titleBlack, // Title style
+          ),
+          content: TextField(
+            controller: _editController,
+            readOnly: readOnly, // Disable editing if it's a view-only field
+            style: greySmallText.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ), // Text style
+            decoration: InputDecoration(
+              labelText: readOnly ? '' : 'Enter new $title',
+              labelStyle: titleBlack.copyWith(fontWeight: FontWeight.normal), // Label style
+              border: OutlineInputBorder(),
+              hintStyle: greySmallText, // Hint style
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog without saving
+              },
+              child: Text("Close"),
+            ),
+            if (!readOnly) // Only show Save button if field is editable
+              TextButton(
+                onPressed: () {
+                  if (_editController.text.isNotEmpty) {
+                    onSave!(_editController.text); // Save the new value
+                    Navigator.pop(context); // Close the dialog
+                  }
+                },
+                child: Text("Save"),
+              ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -134,7 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Username
               Text(
-                '$username!',
+                '$username',
                 style: inkwellText.copyWith(fontWeight: FontWeight.bold, fontSize: 25),
               ),
 
@@ -167,15 +351,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         'Username',
                         '$username',
                         Icons.arrow_forward_ios,
-                            () async {
-                          // final result = await Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                          // );
-                          // if (result == true) {
-                          //   // Refresh the user data
-                          //   fetchUserData();
-                          // }
+                            () {
+                          _showEditDialog('Username', username!, (newValue) async {
+                            // Update in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(globalUID)
+                                .update({'username': newValue});
+
+                            // Fetch updated data
+                            fetchUserData();
+                          });
                         },
                       ),
                     ),
@@ -186,32 +372,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         '$email',
                         Icons.arrow_forward_ios,
                             () async {
-                          // final result = await Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                          // );
-                          // if (result == true) {
-                          //   // Refresh the user data
-                          //   fetchUserData();
-                          // }
-                        },
+                              _showEditDialog('Email', email!, null, readOnly: true); // View-only, no save action
+                            },
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                       child: profile_Button(
                         'Gender',
-                        '$gender',
+                        gender ?? 'Not set', // Use 'Not set' if gender is null
                         Icons.arrow_forward_ios,
-                            () async {
-                          // final result = await Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                          // );
-                          // if (result == true) {
-                          //   // Refresh the user data
-                          //   fetchUserData();
-                          // }
+                            () {
+                          _showEditDialog('Gender', gender ?? '', (newValue) async {
+                            // Update in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(globalUID)
+                                .update({'gender': newValue});
+
+                            // Fetch updated data
+                            fetchUserData();
+                          });
                         },
                       ),
                     ),
@@ -219,20 +400,23 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                       child: profile_Button(
                         'Birthdate',
-                        '$birthday',
+                        birthday ?? 'Not set', // Use 'Not set' if birthdate is null
                         Icons.arrow_forward_ios,
-                            () async {
-                          // final result = await Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => EditProfilePage()),
-                          // );
-                          // if (result == true) {
-                          //   // Refresh the user data
-                          //   fetchUserData();
-                          // }
+                            () {
+                          _showEditDialog('Birthdate', birthday ?? '', (newValue) async {
+                            // Update in Firestore
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(globalUID)
+                                .update({'birthdate': newValue});
+
+                            // Fetch updated data
+                            fetchUserData();
+                          });
                         },
                       ),
                     ),
+
                     // set reminder button
                     // SetReminder(),
 
@@ -267,10 +451,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     '',
                     Icons.arrow_forward_ios,
                         () async {
-                      // final result = await Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                      // );
+                      // await showChangePasswordDialog(context);
                     },
                   ),
                 ),
@@ -368,9 +549,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-                SizedBox(height: 20),
+              SizedBox(height: 20),
               // sign out button
-                Container(
+              Container(
                   width: double.infinity,  // Takes the full width of the screen
                   height: screenHeight * 0.07,
                   child: signout_Button(
@@ -381,6 +562,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
+              SizedBox(height: 20),
             ],
           ),
         ),
