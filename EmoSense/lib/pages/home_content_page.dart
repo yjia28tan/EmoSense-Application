@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/home_daily_view.dart';
-import 'package:emosense/design_widgets/home_monthly_view.dart';
-import 'package:emosense/design_widgets/home_weekly_view.dart';
+import 'package:emosense/pages/home_daily_view.dart';
+import 'package:emosense/pages/home_monthly_view.dart';
+import 'package:emosense/pages/home_weekly_view.dart';
 import 'package:emosense/main.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';

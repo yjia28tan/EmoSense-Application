@@ -10,16 +10,23 @@ class TermsNConditionsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF2F2F2),
       appBar: AppBar(
-        title: Text("Terms and Conditions", style: ProfileTitleText),
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_outlined,
-            color: AppColors.darkLogoColor,
-          ),
+          icon: Icon(Icons.arrow_back_ios, color: AppColors.darkLogoColor),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
         ),
+        backgroundColor: AppColors.textFieldColor,
+        title: Container(
+          alignment: Alignment.center,
+          child: Text(
+            'Terms and Conditions',
+            style: ProfileTitleText,
+          ),
+        ),
+        actions: [
+          Container(width: 48),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.only(top: 30, bottom: 20, left: 16.0, right: 16.0),

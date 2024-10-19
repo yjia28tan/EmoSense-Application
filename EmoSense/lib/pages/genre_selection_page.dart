@@ -156,16 +156,6 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
                       minimumSize: Size(double.infinity, 50), // Full-width button
                     ),
                     onPressed: () {
-                      // // Navigate to the artist selection page with selected genres
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => ArtistSelectionPage(
-                      //       spotifyService: spotifyService, // Pass the SpotifyService instance
-                      //       selectedGenres: selectedGenres,
-                      //     ),
-                      //   ),
-                      // );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
