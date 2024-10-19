@@ -204,7 +204,7 @@ class _EditEmotionGenreSurveyPageState extends State<EditEmotionGenreSurveyPage>
                         );
                       },
                       child: Text(
-                        "Next",
+                        "Save",
                         style: whiteText,
                       ),
                     ),
