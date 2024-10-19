@@ -52,7 +52,6 @@ class _DescriptionPageState extends State<DescriptionPage> {
     return null;
   }
 
-
   Future<void> _getSongandSaveEntry() async {
     setState(() {
       isLoading = true; // Start loading
@@ -65,9 +64,11 @@ class _DescriptionPageState extends State<DescriptionPage> {
       // Fetch user preferences to get the emotionGenreMap
       final preferences = await getUserPreferences(globalUID!);
 
-      if (preferences != null) {
-        List<String> emotionGenreMap = List<String>.from(
-            preferences['emotionGenreMap']);
+      List<String> emotionGenreMap;
+      String? genreForDetectedEmotion;
+
+      if (preferences != null && preferences['emotionGenreMap'] is List) {
+        emotionGenreMap = List<String>.from(preferences['emotionGenreMap']);
         Map<String, int> emotionIndexMap = {
           'Happy': 0,
           'Sad': 1,
@@ -77,55 +78,53 @@ class _DescriptionPageState extends State<DescriptionPage> {
           'Neutral': 5,
         };
 
-        String? genreForDetectedEmotion = emotionGenreMap[emotionIndexMap[widget
-            .detectedEmotion] ?? 0];
-
-        String? query = widget.detectedEmotion + ' ' +  genreForDetectedEmotion;
-
-        print('\n-----------------------------Query: $query\n');
-
-        final playlists = await spotifyService.searchPlaylists(query);
-
-        // Fetch tracks from the playlists
-        tracksRecommended =
-        await spotifyService.fetchTracksFromPlaylists(playlists);
-
-        // Prepare tracks to save to Firestore
-        final List<Map<String, dynamic>> tracksForFirestore = tracksRecommended
-            .map((track) {
-          return {
-            'id': track.id,
-            'name': track.name,
-            'artist': track.artist,
-            'album': track.album,
-            'imageUrl': track.imageUrl,
-            'spotifyUrl': track.spotifyUrl,
-          };
-        }).toList();
-
-        final data = {
-          'emotion': widget.detectedEmotion,
-          'stressLevel': widget.stressLevel,
-          'description': _descriptionController.text.isNotEmpty
-              ? _descriptionController.text
-              : null,
-          'timestamp': Timestamp.now(),
-          'tracks': tracksForFirestore,
-          'uid': globalUID,
-        };
-
-        await FirebaseFirestore.instance.collection('emotionRecords').add(
-            data);
-
-        // Navigate to the RecommendedSongsPage after saving
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) =>
-              RecommendedSongsPage(songs: tracksRecommended)),
-        );
-      } else {
-        print("Emotion genre map is not available.");
+        genreForDetectedEmotion = emotionGenreMap[emotionIndexMap[widget.detectedEmotion] ?? 0];
       }
+
+      String query;
+
+      if (genreForDetectedEmotion != null) {
+        query = widget.detectedEmotion + ' ' + genreForDetectedEmotion;
+      } else {
+        // If no preferences or genre available, search for trending songs based on the emotion
+        query = 'trending ' + widget.detectedEmotion + ' playlist';
+      }
+
+      print('\n-----------------------------Query: $query\n');
+
+      final playlists = await spotifyService.searchPlaylists(query);
+
+      // Fetch tracks from the playlists
+      tracksRecommended = await spotifyService.fetchTracksFromPlaylists(playlists);
+
+      // Prepare tracks to save to Firestore
+      final List<Map<String, dynamic>> tracksForFirestore = tracksRecommended.map((track) {
+        return {
+          'id': track.id,
+          'name': track.name,
+          'artist': track.artist,
+          'album': track.album,
+          'imageUrl': track.imageUrl,
+          'spotifyUrl': track.spotifyUrl,
+        };
+      }).toList();
+
+      final data = {
+        'emotion': widget.detectedEmotion,
+        'stressLevel': widget.stressLevel,
+        'description': _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
+        'timestamp': Timestamp.now(),
+        'tracks': tracksForFirestore,
+        'uid': globalUID,
+      };
+
+      await FirebaseFirestore.instance.collection('emotionRecords').add(data);
+
+      // Navigate to the RecommendedSongsPage after saving
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RecommendedSongsPage(songs: tracksRecommended)),
+      );
     } catch (e) {
       print("Error: $e");
     } finally {
@@ -134,6 +133,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

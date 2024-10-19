@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/artists_selection_page.dart';
+import 'package:emosense/pages/edit_artist_preferences.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
+import 'package:emosense/pages/genre_selection_page.dart';
 import 'package:emosense/pages/get_starter_page.dart';
 import 'package:emosense/pages/privacy_policy.dart';
 import 'package:emosense/pages/terms_conditions.dart';
@@ -13,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
+  static String routeName = '/profile';
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -617,22 +623,76 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: Color(0xFFF2F2F2).withOpacity(0.7),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: profile_Button(
-                    'Edit Preferences',
-                    '',
-                    Icons.arrow_forward_ios,
-                        () async {
-                      // final result = await Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => EditPreferencesPage()),
-                      // );
-                    },
-                  ),
+                child: Column(
+                  children: [
+                    // Check if user has saved their preferences
+                    FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('preferences')
+                          .where('uid', isEqualTo: globalUID)
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CustomLoadingIndicator()); // Loading indicator
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.data!.docs.isEmpty) {
+                          // No preferences saved, show button to add preferences
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: profile_Button(
+                              'Add Preferences',
+                              '',
+                              Icons.arrow_forward_ios,
+                                  () async {
+                                // Navigate to GenreSelectionPage and ArtistSelectionPage
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => GenreSelectionPage()),
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          // Preferences exist, show buttons to edit
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                                child: profile_Button(
+                                  'Edit Favourite Genres',
+                                  '',
+                                  Icons.arrow_forward_ios,
+                                      () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => EditGenrePreferencesPage(uid: globalUID)),
+                                    );
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                                child: profile_Button(
+                                  'Edit Favourite Artists',
+                                  '',
+                                  Icons.arrow_forward_ios,
+                                      () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => EditArtistPreferencesPage(uid: globalUID)),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
-
               // 'More' text
               Align(
                 alignment: Alignment.centerLeft,

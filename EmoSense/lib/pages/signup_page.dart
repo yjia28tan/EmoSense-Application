@@ -348,7 +348,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       },
                       child: Text('Already have an account? Sign in', style: inkwellText),
                     ),
-                    SizedBox(height: screenHeight * 0.01),
+                    // SizedBox(height: screenHeight * 0.01),
                   ],
                 ),
               ),

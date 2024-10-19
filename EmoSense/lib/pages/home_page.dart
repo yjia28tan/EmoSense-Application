@@ -8,9 +8,9 @@ import 'package:emosense/design_widgets/navigation_bar.dart';
 import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
-  // final Interpreter interpreter; // Add the interpreter here
-  //
-  // HomePage(this.interpreter); // Update constructor
+  final int selectedIndex;
+
+  HomePage({this.selectedIndex = 0}); // Default to index 0 if not provided
 
   static String routeName = '/HomePage';
 
@@ -20,6 +20,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex; // Use the passed index
+  }
 
   // List of pages to display
   final List<Widget> _pages = <Widget>[
@@ -36,49 +42,6 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
   }
-
-  // Future<bool> _onWillPop() async {
-  //   // Show a dialog asking if the user is sure they want to log out
-  //   final bool? shouldSignout = await showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Sign Out'),
-  //         content: Text('Are you sure you want to sign out?'),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop(false); // Return false to prevent back action
-  //             },
-  //             child: Text('Cancel'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () async {
-  //               // Sign out the user from Firebase Authentication
-  //               await FirebaseAuth.instance.signOut();
-  //
-  //               // Clear the user's FCM token in Firestore
-  //               if (globalUID != null) {
-  //                 final userRef = FirebaseFirestore.instance.collection('users').doc(globalUID);
-  //                 await userRef.update({'fcmToken': ""});
-  //               }
-  //
-  //               // Navigate to SigninPage and clear the navigation stack
-  //               Navigator.pushAndRemoveUntil(
-  //                 context,
-  //                 MaterialPageRoute(builder: (context) => GetStartedPage()),
-  //                     (route) => false,
-  //               ); // Return true to allow back action
-  //             },
-  //             child: Text('Sign Out'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  //
-  //   return shouldSignout ?? false; // Default to false if null
-  // }
 
   Future<bool> _onWillPop() async {
     // Close the app instead of popping to another page

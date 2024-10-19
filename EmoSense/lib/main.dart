@@ -1,6 +1,7 @@
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/pages/genre_selection_page.dart';
 import 'package:emosense/pages/get_starter_page.dart';
+import 'package:emosense/pages/profile_page.dart';
 import 'package:emosense/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -66,6 +67,7 @@ class _MyAppState extends State<MyApp> {
         HomePage.routeName: (context) => HomePage(),
         GenreSelectionPage.routeName: (context) => GenreSelectionPage(),
         EmotionDetectionPage.routeName: (context) => EmotionDetectionPage(),
+        '/profile': (context) => ProfilePage(),
       },
     );
   }
