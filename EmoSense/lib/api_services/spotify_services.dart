@@ -57,7 +57,6 @@ class SpotifyService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final artists = data['artists']['items'] as List;
-      print(data);
       return artists.map((artistData) => Artist.fromJson(artistData)).toList();
     } else {
       throw Exception('Failed to load artists');
@@ -179,6 +178,46 @@ class SpotifyService {
     }
   }
 
+  /// search artists based on query
+  Future<List<Artist>> searchArtists(String query) async {
+    const limit = 30; // Limit the number of artists fetched
+
+    final url = 'https://api.spotify.com/v1/search?q=$query&type=artist&limit=$limit';
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final artists = data['artists']['items'] as List;
+      return artists.map((artistData) => Artist.fromJson(artistData)).toList();
+    } else {
+      throw Exception('Failed to load artists');
+    }
+  }
+
+  /// Fetch artist details by ID
+  Future<Artist> fetchArtistById(String artistId) async {
+    if (accessToken == null) {
+      throw Exception('Access token is not set');
+    }
+    final url = 'https://api.spotify.com/v1/artists/$artistId';
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Artist.fromJson(data);
+    } else {
+      throw Exception("Failed to fetch artist details");
+    }
+  }
 
 
 }

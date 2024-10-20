@@ -660,7 +660,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                                 child: profile_Button(
-                                  'Edit Favourite Genres',
+                                  'Edit Genres',
                                   '',
                                   Icons.arrow_forward_ios,
                                       () async {
@@ -671,20 +671,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                   },
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: profile_Button(
-                                  'Edit Favourite Artists',
-                                  '',
-                                  Icons.arrow_forward_ios,
-                                      () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => EditArtistPreferencesPage(uid: globalUID)),
-                                    );
-                                  },
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                              //   child: profile_Button(
+                              //     'Edit Favourite Artists',
+                              //     '',
+                              //     Icons.arrow_forward_ios,
+                              //         () async {
+                              //       final result = await Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(builder: (context) => EditArtistPreferencesPage(uid: globalUID)),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
                             ],
                           );
                         }
@@ -746,6 +746,45 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                      child: profile_Button(
+                        'Deactivate Account',
+                        '',
+                        Icons.arrow_forward_ios,
+                            () async {
+                              // Show confirmation dialog before deactivating
+                              bool confirmed = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Confirm Deactivation"),
+                                    content: Text("Are you sure you want to deactivate your account?\nBut you can reactivate it anytime."),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false); // Cancel
+                                        },
+                                        child: Text("Cancel"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true); // Confirm
+                                        },
+                                        child: Text("Deactivate"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+
+                              // If confirmed, proceed to deactivate
+                              if (confirmed) {
+                                await deactivateAccountInFirestore(context); // For marking as deactivated in Firestore
+                              }
+                            },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -770,4 +809,51 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+
+  Future<void> deactivateAccountInFirestore(BuildContext context) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // Update the user's document in Firestore to mark it as deactivated
+        await FirebaseFirestore.instance
+            .collection('users') // Replace 'users' with your collection name
+            .doc(user.uid)
+            .update({'isDeactivated': true});
+
+        // Optionally sign the user out after deactivation
+        await FirebaseAuth.instance.signOut();
+
+        // Notify the user that their account has been deactivated
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Account Deactivated"),
+              content: Text("Your account has been deactivated successfully."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Navigate to login screen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => GetStartedPage()),
+                          (route) => false,
+                    );
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        print("No user is currently logged in.");
+      }
+    } catch (e) {
+      print("Error deactivating account: $e");
+    }
+  }
+
 }

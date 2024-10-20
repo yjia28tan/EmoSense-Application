@@ -336,7 +336,7 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    'No reflections available for today.',
+                    'No reflections available for this week.',
                     style: greySmallText.copyWith(fontSize: 14),
                   ),
                 ),

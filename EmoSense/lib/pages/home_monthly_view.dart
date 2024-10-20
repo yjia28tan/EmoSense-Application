@@ -323,7 +323,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    'No reflections available for today.',
+                    'No reflections available for this month.',
                     style: greySmallText.copyWith(fontSize: 14),
                   ),
                 ),
