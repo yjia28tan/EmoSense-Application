@@ -61,6 +61,12 @@ dependencies:
   audioplayers: ^6.0.0
   flutter_tts: ^4.0.2
   smooth_page_indicator: ^1.1.0
+  flutter_launcher_icons: ^0.9.2
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
 
 dev_dependencies:
   flutter_test:
@@ -93,8 +99,7 @@ flutter:
     - assets/discover/
     - assets/onboarding/
     - assets/otherLogo/
-    - assets/audio/5mins mindfulness audio.mp3
-    - assets/audio/deepMeditation.mp3
+    - assets/splash_screen
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
