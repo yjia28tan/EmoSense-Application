@@ -60,13 +60,16 @@ cd EmoSense-Application
    ```bash
    cd backend
    ```
+
+   #### ii. Download the FER model from Google Drive and place it to backend/model :
+   ```https://drive.google.com/file/d/122epRv2JVvB4ziQtrn82qWKVhaHi3CNc/view?usp=sharing```
    
-   ##### ii. Install dependencies:
+   ##### iii. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
    
-   ##### iii. Run the Flask server:
+   ##### iv. Run the Flask server:
    ```bash
    python emotion_detection_flask.py
    ```
