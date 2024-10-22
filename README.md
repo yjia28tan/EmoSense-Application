@@ -77,6 +77,7 @@ cd EmoSense-Application
 #### 4. Emotion Detection Model
    - Ensure the emotion detection model is running (local or hosted).
    - Update API endpoints in Flutter app as needed.
+   - All the model training process is in ```Backend/model_training``` (for all versions - different pretrained CNN model to compare, re-train with new dataset, etc.)
 
 ## Usage
 - **Onboarding**: The app will guide new users through an onboarding process, allowing them to select preferred music genres and artists for different emotions.
