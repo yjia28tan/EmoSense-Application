@@ -5,12 +5,9 @@ import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/profile_button_style.dart';
 import 'package:emosense/main.dart';
-import 'package:emosense/pages/artists_selection_page.dart';
-import 'package:emosense/pages/edit_artist_preferences.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
 import 'package:emosense/pages/genre_selection_page.dart';
 import 'package:emosense/pages/get_starter_page.dart';
-import 'package:emosense/pages/home_content_page.dart';
 import 'package:emosense/pages/privacy_policy.dart';
 import 'package:emosense/pages/terms_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +24,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String? username;
   String? email;
-  bool? dailyReminder;
+  // bool? dailyReminder;
   String? gender;
   String? birthday;
 
@@ -109,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
 
-          dailyReminder = userData['dailyReminder'];
+          // dailyReminder = userData['dailyReminder'];
         });
       }).catchError((error) {
         print("Error: $error");

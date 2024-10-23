@@ -274,8 +274,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               'firstLogin': true,
                               'gender': null,
                               'birthdate': null,
-                              'dailyReminder': false,
-                              'reminderTime': null,
+                              // 'dailyReminder': false,
+                              // 'reminderTime': null,
                             });
 
                             await userCredential.user!.sendEmailVerification();
