@@ -197,29 +197,6 @@ class SpotifyService {
     }
   }
 
-  /// Fetch artist details by ID
-  Future<Artist> fetchArtistById(String artistId) async {
-    if (accessToken == null) {
-      throw Exception('Access token is not set');
-    }
-    final url = 'https://api.spotify.com/v1/artists/$artistId';
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return Artist.fromJson(data);
-    } else {
-      throw Exception("Failed to fetch artist details");
-    }
-  }
-
-
 }
 
 

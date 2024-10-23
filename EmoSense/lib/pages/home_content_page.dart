@@ -5,11 +5,8 @@ import 'package:emosense/pages/home_daily_view.dart';
 import 'package:emosense/pages/home_monthly_view.dart';
 import 'package:emosense/pages/home_weekly_view.dart';
 import 'package:emosense/main.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import '/design_widgets/font_style.dart';
 
 class HomeContentPage extends StatefulWidget {
@@ -28,11 +25,17 @@ class _HomeContentPageState extends State<HomeContentPage> {
     super.initState();
     fetchUserData();
     setState(() {
-      _resetToToday(); // Set the initial date and view
-      fetchUserData();
+      _resetToToday();
       DailyViewHome();
       WeeklyViewHome();
       MonthlyViewHome();
+    });
+  }
+
+  Future<void> _refreshPage() async {
+    fetchUserData();
+    setState(() {
+      _resetToToday();
     });
   }
 
@@ -62,7 +65,6 @@ class _HomeContentPageState extends State<HomeContentPage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -70,104 +72,107 @@ class _HomeContentPageState extends State<HomeContentPage> {
 
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: screenHeight * 0.325,
-                        width: screenWidth,
-                        decoration: BoxDecoration(
-                          color: AppColors.upBackgroundColor,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            bottomRight: Radius.circular(30),
+      body: RefreshIndicator(
+        onRefresh: _refreshPage, // Define what happens on pull to refresh
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: screenHeight * 0.325,
+                          width: screenWidth,
+                          decoration: BoxDecoration(
+                            color: AppColors.upBackgroundColor,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(30),
+                              bottomRight: Radius.circular(30),
+                            ),
+                          ),
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: screenHeight * 0.05,
+                                    left: screenWidth * 0.05),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Hey, $username :)',
+                                      style: HomeWelcomeTitle.copyWith(
+                                        fontSize: screenHeight * 0.035,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Have a great day!',
+                                      style: HomeWelcomeTitle.copyWith(
+                                        fontSize: screenHeight * 0.026,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                bottom: -35,
+                                right: -25,
+                                child: Image.asset(
+                                  'assets/hi.png',
+                                  width: 225,
+                                  height: 225,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Stack(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: screenHeight * 0.05,
-                                  left: screenWidth * 0.05
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Hey, $username :)',
-                                    style: HomeWelcomeTitle.copyWith(
-                                      fontSize: screenHeight * 0.035,
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.05,
+                              vertical: screenHeight * 0.01),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 10, left: 10, right: 10),
+                                child: Container(
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Emotion Stats',
+                                      style: titleBlack.copyWith(
+                                          fontSize: screenHeight * 0.025),
                                     ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    'Have a great day!',
-                                    style: HomeWelcomeTitle.copyWith(
-                                      fontSize: screenHeight * 0.026,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              bottom: -35,
-                              right: -25,
-                              child: Image.asset(
-                                'assets/hi.png',
-                                width: 225,
-                                height: 225,
-                                fit: BoxFit.cover, // Ensures the image fits properly
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                            vertical: screenHeight * 0.01
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
-                              child: Container(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Emotion Stats',
-                                    style: titleBlack.copyWith(fontSize: screenHeight * 0.025),
                                   ),
                                 ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _buildViewButton('Daily'),
-                                _buildViewButton('Weekly'),
-                                _buildViewButton('Monthly'),
-                              ],
-                            ),
-                            // Display the selected view widget
-                            _getSelectedViewWidget(),
-
-                          ],
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  _buildViewButton('Daily'),
+                                  _buildViewButton('Weekly'),
+                                  _buildViewButton('Monthly'),
+                                ],
+                              ),
+                              // Display the selected view widget
+                              _getSelectedViewWidget(),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                    ],
+                        SizedBox(height: 20),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -201,8 +206,11 @@ class _HomeContentPageState extends State<HomeContentPage> {
             });
           },
           style: ElevatedButton.styleFrom(
-            foregroundColor: isSelected ? Colors.white : AppColors.textColorGrey,
-            backgroundColor: isSelected ? AppColors.darkPurpleColor : AppColors.downBackgroundColor, // Text color
+            foregroundColor:
+            isSelected ? Colors.white : AppColors.textColorGrey,
+            backgroundColor: isSelected
+                ? AppColors.darkPurpleColor
+                : AppColors.downBackgroundColor, // Text color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50.0),
               // no border
@@ -211,8 +219,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
           ),
           child: Text(view,
               style: GoogleFonts.leagueSpartan(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+                  fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center),
         ),
       ),

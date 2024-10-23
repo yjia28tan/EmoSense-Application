@@ -10,6 +10,7 @@ import 'package:emosense/pages/edit_artist_preferences.dart';
 import 'package:emosense/pages/edit_genres_preferences.dart';
 import 'package:emosense/pages/genre_selection_page.dart';
 import 'package:emosense/pages/get_starter_page.dart';
+import 'package:emosense/pages/home_content_page.dart';
 import 'package:emosense/pages/privacy_policy.dart';
 import 'package:emosense/pages/terms_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -509,6 +510,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             // Fetch updated data
                             fetchUserData();
+
                           });
                         },
                       ),
