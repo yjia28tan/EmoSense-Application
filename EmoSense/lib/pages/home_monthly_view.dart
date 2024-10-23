@@ -689,7 +689,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
                       SizedBox(
                         height: 110,
                         width: 150,
-                        child: HalfDonutChart(stressCounts: stressCounts),
+                        child: stressLevelChart(stressCounts: stressCounts),
                       ),
 
                     // Display the current stress level that was calculated

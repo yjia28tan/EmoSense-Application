@@ -2,10 +2,10 @@ import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class HalfDonutChart extends StatelessWidget {
+class stressLevelChart extends StatelessWidget {
   final Map<String, int> stressCounts;
 
-  HalfDonutChart({required this.stressCounts});
+  stressLevelChart({required this.stressCounts});
 
   @override
   Widget build(BuildContext context) {

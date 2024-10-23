@@ -1,9 +1,8 @@
-// youtube_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class YouTubeService {
-  final String apiKey = 'AIzaSyA_Zhwl9ZC5QIPRYc9HDnsXjt3GpfowF9I'; // Your YouTube API Key
+  final String apiKey = 'AIzaSyA_Zhwl9ZC5QIPRYc9HDnsXjt3GpfowF9I';
 
   final String meditationChannelId = 'UCN4vyryy6O4GlIXcXTIuZQQ';  // Great Meditation Channel ID
   final String yogaChannelId = 'UCFKE7WVJfvaHW5q283SxchA';       // Yoga with Adriene Channel ID

@@ -26,6 +26,7 @@ class _HomeContentPageState extends State<HomeContentPage> {
   @override
   void initState() {
     super.initState();
+    fetchUserData();
     setState(() {
       _resetToToday(); // Set the initial date and view
       fetchUserData();

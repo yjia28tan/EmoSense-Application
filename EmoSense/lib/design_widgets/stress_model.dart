@@ -1,4 +1,3 @@
-// stress_model.dart
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:flutter/material.dart';
 
