@@ -6,6 +6,7 @@ import 'package:emosense/design_widgets/emotion_trends_line_graphs.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
 import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/discover_stress_relief.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -354,6 +355,22 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
                 ),
                 // Display the stress relief suggestions
                 ..._buildSuggestions(stressSuggestion),
+                if (_currentStressLevelValue! >= 2.5)
+                  InkWell(
+                    onTap: () {
+                      // Navigate to the Discover page for stress relief
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => StressReliefGuideContent())
+                      );
+                    },
+                    child: Text(
+                      'Discover more stress relief tips here',
+                      style: inkwellText.copyWith(
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline),
+                    ),
+                  ),
               ],
             ],
           ),
@@ -381,10 +398,15 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     return suggestions.map((suggestion) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 5.0),
-        child: Text(
-          suggestion,
-          style: greySmallText.copyWith(fontSize: 14, fontStyle: FontStyle.normal),
-          textAlign: TextAlign.justify,
+        child: Column(
+          children: [
+            Text(
+              suggestion,
+              style: greySmallText.copyWith(fontSize: 14, fontStyle: FontStyle.normal),
+              textAlign: TextAlign.justify,
+            ),
+
+          ],
         ),
       );
     }).toList();

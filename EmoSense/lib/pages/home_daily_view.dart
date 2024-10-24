@@ -5,6 +5,7 @@ import 'package:emosense/design_widgets/emotion_model.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
 import 'package:emosense/design_widgets/stress_model.dart';
 import 'package:emosense/main.dart';
+import 'package:emosense/pages/discover_stress_relief.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -354,6 +355,22 @@ class _DailyViewHomeState extends State<DailyViewHome> {
                         suggestion,
                         style: greySmallText.copyWith(fontSize: 14),
                         textAlign: TextAlign.justify,
+                      ),
+                    ),
+                  if (_currentStressLevelValue! >= 2.5)
+                    InkWell(
+                      onTap: () {
+                        // Navigate to the Discover page for stress relief
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => StressReliefGuideContent())
+                        );
+                      },
+                      child: Text(
+                        'Discover more stress relief tips here',
+                        style: inkwellText.copyWith(
+                            fontStyle: FontStyle.italic,
+                            decoration: TextDecoration.underline),
                       ),
                     ),
                 ],
