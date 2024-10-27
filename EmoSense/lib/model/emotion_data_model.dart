@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
-import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/model/emotion_model.dart';
+import 'package:emosense/model/stress_model.dart';
 
 class EmotionData {
   final String docId; // Add docId field

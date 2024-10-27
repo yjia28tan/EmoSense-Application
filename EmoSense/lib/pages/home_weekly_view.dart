@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/model/emotion_model.dart';
 import 'package:emosense/design_widgets/emotion_trends_line_graphs.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
-import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/model/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/discover_stress_relief.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -422,34 +422,35 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
       double averageValence = emotionData.map((e) => _getEmotionValence(e['emotion'])).reduce((a, b) => a + b) / emotionData.length;
 
       if (positiveCount > negativeCount) {
-        reflections.add('You experienced more happiness emotion than sad emotion this week. \nKeep focusing on the positive moments!');
-        reflections.add('Consider what made you happy and how you can replicate those moments.');
-        reflections.add('Reflect on the positive aspects of your life.\n');
+        reflections.add('This week, you felt happier more often than sad. \nContinue to embrace those joyful moments!');
+        reflections.add('Think about the things that brought you joy and explore ways to recreate those experiences.');
+        reflections.add('Take some time to appreciate the positive elements in your life.\n');
       } else if (negativeCount > positiveCount) {
-        reflections.add('You had some sad moments this week. \nConsider what might have caused those feelings.');
-        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
-        reflections.add('Remember that it is normal to experience a range of emotions.');
-        reflections.add('Consider what can make you happy and how you can replicate those moments.\n');
+        reflections.add('You encountered several sad moments this week. \nConsider what may have contributed to these feelings.');
+        reflections.add('Think about strategies to uplift your mood and remember to reach out for support if needed.');
+        reflections.add('It’s perfectly natural to experience a variety of emotions.');
+        reflections.add('Reflect on what brings you happiness and how to recreate those joyful experiences.\n');
       } else { // when happy == sad
-        reflections.add('You experienced an equal number of happy and sad emotions this week. \n');
+        reflections.add('You experienced an equal amount of happy and sad emotions this week. \n');
       }
 
       if (averageValence < 0) {
-        reflections.add('Overall, the emotional trend indicates more negative emotions. \n');
-        reflections.add('Consider what might have caused these feelings and how you can address them.');
-        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
-        reflections.add('Remember that it is normal to experience a negative emotions, but it is important to address them.');
+        reflections.add('Overall, your emotional state leans towards negative feelings. \n');
+        reflections.add('Reflect on what might have led to these emotions and consider how to address them.');
+        reflections.add('Explore ways to lift your spirits and remember that seeking support is important when needed.');
+        reflections.add('Experiencing negative emotions is normal; however, it’s vital to confront and manage them.');
       } else if (averageValence > 0) {
-        reflections.add('Overall, the emotional trend indicates more positive emotions. \n');
-        reflections.add('Consider what made you happy and how you can replicate those moments.');
-        reflections.add('Reflect on the positive aspects of your life and seek to maintain this positive trend.');
+        reflections.add('Overall, your emotional trend shows a predominance of positive feelings. \n');
+        reflections.add('Reflect on the sources of your happiness and think about how to sustain those joyful experiences.');
+        reflections.add('Focus on the positive aspects of your life and strive to continue this uplifting trend.');
       } else {
-        reflections.add('You experienced a mix of emotions this week. \n');
-        reflections.add('Consider what might have caused the mix feelings and how you can address them.');
-        reflections.add('Try to maintain a balance between positive and negative emotions.');
-        reflections.add('Reflect on ways to improve your mood and seek support if needed.');
-        reflections.add('Remember that it is normal to experience a range of emotions.');
+        reflections.add('You experienced a blend of emotions this week. \n');
+        reflections.add('Consider what led to these mixed feelings and how you might address them.');
+        reflections.add('Aim to strike a balance between positive and negative emotions.');
+        reflections.add('Think about ways to enhance your mood and don’t hesitate to seek support if needed.');
+        reflections.add('It’s normal to feel a wide range of emotions.');
       }
+
     }
 
     return reflections;
@@ -459,24 +460,27 @@ class _WeeklyViewHomeState extends State<WeeklyViewHome> {
     List<String> suggestions = [];
 
     if (averageStressLevel >= 2.5) {
-      suggestions.add('Consider practicing mindfulness or meditation to reduce stress.');
-      suggestions.add('Engage in physical activities to relieve tension.');
-      suggestions.add('Seek support from friends or family to discuss your feelings.');
-      suggestions.add('\nMore suggestions for stress relief can be found in the "Stress Relief" section of the Discover page.');
+      suggestions.add('Consider exploring mindfulness or meditation techniques to help lower your stress levels.');
+      suggestions.add('Incorporate physical activities into your routine to release built-up tension.');
+      suggestions.add('Don’t hesitate to reach out to friends or family to share what’s on your mind.');
+      suggestions.add('\nFor additional stress-relief tips, check out the "Stress Relief" section on the Discover page!');
 
     } else if (averageStressLevel >= 1.8 && averageStressLevel < 2.5) {
-      suggestions.add('You have maintained an optimal  stress level this week. Keep up the good work! ><');
-      suggestions.add('Practice deep breathing exercises to relax your mind and body.');
-      suggestions.add('Take regular breaks during your day to refresh your mind.');
-      suggestions.add('Try journaling your thoughts and feelings.');
+      suggestions.add('You’ve done a great job maintaining an optimal stress level this week—keep it up!');
+      suggestions.add('Try practicing deep breathing exercises to help calm your mind and body.');
+      suggestions.add('Remember to take regular breaks throughout your day to recharge your mental energy.');
+      suggestions.add('Consider journaling your thoughts and feelings to gain clarity and insight.');
+
     } else if (averageStressLevel < 1.8 && averageStressLevel > 0.0) {
-      suggestions.add('WELL DONE! You are managing your stress well. Keep it up! ^^');
-      suggestions.add('Spend time on hobbies or activities you enjoy.');
-      suggestions.add('Practice gratitude by reflecting on positive aspects of your life.');
-      suggestions.add('Connect with friends or family to share your positive experiences.');
-    }else {
-      suggestions.add('Maintain a healthy balance of work and leisure.');
+      suggestions.add('Fantastic job! You’re handling your stress like a pro—keep shining!');
+      suggestions.add('Make time for hobbies or activities that bring you joy and fulfillment.');
+      suggestions.add('Practice gratitude by reflecting on the positive moments in your life.');
+      suggestions.add('Connect with friends or family to share your happy experiences and celebrate together.');
+
+    } else {
+      suggestions.add('Remember to strike a healthy balance between work and leisure for overall well-being.');
     }
+
 
     return suggestions;
   }

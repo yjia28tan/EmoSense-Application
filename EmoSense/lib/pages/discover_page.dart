@@ -3,7 +3,7 @@ import 'package:emosense/api_services/quote_services.dart';
 import 'package:emosense/design_widgets/app_color.dart';
 import 'package:emosense/design_widgets/cardview_discover.dart';
 import 'package:emosense/design_widgets/font_style.dart';
-import 'package:emosense/design_widgets/meditation_tools_model.dart';
+import 'package:emosense/model/meditation_tools_model.dart';
 import 'package:emosense/pages/discover_meditation_guides_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

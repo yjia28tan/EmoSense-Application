@@ -1,4 +1,4 @@
-import 'package:emosense/design_widgets/onboarding_model.dart';
+import 'package:emosense/model/onboarding_model.dart';
 
 class OnboardingItems{
   List<OnboardingModel> items = [

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_data_model.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/model/emotion_data_model.dart';
+import 'package:emosense/model/emotion_model.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/design_widgets/emotion_display_box.dart';
 import 'package:emosense/design_widgets/music_lists_widget.dart';

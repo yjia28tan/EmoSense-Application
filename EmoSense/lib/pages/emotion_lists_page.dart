@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_data_model.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/model/emotion_data_model.dart';
+import 'package:emosense/model/emotion_model.dart';
 import 'package:emosense/design_widgets/font_style.dart';
-import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/model/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

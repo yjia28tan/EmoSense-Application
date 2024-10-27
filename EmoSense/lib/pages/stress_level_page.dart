@@ -1,4 +1,4 @@
-import 'package:emosense/design_widgets/stress_model.dart'; // Import the new stress model
+import 'package:emosense/model/stress_model.dart'; // Import the new stress model
 import 'package:emosense/pages/mind_description_page.dart';
 import 'package:flutter/material.dart';
 import 'package:emosense/design_widgets/app_color.dart';

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/model/emotion_model.dart';
 import 'package:emosense/design_widgets/emotion_trends_line_graphs.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
-import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/model/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/discover_stress_relief.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -462,24 +462,29 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
     List<String> suggestions = [];
 
     if (averageStressLevel >= 2.5) {
-      suggestions.add('For this month, consider integrating mindfulness practices into your routine to manage stress effectively.');
-      suggestions.add('Engage in regular physical activities to relieve tension and boost your mood.');
-      suggestions.add('Talk to friends or family about your feelings to gain support and perspective.');
-      suggestions.add('\nExplore additional stress relief resources in the "Stress Relief" section of the Discover page.');
+      suggestions.add('This month, prioritize incorporating mindfulness practices into your daily life to effectively manage stress.');
+      suggestions.add('Aim for consistent physical activities to alleviate tension and uplift your spirits.');
+      suggestions.add('Reach out to friends or family to discuss your feelings and gain valuable support and insights.');
+      suggestions.add('It is important to prioritize self-care; consider setting aside time for activities that bring you joy.');
+      suggestions.add('\nDon’t forget to explore more stress relief resources in the "Stress Relief" section on the Discover page!');
+
     } else if (averageStressLevel >= 1.8 && averageStressLevel < 2.5) {
-      suggestions.add('You have maintained a good stress level this month. Keep it up! ^^');
-      suggestions.add('Consider introducing deep breathing exercises into your daily routine to enhance relaxation.');
-      suggestions.add('Taking breaks regularly is key; continue to refresh your mind throughout the day.');
-      suggestions.add('Journaling your experiences can help process emotions and reduce stress.');
+      suggestions.add('Great job on maintaining a healthy stress level this month—keep the momentum going! ^^');
+      suggestions.add('Consider adding deep breathing exercises into your daily practices to deepen your relaxation experience.');
+      suggestions.add('Remember that regular breaks are essential; keep refreshing your mind as you go through your days.');
+      suggestions.add('Make journaling a monthly habit to help you process emotions and manage stress effectively.');
+
     } else if (averageStressLevel < 1.8 && averageStressLevel > 0.0) {
-        suggestions.add('Excellent work! You are managing your stress well. Continue it! :D');
-      suggestions.add('Invest time in hobbies or activities that bring you joy to maintain this balance.');
-      suggestions.add('Practice gratitude by reflecting on the positive aspects of your life regularly.');
-      suggestions.add('Connect with friends or family to share your positive experiences and strengthen bonds.');
+      suggestions.add('WELL DONE!! You’re handling your stress exceptionally well—keep it up! :D');
+      suggestions.add('Dedicate time this month to hobbies or activities that spark joy and help you maintain balance.');
+      suggestions.add('Make it a practice to reflect on what you’re grateful for regularly; it fosters positivity.');
+      suggestions.add('Strengthen your connections by sharing your happy moments with friends or family this month.');
+
     } else {
-      suggestions.add('To maintain a healthy balance, ensure you are taking time for both work and leisure. \n'
-          'Consider how you can keep this balance going forward.');
+      suggestions.add('To ensure a healthy balance, focus on dedicating time to both work and leisure this month. \n'
+          'Reflect on ways to sustain this balance moving forward.');
     }
+
 
     return suggestions;
   }
@@ -648,7 +653,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
 
                   gridData: FlGridData(show: false), // Disable grid lines
                   alignment: BarChartAlignment.spaceAround, // Space the bars evenly
-                  maxY: 15, // Maximum Y value (assuming 5 for visual consistency)
+                  maxY: 20, // Maximum Y value 
                 ),
               ),
             ),

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/alert_dialog_widget.dart';
 import 'package:emosense/design_widgets/app_color.dart';
-import 'package:emosense/design_widgets/emotion_model.dart';
+import 'package:emosense/model/emotion_model.dart';
 import 'package:emosense/design_widgets/stress_level_chart.dart';
-import 'package:emosense/design_widgets/stress_model.dart';
+import 'package:emosense/model/stress_model.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/discover_stress_relief.dart';
 import 'package:fl_chart/fl_chart.dart';
