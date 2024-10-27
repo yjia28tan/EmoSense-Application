@@ -653,7 +653,7 @@ class _MonthlyViewHomeState extends State<MonthlyViewHome> {
 
                   gridData: FlGridData(show: false), // Disable grid lines
                   alignment: BarChartAlignment.spaceAround, // Space the bars evenly
-                  maxY: 20, // Maximum Y value 
+                  maxY: 20, // Maximum Y value
                 ),
               ),
             ),

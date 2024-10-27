@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/main.dart';
 import 'package:emosense/pages/home_page.dart';
@@ -113,7 +114,7 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CustomLoadingIndicator())
           : Padding(
             padding: const EdgeInsets.only(top: 15.0, left: 10.0, right: 15.0, bottom: 15.0),
             child: Column(

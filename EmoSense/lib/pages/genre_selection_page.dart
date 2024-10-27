@@ -1,5 +1,6 @@
 import 'package:emosense/api_services/spotify_services.dart';
 import 'package:emosense/design_widgets/app_color.dart';
+import 'package:emosense/design_widgets/custom_loading_button.dart';
 import 'package:emosense/design_widgets/font_style.dart';
 import 'package:emosense/pages/artists_selection_page.dart';
 import 'package:emosense/pages/emotion_genre_survey_page.dart';
@@ -62,7 +63,7 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
     return Scaffold(
       backgroundColor: AppColors.downBackgroundColor,
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show a loader while fetching data
+          ? Center(child: CustomLoadingIndicator()) // Show a loader while fetching data
           : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(

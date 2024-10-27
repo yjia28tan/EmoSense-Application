@@ -57,8 +57,6 @@ class _GetStartedPageState extends State<GetStartedPage> {
                   style: inkwellText.copyWith(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
             ),
-
-
           ],
         ),
       ),

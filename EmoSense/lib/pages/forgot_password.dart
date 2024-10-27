@@ -19,8 +19,6 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   TextEditingController _emailTextController = TextEditingController();
-  TextEditingController _passwordTextController = TextEditingController();
-  TextEditingController _confirmpasswordTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +79,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Navigator.pop(context);
 
                             final snackbar = SnackBar(
-                              content: Text("Password reset email sent. Please check your email.\nYou can reset your password using the link in the email and sign in again."),
+                              content: Text("Password reset email sent. Please check your email.\n"
+                                  "You can reset your password using the link in the email and sign in again."),
                               action: SnackBarAction(
                                 label: 'OK',
                                 onPressed: () {},
@@ -102,7 +101,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             Navigator.pop(context);
 
                             final snackbar = SnackBar(
-                              content: Text("Failed to send password reset email."),
+                              content: Text("Failed to send password reset email. Please enter a valid email address."),
                               action: SnackBarAction(
                                 label: 'OK',
                                 onPressed: () {},
