@@ -2,6 +2,10 @@
 
 EmoSense is an innovative mobile application designed to enhance emotional well-being by using facial emotion detection to provide personalized music recommendations. The app integrates a reliable emotion detection model with a user-friendly interface, allowing users to track their emotions and receive tailored suggestions based on their mood.
 
+## Mobile Application Demo Video
+https://youtu.be/hhVZd4bi6Tw
+
+
 ## Features
 
 - **Emotion Detection**: Utilizes advanced facial recognition technology to accurately identify a range of emotions.
