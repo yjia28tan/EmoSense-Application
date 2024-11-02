@@ -32,6 +32,12 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
       // Authenticate with Spotify
       await spotifyService.authenticate();
 
+      // SnackBar for 1 second
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetching genres from Spotify...'), duration: Duration(seconds: 1)
+        ),
+      );
+
       // Fetch available genres
       List<String> fetchedGenres = await spotifyService.getAvailableGenres();
 
@@ -42,6 +48,10 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
       });
     } catch (e) {
       print('Error: $e');
+      // SnackBar show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load genres: $e')),
+      );
       setState(() {
         isLoading = false;
       });
@@ -157,6 +167,15 @@ class _GenreSelectionPageState extends State<GenreSelectionPage> {
                       minimumSize: Size(double.infinity, 50), // Full-width button
                     ),
                     onPressed: () {
+                      // Only proceed if has a selected genre
+                      if (selectedGenres.isEmpty) {
+                        // Show a message if the user hasn't selected all genres
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please select at least one genre.')),
+                        );
+                        return;
+                      }
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(

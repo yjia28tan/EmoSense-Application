@@ -47,12 +47,24 @@ class _EditGenrePreferencesPageState extends State<EditGenrePreferencesPage> {
       });
     } catch (e) {
       print("Error fetching favourite genres: $e");
+      // Show snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching favourite genres: $e')),
+      );
     }
   }
 
   void fetchGenres() async {
     try {
       await spotifyService.authenticate();
+
+      // SnackBar for 1 second
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetching genres from Spotify...'), duration: Duration(seconds: 1)
+        ),
+      );
+
+
       List<String> fetchedGenres = await spotifyService.getAvailableGenres();
 
       setState(() {
@@ -61,6 +73,10 @@ class _EditGenrePreferencesPageState extends State<EditGenrePreferencesPage> {
       });
     } catch (e) {
       print('Error fetching genres: $e');
+      // Show snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching genres: $e')),
+      );
       setState(() {
         isLoading = false;
       });

@@ -61,6 +61,12 @@ class _DescriptionPageState extends State<DescriptionPage> {
       // Authenticate with Spotify API
       await spotifyService.authenticate();
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Fetching Tracks..."),
+        ),
+      );
+
       // Fetch user preferences to get the emotionGenreMap
       final preferences = await getUserPreferences(globalUID!);
 
@@ -124,6 +130,12 @@ class _DescriptionPageState extends State<DescriptionPage> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => RecommendedSongsPage(songs: tracksRecommended)),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Emotion Record and Recommended Music Saved!"),
+        ),
       );
     } catch (e) {
       print("Error: $e");

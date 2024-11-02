@@ -67,6 +67,11 @@ class _EditEmotionGenreSurveyPageState extends State<EditEmotionGenreSurveyPage>
       });
     } catch (e) {
       print("Error fetching favourite emotion genres: $e");
+      // Show snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching favourite emotion genres: $e')),
+      );
+
       setState(() {
         isLoading = false; // Hide loading in case of an error
       });
@@ -99,10 +104,17 @@ class _EditEmotionGenreSurveyPageState extends State<EditEmotionGenreSurveyPage>
             'emotionGenreMap': emotionGenreList, // Save as a list
           });
           print("Preferences updated successfully!");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Preferences updated successfully!')),
+          );
         }
       });
     } catch (e) {
       print("Error updating preferences: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating preferences: $e')),
+      );
     }
   }
 

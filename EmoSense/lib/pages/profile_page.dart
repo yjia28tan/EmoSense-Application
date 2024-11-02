@@ -169,6 +169,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () {
                       onSave!(selectedGender); // Save the selected gender
                       Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Gender Saved Sucessfully!"),
+                        ),
+                      );
                     },
                     child: Text("Save"),
                   ),
@@ -228,6 +233,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       String? dateString = selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : null;
                       onSave!(dateString);
                       Navigator.pop(context);
+                      // Show a SnackBar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Birthdate Saved Sucessfully!"),
+                        ),
+                      );
                     },
                     child: Text("Save"),
                   ),
@@ -273,9 +284,22 @@ class _ProfilePageState extends State<ProfilePage> {
             if (!readOnly) // Only show Save button if field is editable
               TextButton(
                 onPressed: () {
+                  // Check if the input is empty
                   if (_editController.text.isNotEmpty) {
                     onSave!(_editController.text); // Save the new value
                     Navigator.pop(context); // Close the dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Username Saved Sucessfully!"),
+                      ),
+                    );
+                  } else {
+                    // Show a SnackBar if the input is empty
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Field cannot be empty!"),
+                      ),
+                    );
                   }
                 },
                 child: Text("Save"),

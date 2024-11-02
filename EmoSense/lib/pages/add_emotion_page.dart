@@ -55,6 +55,11 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       }
     } catch (e) {
       print('Error fetching server IP: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error fetching server IP: $e"),
+        ),
+      );
     }
   }
 

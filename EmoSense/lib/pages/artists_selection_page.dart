@@ -35,6 +35,12 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
     try {
       await spotifyService.authenticate();
 
+      // SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fetching artists from Spotify...')),
+      );
+
+
       List<Artist> allArtists = [];
       for (String genre in widget.selectedGenres) {
         try {
@@ -42,6 +48,10 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
           allArtists.addAll(fetchedArtists);
         } catch (e) {
           print('Error fetching artists for genre $genre: $e');
+          // Show snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error fetching artists for genre: $e')),
+          );
         }
       }
 
@@ -52,6 +62,10 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
         isLoading = false;
       });
     } catch (e) {
+      // SnackBar show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch artists: $e')),
+      );
       print('Error: $e');
       setState(() {
         isLoading = false;
@@ -69,6 +83,10 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
         artists.addAll(similarArtists);
       });
     } catch (e) {
+      // SnackBar show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch similar artists: $e')),
+      );
       print('Error fetching similar artists for artist $artistId: $e');
     }
   }
@@ -104,7 +122,12 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
       });
 
       print("Preferences saved successfully!");
+
     } catch (e) {
+      // SnackBar show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error to save preferences: $e')),
+      );
       print("Error saving preferences: $e");
     }
   }
@@ -139,7 +162,7 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
                         textAlign: TextAlign.center,
                     ),
 
-                    SizedBox(width: 8), // to balance the back button space
+                    SizedBox(width: 8),
                   ],
                 ),
                 SizedBox(height: 8),
@@ -234,6 +257,11 @@ class _ArtistSelectionPageState extends State<ArtistSelectionPage> {
                     ),
                     onPressed: () async {
                       await savePreferencesToFirebase();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Preferences Saved Successfully!"),
+                        ),
+                      );
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()));
