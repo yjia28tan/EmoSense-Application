@@ -1,36 +1,35 @@
-# EmoSense
+# Facial Emotion Recognition (FER) Model Training
+This repository contains the code and resources for training a Facial Emotion Recognition (FER) model using the FER2013 dataset. The final model is designed to detect four primary emotions (happy, sad, angry, neutral) from grayscale facial images, based on deep learning techniques using convolutional neural networks (CNNs).
 
-EmoSense is an innovative mobile application designed to enhance emotional well-being by using facial emotion detection to provide personalized music recommendations. The app integrates a reliable emotion detection model with a user-friendly interface, allowing users to track their emotions and receive tailored suggestions based on their mood.
+## Final model 
+The final model achieved an accuracy of 75.21% and was trained by RestNet50 using the Jupyter notebook file: train_resnet_72.ipynb.
 
-## Features
+Download the FER model:
+[RestNet50 FER model](https://drive.google.com/file/d/122epRv2JVvB4ziQtrn82qWKVhaHi3CNc/view?usp=sharing) <br/><br/>
+Model Validation Accuracy: 75.21% <br/>
+Model Validation Loss: 0.62
 
-- **Emotion Detection**: Utilizes advanced facial recognition technology to accurately identify a range of emotions.
-- **Personalized Music Recommendations**: Suggests music based on the user's detected emotions and personal preferences.
-- **User-Friendly Interface**: Intuitive design with easy navigation for tracking and managing emotional states.
-- **Daily Quotes**: Fetches motivational quotes daily to inspire users.
-- **Mood Analysis**: Provides graphs and insights into the user's emotional trends over time.
 
-## Technologies Used
 
-- **Flutter**: For building the cross-platform mobile application.
-- **Dart**: The programming language used in the Flutter framework.
-- **Camera Plugin**: For capturing images for emotion detection.
-- **HTTP Requests**: For communicating with the server and retrieving data.
-- **Firebase**: For storing user data and managing authentication.
-- **Spotify API**: For fetching music genres and recommendations.
-- **Python Flask**: For the backend server that processes emotion detection and handles requests.
+## Dataset
+The model is trained on the FER2013 dataset, which consists of 48x48 pixel grayscale images of faces. The dataset contains 35,887 images across seven emotion classes: Angry, Disgust, Fear, Happy, Sad, Surprise, and Neutral.
 
-## Getting Started
+For this project, the Disgust and Fear categories were removed due to their low representation and ambiguity. The final classes used are:
+   - Happy
+   - Sad
+   - Angry
+   - Neutral
 
-### Prerequisites
 
-- Flutter SDK installed on your machine.
-- Python and Flask installed for the backend.
-- An IDE such as Android Studio or Visual Studio Code.
-- Access to a local server for the emotion detection model.
+The dataset is available on Kaggle: [Kaggle FER2013](https://www.kaggle.com/datasets/msambare/fer2013)
 
-### Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/emosense.git
+## Requirements
+The following packages are required to run the training scripts:
+   - Python 3.8+
+   - TensorFlow
+   - Keras
+   - NumPy
+   - OpenCV
+   - Scikit-learn
+   - Matplotlib
