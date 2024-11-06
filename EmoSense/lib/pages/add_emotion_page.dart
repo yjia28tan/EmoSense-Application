@@ -52,6 +52,11 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
         print('Server IP fetched: $serverIp');
       } else {
         print('No IP address found in Firebase.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("No IP address found in Firebase."),
+          ),
+        );
       }
     } catch (e) {
       print('Error fetching server IP: $e');
@@ -132,9 +137,11 @@ class _EmotionDetectionPageState extends State<EmotionDetectionPage> {
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
       Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+
       setState(() {
         detectedEmotion = jsonResponse['detected_emotion'] ?? 'Unknown Emotion';
         print(detectedEmotion);
+
         // Show the detected emotion using SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
